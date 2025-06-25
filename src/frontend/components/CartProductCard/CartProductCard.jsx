@@ -81,7 +81,7 @@ const CartProductCard = ({ singleCartItem }) => {
                 <Price amount={originalPrice} />
                 <span className={styles.discount}>
                   {' '}
-                  ({discountPercent}% desc.)
+                  ({discountPercent}% off)
                 </span>
               </>
             )}
@@ -109,7 +109,7 @@ const CartProductCard = ({ singleCartItem }) => {
             <button
               onClick={
                 qty === colorQuantity
-                  ? () => toastHandler(ToastType.Warn, 'Límite de stock excedido')
+                  ? () => toastHandler(ToastType.Warn, 'Stock Limit exceeded')
                   : () => handleQuantityClick(INCREMENT_DECRMENT_TYPE.INCREMENT)
               }
               disabled={isAllBtnsDisabled}
@@ -126,7 +126,7 @@ const CartProductCard = ({ singleCartItem }) => {
           disabled={isAllBtnsDisabled}
           onClick={handleWishlistBtnClick}
         >
-          {isProductInWishlist ? 'Ir a Lista de Deseos' : 'Mover a Lista de Deseos'}
+          {isProductInWishlist ? 'Go to Wishlist' : 'Move to Wishlist'}
         </button>
 
         <button
@@ -134,7 +134,7 @@ const CartProductCard = ({ singleCartItem }) => {
           disabled={isAllBtnsDisabled}
           onClick={handleDeleteFromCart}
         >
-          Remover del Carrito
+          Remove From Cart
         </button>
       </footer>
     </article>

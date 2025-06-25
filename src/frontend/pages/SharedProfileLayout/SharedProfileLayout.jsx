@@ -14,18 +14,18 @@ const SharedProfileLayout = () => {
       <main>
         <header>
           <Link className={showActiveCSS(isProfileActive)} to='/profile'>
-            Perfil
+            Profile
           </Link>
 
           <Link
             className={showActiveCSS(isAddressActive)}
             to='/profile/address'
           >
-            Direcciones
+            Address
           </Link>
 
           {/* <Link className={showActiveCSS(isOrdersActive)} to='/profile/order'>
-            Pedidos
+            Orders
           </Link> */}
         </header>
         <hr />

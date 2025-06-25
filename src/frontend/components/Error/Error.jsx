@@ -13,7 +13,7 @@ const Error = ({ errorText }) => {
       </div>
 
       <Link to='/' className='btn btn-padding-desktop'>
-        Volver al Inicio
+        Go back to Home
       </Link>
     </div>
   );

@@ -61,7 +61,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
     });
 
     if (isAnyInputEmpty) {
-      toastHandler(ToastType.Error, 'Por favor completa todos los campos');
+      toastHandler(ToastType.Error, 'Please fill all the inputs');
       return;
     }
 
@@ -94,52 +94,52 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
       onSubmit={handleSubmitForm}
     >
       <FormRow
-        text='Nombre'
+        text='Name'
         type='text'
         name='username'
         id='username'
-        placeholder='nombre'
+        placeholder='name'
         value={inputs.username}
         handleChange={handleInputChange}
       />
 
       <FormRow
-        text='Número de Móvil'
+        text='Mobile No.'
         type='number'
         name='mobile'
         id='mobile'
-        placeholder='móvil'
+        placeholder='mobile'
         value={inputs.mobile}
         handleChange={handleInputChange}
       />
 
       <FormRow
-        text='Código Postal'
+        text='Pincode'
         type='number'
         name='pincode'
         id='pincode'
-        placeholder='código postal'
+        placeholder='pincode'
         value={inputs.pincode}
         handleChange={handleInputChange}
       />
 
       <FormRow
-        text='Ciudad'
+        text='City'
         type='text'
         name='city'
         id='city'
-        placeholder='ciudad'
+        placeholder='city'
         value={inputs.city}
         handleChange={handleInputChange}
       />
 
       <div>
-        <label htmlFor='textarea'>Dirección</label>
+        <label htmlFor='textarea'>Address</label>
         <textarea
           name='addressInfo'
           id='textarea'
           className='form-textarea'
-          placeholder='dirección'
+          placeholder='address'
           value={inputs.addressInfo}
           onChange={handleInputChange}
           required
@@ -147,12 +147,12 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
       </div>
 
       <div>
-        <label htmlFor='alternate'>Móvil Alternativo</label>
+        <label htmlFor='alternate'>Alternate Mobile</label>
         <input
           type='number'
           name='alternate'
           id='alternate'
-          placeholder='alternativo'
+          placeholder='alternate'
           value={inputs.alternate}
           onChange={handleInputChange}
           className='form-input'
@@ -160,7 +160,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
       </div>
 
       <div>
-        <label htmlFor='state'>Provincia</label>
+        <label htmlFor='state'>State</label>
         <select
           className='form-select'
           name='state'
@@ -170,7 +170,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
           required
         >
           <option id='state' value='' disabled>
-            Elige Provincia:
+            Choose State:
           </option>
 
           {ALL_STATES.map((singleState, index) => (
@@ -183,19 +183,19 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
 
       <div className={`btn-container ${styles.formBtnContainer}`}>
         <button type='submit' className='btn btn-primary'>
-          {isEditing ? 'Actualizar' : 'Agregar'}
+          {isEditing ? 'Update' : 'Add'}
         </button>
 
         <button onClick={handleReset} type='button' className='btn btn-hipster'>
-          Restablecer
+          Reset
         </button>
 
         <button onClick={handleRandomData} type='button' className='btn'>
-          Datos Aleatorios
+          Random Data
         </button>
 
         <button type='button' className='btn btn-danger' onClick={closeForm}>
-          Cancelar
+          Cancel
         </button>
       </div>
     </form>

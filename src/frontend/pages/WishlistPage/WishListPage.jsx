@@ -11,16 +11,16 @@ const WishListPage = () => {
 
   const handleClearWishlist = () => {
     clearWishlistDispatch();
-    toastHandler(ToastType.Success, 'Lista de deseos limpiada exitosamente');
+    toastHandler(ToastType.Success, 'Cleared Wishlist Successfully');
   };
 
   if (wishlistFromContext.length < 1) {
-    return <EmptyList listName='lista de deseos' />;
+    return <EmptyList listName='wishlist' />;
   }
 
   return (
     <main className={`full-page ${styles.wishlistPage}`}>
-      <Title>Lista de Deseos ({wishlistFromContext.length})</Title>
+      <Title>Wishlist ({wishlistFromContext.length})</Title>
 
       <div className={`container ${styles.wishlistsContainer}`}>
         {wishlistFromContext.map((singleWishItem) => (
@@ -33,7 +33,7 @@ const WishListPage = () => {
         className='btn btn-danger btn-padding-desktop btn-center mt-2'
         onClick={handleClearWishlist}
       >
-        Limpiar Lista de Deseos
+        Clear Wishlist
       </button>
     </main>
   );

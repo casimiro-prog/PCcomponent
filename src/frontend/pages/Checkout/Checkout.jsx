@@ -52,7 +52,7 @@ const Checkout = () => {
   if (isCheckoutSuccess)
     return (
       <main className='half-page container center-div'>
-        <p className='success-text'>Tu pedido se ha realizado exitosamente 🎉</p>
+        <p className='success-text'>Your order has successfully placed 🎉</p>
       </main>
     );
 
@@ -64,11 +64,11 @@ const Checkout = () => {
         </Modal>
       )}
 
-      <Title>Finalizar Compra</Title>
+      <Title>Checkout</Title>
 
       <div className={styles.checkoutPage}>
         <section>
-          <h3>Elige una dirección de entrega</h3>
+          <h3>Choose a delivery address</h3>
 
           <AddAddressBtn openForm={toggleModal} />
 
@@ -82,7 +82,7 @@ const Checkout = () => {
               />
             ))
           ) : (
-            <p className='text-center bold'>No hay direcciones para mostrar</p>
+            <p className='text-center bold'>No address to display</p>
           )}
         </section>
 

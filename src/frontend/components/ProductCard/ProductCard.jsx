@@ -55,10 +55,10 @@ const ProductCard = ({ product }) => {
   // If card is in wishlist page & product is in cartContext show- "go to cart" else show 'move to cart'
 
   // In productListing page, if this product is in cart- "go to cart" else show 'add to cart'
-  let productBtnText = isCardInWishlistPage ? 'mover al carrito' : 'agregar al carrito';
+  let productBtnText = isCardInWishlistPage ? 'move to cart' : 'add to cart';
 
   if (isProductInCart) {
-    productBtnText = 'ir al carrito';
+    productBtnText = 'go to cart';
   }
 
   const discountPercent = calculateDiscountPercent(
@@ -162,7 +162,7 @@ const ProductCard = ({ product }) => {
           {discountPercent > 0 && (
             <>
               <Price amount={product.originalPrice} />
-              <span className={styles.discount}> ({discountPercent}% desc.)</span>
+              <span className={styles.discount}> ({discountPercent}% off)</span>
             </>
           )}
         </main>

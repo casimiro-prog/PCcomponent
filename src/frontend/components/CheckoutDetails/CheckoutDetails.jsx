@@ -45,12 +45,12 @@ const CheckoutDetails = ({
 
   const updateActiveCoupon = (couponObjClicked) => {
     setActiveCoupon(couponObjClicked);
-    toastHandler(ToastType.Success, 'Cupón aplicado exitosamente');
+    toastHandler(ToastType.Success, 'Coupon Applied Successfully');
   };
 
   const cancelCoupon = () => {
     setActiveCoupon(null);
-    toastHandler(ToastType.Warn, 'Cupón removido');
+    toastHandler(ToastType.Warn, 'Coupon Removed');
   };
 
   const loadScript = async (url) => {
@@ -79,7 +79,7 @@ const CheckoutDetails = ({
       if (!res) {
         toastHandler(
           ToastType.Error,
-          'Error al cargar Razorpay SDK, verifica tu conexión'
+          'Razorpay SDK failed to load, check you connection'
         );
         return;
       }
@@ -89,7 +89,7 @@ const CheckoutDetails = ({
         amount: finalPriceToPay * 100,
         currency: 'INR',
         name: 'Gada Electronics',
-        description: 'Gracias por comprar con nosotros',
+        description: 'Thank you for shopping with us',
         image:
           'https://res.cloudinary.com/dtbd1y4en/image/upload/v1685641105/apple-touch-icon_edbdny.png',
 
@@ -104,7 +104,7 @@ const CheckoutDetails = ({
           updateCheckoutStatus({ showSuccessMsg: true });
 
           Popper();
-          toastHandler(ToastType.Success, 'Pago exitoso');
+          toastHandler(ToastType.Success, 'Payment successful');
 
           timer.current = setTimeout(() => {
             updateCheckoutStatus({ showSuccessMsg: false });
@@ -133,7 +133,7 @@ const CheckoutDetails = ({
     );
 
     if (!addressToDeliver) {
-      toastHandler(ToastType.Error, 'Por favor selecciona una dirección');
+      toastHandler(ToastType.Error, 'Please select address');
       return;
     }
 
@@ -142,7 +142,7 @@ const CheckoutDetails = ({
 
   return (
     <article className={styles.checkout}>
-      <h3 className='text-center'>Detalles del Precio</h3>
+      <h3 className='text-center'>Price Details</h3>
 
       <CouponSearch
         activeCoupon={activeCoupon}
@@ -153,13 +153,13 @@ const CheckoutDetails = ({
 
       <div className={styles.row}>
         <span>
-          Precio ({totalCountFromContext} artículo{totalCountFromContext > 1 && 's'})
+          Price ({totalCountFromContext} item{totalCountFromContext > 1 && 's'})
         </span>
         <Price amount={totalAmountFromContext} />
       </div>
 
       <div className={styles.row}>
-        <span>Descuento</span>
+        <span>Discount</span>
         <Price amount={CHARGE_AND_DISCOUNT.discount} />
       </div>
 
@@ -172,7 +172,7 @@ const CheckoutDetails = ({
               onClick={cancelCoupon}
             />{' '}
             <p className={styles.couponText}>
-              Cupón {activeCoupon.couponCode} aplicado
+              Coupon {activeCoupon.couponCode} applied
             </p>
           </div>
           <Price amount={priceAfterCouponApplied} />
@@ -180,19 +180,19 @@ const CheckoutDetails = ({
       )}
 
       <div className={styles.row}>
-        <span>Gastos de Envío</span>
+        <span>Delivery Charges</span>
         <Price amount={CHARGE_AND_DISCOUNT.deliveryCharge} />
       </div>
 
       <hr />
 
       <div className={`${styles.row} ${styles.totalPrice}`}>
-        <span>Precio Total</span>
+        <span>Total Price</span>
         <Price amount={finalPriceToPay} />
       </div>
 
       <button onClick={handlePlaceOrder} className='btn btn-width-100'>
-        Realizar Pedido
+        Place Order
       </button>
     </article>
   );

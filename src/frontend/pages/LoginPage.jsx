@@ -62,7 +62,7 @@ const LoginPage = () => {
       // show success toast
       toastHandler(
         ToastType.Success,
-        `Bienvenido ${user.firstName} ${user.lastName} 😎`
+        `Welcome ${user.firstName} ${user.lastName} 😎`
       );
       // if non-registered user comes from typing '/login' at the url, after success redirect it to '/'
       navigate(locationOfLogin?.state?.from ?? '/');
@@ -81,11 +81,11 @@ const LoginPage = () => {
 
   return (
     <LoginAndSignupLayout>
-      <Title>Iniciar Sesión</Title>
+      <Title>Login</Title>
 
       <form onSubmit={(e) => handleSubmit(e, LOGIN_CLICK_TYPE.RegisterClick)}>
         <FormRow
-          text='Correo Electrónico'
+          text='Email Address'
           type='email'
           name='email'
           id='email'
@@ -95,7 +95,7 @@ const LoginPage = () => {
           disabled={!!activeBtnLoader}
         />
         <PasswordRow
-          text='Ingresa tu Contraseña'
+          text='Enter Password'
           name='password'
           id='password'
           placeholder='babitaji1234'
@@ -112,7 +112,7 @@ const LoginPage = () => {
           {activeBtnLoader === LOGIN_CLICK_TYPE.RegisterClick ? (
             <span className='loader-2'></span>
           ) : (
-            'Iniciar Sesión'
+            'Login'
           )}
         </button>
 
@@ -125,19 +125,33 @@ const LoginPage = () => {
           {activeBtnLoader === LOGIN_CLICK_TYPE.GuestClick ? (
             <span className='loader-2'></span>
           ) : (
-            'Iniciar como invitado'
+            'Login as a guest'
           )}
         </button>
       </form>
 
+      {/*
+        * user journey
+        * '/wishlist' (protectedRoute) -->  
+        * '/login' (comes to login page, but thinks to sign up)
+        * clicks Link to sign up
+        * '/signup' after successful signup -->
+        * '/wishlist'
+
+        // if the non-registered user comes from wishlist and then user decides to signup, clicks the link of signup, then pass that '/wishlist' state from loginPage's state to the signup page state, so the signup page can access it and after successful signup, and user goes to wishlist..
+
+        // (locationOfLogin?.state?.from) 
+        // i.e. passing loginPage State to SignupPage State
+      */}
+
       <div>
         <span>
-          ¿No tienes una cuenta?{' '}
+          Don't have an account?{' '}
           <Link
             to='/signup'
             state={{ from: locationOfLogin?.state?.from ?? '/' }}
           >
-            regístrate
+            sign up
           </Link>
         </span>
       </div>

@@ -31,7 +31,7 @@ const Profile = () => {
     clearWishlistInContext();
     clearFilters();
     clearAddressInContext();
-    toastHandler(ToastType.Success, 'Sesión cerrada exitosamente');
+    toastHandler(ToastType.Success, 'Logged out sucessfully');
 
     navigate('/');
   };
@@ -39,7 +39,7 @@ const Profile = () => {
   return (
     <div className={styles.profile}>
       <p className={styles.row}>
-        <span>Nombre:</span> {`${firstName} ${lastName}`}
+        <span>Name:</span> {`${firstName} ${lastName}`}
       </p>
 
       <p className={styles.row}>
@@ -47,7 +47,7 @@ const Profile = () => {
       </p>
 
       <button className='btn btn-danger' onClick={handleLogout}>
-        cerrar sesión
+        logout
       </button>
     </div>
   );

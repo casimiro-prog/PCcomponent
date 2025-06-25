@@ -66,7 +66,7 @@ const ProductsList = ({
           {overlayJSXInMobile}
 
           <header className={styles.listHeader}>
-            <p className='primary-color-text font-size-one-half'>Cargando...</p>
+            <p className='primary-color-text font-size-one-half'>Loading...</p>
           </header>
 
           <div className={styles.productsCenter}>
@@ -85,7 +85,7 @@ const ProductsList = ({
         {overlayJSXInMobile}
 
         <p className='error-text'>
-          No se encontraron productos que coincidan con tu combinación de filtros ☹️
+          No products matched your filters combination ☹️
         </p>
 
         {showFilterButtonJSXInMobile}
@@ -101,12 +101,12 @@ const ProductsList = ({
 
       <header className={styles.listHeader}>
         <p className='primary-color-text font-size-one-half'>
-          {totalProductsLength} Producto
-          {totalProductsLength !== 1 && 's'} Encontrado{totalProductsLength !== 1 && 's'}
+          {totalProductsLength} Product
+          {totalProductsLength !== 1 && 's'} Found
         </p>
 
         <p className={styles.pageCount}>
-          Página {paginateIndex + 1} de {filteredProductsLength}
+          Page {paginateIndex + 1} of {filteredProductsLength}
         </p>
       </header>
 
@@ -128,7 +128,7 @@ const ProductsList = ({
               )
             }
           >
-            anterior
+            prev
           </button>
 
           {filteredProducts.map((_, index) => (
@@ -151,7 +151,7 @@ const ProductsList = ({
               )
             }
           >
-            siguiente
+            next
           </button>
         </div>
       )}
