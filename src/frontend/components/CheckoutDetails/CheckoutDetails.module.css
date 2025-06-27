@@ -91,6 +91,50 @@
   cursor: pointer;
 }
 
+.orderButton {
+  position: relative;
+  overflow: hidden;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
+  transition: all 0.3s ease;
+}
+
+.orderButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-800));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+.orderButton:disabled {
+  background: var(--grey-400);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.processingOrder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  font-size: 1.2rem;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media screen and (min-width: 768px) {
   .tooltip {
     font-size: 0.75rem;

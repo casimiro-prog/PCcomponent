@@ -7,6 +7,7 @@ import {
 } from '../components';
 import {
   TEST_USER,
+  SUPER_ADMIN,
   ToastType,
   LOCAL_STORAGE_KEYS,
   LOGIN_CLICK_TYPE,
@@ -41,10 +42,19 @@ const LoginPage = () => {
     e.preventDefault();
 
     const isGuestClick = clickType === LOGIN_CLICK_TYPE.GuestClick;
-    const userInfo = isGuestClick ? TEST_USER : userInputs;
+    const isAdminClick = clickType === LOGIN_CLICK_TYPE.AdminClick;
+    
+    let userInfo;
+    if (isGuestClick) {
+      userInfo = TEST_USER;
+    } else if (isAdminClick) {
+      userInfo = SUPER_ADMIN;
+    } else {
+      userInfo = userInputs;
+    }
 
     // Validaciones básicas para login manual
-    if (!isGuestClick) {
+    if (!isGuestClick && !isAdminClick) {
       if (!userInputs.email.trim()) {
         toastHandler(ToastType.Error, 'Por favor ingresa tu email');
         return;
@@ -59,10 +69,30 @@ const LoginPage = () => {
 
     if (isGuestClick) {
       setUserInputs(TEST_USER);
+    } else if (isAdminClick) {
+      setUserInputs(SUPER_ADMIN);
     }
 
     try {
-      const { user, token } = await loginUserService(userInfo);
+      let user, token;
+      
+      if (isAdminClick) {
+        // Crear usuario administrador especial
+        user = {
+          _id: 'super-admin-id',
+          firstName: 'Super',
+          lastName: 'Administrador',
+          email: SUPER_ADMIN.email,
+          isAdmin: true,
+          cart: [],
+          wishlist: []
+        };
+        token = 'super-admin-token';
+      } else {
+        const response = await loginUserService(userInfo);
+        user = response.user;
+        token = response.token;
+      }
 
       // update AuthContext with data
       updateUserAuth({ user, token });
@@ -72,10 +102,12 @@ const LoginPage = () => {
       setIntoLocalStorage(LOCAL_STORAGE_KEYS.Token, token);
 
       // show success toast
-      toastHandler(
-        ToastType.Success,
-        `¡Bienvenido ${user.firstName} ${user.lastName}! 😎`
-      );
+      const welcomeMessage = isAdminClick 
+        ? '¡Bienvenido Super Administrador! 👑'
+        : `¡Bienvenido ${user.firstName} ${user.lastName}! 😎`;
+      
+      toastHandler(ToastType.Success, welcomeMessage);
+      
       // if non-registered user comes from typing '/login' at the url, after success redirect it to '/'
       navigate(locationOfLogin?.state?.from ?? '/');
     } catch (error) {
@@ -147,6 +179,20 @@ const LoginPage = () => {
             <span className='loader-2'></span>
           ) : (
             'Iniciar como Invitado'
+          )}
+        </button>
+
+        {/* Super Admin Login button */}
+        <button
+          disabled={!!activeBtnLoader}
+          className='btn btn-block btn-danger'
+          type='button'
+          onClick={(e) => handleSubmit(e, LOGIN_CLICK_TYPE.AdminClick)}
+        >
+          {activeBtnLoader === LOGIN_CLICK_TYPE.AdminClick ? (
+            <span className='loader-2'></span>
+          ) : (
+            '👑 Acceso Administrador'
           )}
         </button>
       </form>
