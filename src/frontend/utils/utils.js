@@ -77,7 +77,7 @@ export const givePaginatedList = (list) => {
 };
 
 export const formatPrice = (price) =>
-  price.toLocaleString('es-ES', {
+  price.toLocaleString('es-CU', {
     maximumFractionDigits: 2,
   });
 
@@ -136,4 +136,11 @@ export const validateEmptyTextInput = ({ inputsObj, optionalInput }) => {
   }
 
   return false;
+};
+
+// Generar número de orden aleatorio
+export const generateOrderNumber = () => {
+  const timestamp = Date.now().toString().slice(-6);
+  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+  return `ORD${timestamp}${random}`;
 };
