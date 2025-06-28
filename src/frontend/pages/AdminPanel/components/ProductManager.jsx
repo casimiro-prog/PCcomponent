@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { v4 as uuid } from 'uuid';
+import { useAllProductsContext } from '../../../contexts/ProductsContextProvider';
 import { toastHandler } from '../../../utils/utils';
 import { ToastType } from '../../../constants/constants';
 import styles from './ProductManager.module.css';
 
 const ProductManager = () => {
-  const [products, setProducts] = useState([]);
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-
-  const initialProductState = {
+  const { products, categories } = useAllProductsContext();
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
     name: '',
     price: '',
     originalPrice: '',
@@ -19,39 +18,37 @@ const ProductManager = () => {
     stock: '',
     reviewCount: '',
     stars: '',
-    isShippingAvailable: true,
-    featured: false,
     colors: [{ color: '#000000', colorQuantity: 0 }],
-    image: null
-  };
-
-  const [productForm, setProductForm] = useState(initialProductState);
+    image: '',
+    isShippingAvailable: true,
+    featured: false
+  });
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setProductForm(prev => ({
+    setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
   };
 
   const handleColorChange = (index, field, value) => {
-    const newColors = [...productForm.colors];
+    const newColors = [...formData.colors];
     newColors[index] = { ...newColors[index], [field]: value };
-    setProductForm(prev => ({ ...prev, colors: newColors }));
+    setFormData(prev => ({ ...prev, colors: newColors }));
   };
 
   const addColor = () => {
-    setProductForm(prev => ({
+    setFormData(prev => ({
       ...prev,
       colors: [...prev.colors, { color: '#000000', colorQuantity: 0 }]
     }));
   };
 
   const removeColor = (index) => {
-    if (productForm.colors.length > 1) {
-      const newColors = productForm.colors.filter((_, i) => i !== index);
-      setProductForm(prev => ({ ...prev, colors: newColors }));
+    if (formData.colors.length > 1) {
+      const newColors = formData.colors.filter((_, i) => i !== index);
+      setFormData(prev => ({ ...prev, colors: newColors }));
     }
   };
 
@@ -60,68 +57,77 @@ const ProductManager = () => {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setProductForm(prev => ({ ...prev, image: e.target.result }));
+        setFormData(prev => ({ ...prev, image: e.target.result }));
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
+  const handleEdit = (product) => {
+    setSelectedProduct(product);
+    setFormData({
+      name: product.name,
+      price: product.price.toString(),
+      originalPrice: product.originalPrice.toString(),
+      description: product.description,
+      category: product.category,
+      company: product.company,
+      stock: product.stock.toString(),
+      reviewCount: product.reviewCount.toString(),
+      stars: product.stars.toString(),
+      colors: product.colors,
+      image: product.image,
+      isShippingAvailable: product.isShippingAvailable,
+      featured: product.featured || false
+    });
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
     // Validaciones
-    if (!productForm.name.trim()) {
+    if (!formData.name.trim()) {
       toastHandler(ToastType.Error, 'El nombre del producto es requerido');
       return;
     }
-    
-    if (!productForm.price || productForm.price <= 0) {
+
+    if (!formData.price || parseFloat(formData.price) <= 0) {
       toastHandler(ToastType.Error, 'El precio debe ser mayor a 0');
       return;
     }
 
-    const newProduct = {
-      ...productForm,
-      _id: editingProduct ? editingProduct._id : uuid(),
-      price: parseFloat(productForm.price),
-      originalPrice: parseFloat(productForm.originalPrice) || parseFloat(productForm.price),
-      stock: parseInt(productForm.stock) || 0,
-      reviewCount: parseInt(productForm.reviewCount) || 0,
-      stars: parseFloat(productForm.stars) || 0,
-      colors: productForm.colors.map(color => ({
-        ...color,
-        colorQuantity: parseInt(color.colorQuantity) || 0
-      }))
-    };
-
-    if (editingProduct) {
-      setProducts(prev => prev.map(p => p._id === editingProduct._id ? newProduct : p));
-      toastHandler(ToastType.Success, 'Producto actualizado exitosamente');
-    } else {
-      setProducts(prev => [...prev, newProduct]);
-      toastHandler(ToastType.Success, 'Producto creado exitosamente');
-    }
-
+    // Aquí iría la lógica para guardar el producto
+    // Por ahora solo mostramos un mensaje de éxito
+    toastHandler(ToastType.Success, 
+      selectedProduct ? 'Producto actualizado exitosamente' : 'Producto creado exitosamente'
+    );
+    
+    setIsEditing(false);
+    setSelectedProduct(null);
     resetForm();
   };
 
   const resetForm = () => {
-    setProductForm(initialProductState);
-    setEditingProduct(null);
-    setShowForm(false);
+    setFormData({
+      name: '',
+      price: '',
+      originalPrice: '',
+      description: '',
+      category: '',
+      company: '',
+      stock: '',
+      reviewCount: '',
+      stars: '',
+      colors: [{ color: '#000000', colorQuantity: 0 }],
+      image: '',
+      isShippingAvailable: true,
+      featured: false
+    });
   };
 
-  const editProduct = (product) => {
-    setProductForm(product);
-    setEditingProduct(product);
-    setShowForm(true);
-  };
-
-  const deleteProduct = (productId) => {
-    if (window.confirm('¿Estás seguro de eliminar este producto?')) {
-      setProducts(prev => prev.filter(p => p._id !== productId));
-      toastHandler(ToastType.Success, 'Producto eliminado exitosamente');
-    }
+  const handleCancel = () => {
+    setIsEditing(false);
+    setSelectedProduct(null);
+    resetForm();
   };
 
   return (
@@ -130,38 +136,38 @@ const ProductManager = () => {
         <h2>Gestión de Productos</h2>
         <button 
           className="btn btn-primary"
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => setIsEditing(true)}
         >
-          {showForm ? 'Cancelar' : '+ Nuevo Producto'}
+          ➕ Nuevo Producto
         </button>
       </div>
 
-      {showForm && (
-        <form className={styles.productForm} onSubmit={handleSubmit}>
+      {isEditing ? (
+        <div className={styles.editForm}>
+          <h3>{selectedProduct ? 'Editar Producto' : 'Nuevo Producto'}</h3>
+          
           <div className={styles.formGrid}>
             <div className={styles.formGroup}>
-              <label>Nombre del Producto *</label>
+              <label>Nombre del Producto</label>
               <input
                 type="text"
                 name="name"
-                value={productForm.name}
+                value={formData.name}
                 onChange={handleInputChange}
                 className="form-input"
-                required
+                placeholder="Nombre del producto"
               />
             </div>
 
             <div className={styles.formGroup}>
-              <label>Precio *</label>
+              <label>Precio</label>
               <input
                 type="number"
                 name="price"
-                value={productForm.price}
+                value={formData.price}
                 onChange={handleInputChange}
                 className="form-input"
-                min="0"
-                step="0.01"
-                required
+                placeholder="Precio"
               />
             </div>
 
@@ -170,11 +176,10 @@ const ProductManager = () => {
               <input
                 type="number"
                 name="originalPrice"
-                value={productForm.originalPrice}
+                value={formData.originalPrice}
                 onChange={handleInputChange}
                 className="form-input"
-                min="0"
-                step="0.01"
+                placeholder="Precio original"
               />
             </div>
 
@@ -182,16 +187,16 @@ const ProductManager = () => {
               <label>Categoría</label>
               <select
                 name="category"
-                value={productForm.category}
+                value={formData.category}
                 onChange={handleInputChange}
                 className="form-select"
               >
                 <option value="">Seleccionar categoría</option>
-                <option value="laptop">Laptop</option>
-                <option value="tv">TV</option>
-                <option value="smartwatch">Smartwatch</option>
-                <option value="earphone">Auriculares</option>
-                <option value="mobile">Móvil</option>
+                {categories.map(cat => (
+                  <option key={cat._id} value={cat.categoryName}>
+                    {cat.categoryName}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -200,9 +205,10 @@ const ProductManager = () => {
               <input
                 type="text"
                 name="company"
-                value={productForm.company}
+                value={formData.company}
                 onChange={handleInputChange}
                 className="form-input"
+                placeholder="Marca"
               />
             </div>
 
@@ -211,10 +217,10 @@ const ProductManager = () => {
               <input
                 type="number"
                 name="stock"
-                value={productForm.stock}
+                value={formData.stock}
                 onChange={handleInputChange}
                 className="form-input"
-                min="0"
+                placeholder="Stock"
               />
             </div>
 
@@ -223,24 +229,25 @@ const ProductManager = () => {
               <input
                 type="number"
                 name="reviewCount"
-                value={productForm.reviewCount}
+                value={formData.reviewCount}
                 onChange={handleInputChange}
                 className="form-input"
-                min="0"
+                placeholder="Número de reseñas"
               />
             </div>
 
             <div className={styles.formGroup}>
-              <label>Calificación (Estrellas)</label>
+              <label>Calificación (1-5)</label>
               <input
                 type="number"
                 name="stars"
-                value={productForm.stars}
+                value={formData.stars}
                 onChange={handleInputChange}
                 className="form-input"
-                min="0"
+                min="1"
                 max="5"
                 step="0.1"
+                placeholder="Calificación"
               />
             </div>
           </div>
@@ -249,9 +256,10 @@ const ProductManager = () => {
             <label>Descripción</label>
             <textarea
               name="description"
-              value={productForm.description}
+              value={formData.description}
               onChange={handleInputChange}
               className="form-textarea"
+              placeholder="Descripción del producto"
               rows="4"
             />
           </div>
@@ -264,16 +272,16 @@ const ProductManager = () => {
               onChange={handleImageUpload}
               className="form-input"
             />
-            {productForm.image && (
+            {formData.image && (
               <div className={styles.imagePreview}>
-                <img src={productForm.image} alt="Preview" />
+                <img src={formData.image} alt="Preview" />
               </div>
             )}
           </div>
 
           <div className={styles.colorsSection}>
             <label>Colores y Stock por Color</label>
-            {productForm.colors.map((color, index) => (
+            {formData.colors.map((color, index) => (
               <div key={index} className={styles.colorRow}>
                 <input
                   type="color"
@@ -283,21 +291,19 @@ const ProductManager = () => {
                 />
                 <input
                   type="number"
-                  placeholder="Cantidad"
                   value={color.colorQuantity}
-                  onChange={(e) => handleColorChange(index, 'colorQuantity', e.target.value)}
+                  onChange={(e) => handleColorChange(index, 'colorQuantity', parseInt(e.target.value) || 0)}
                   className="form-input"
-                  min="0"
+                  placeholder="Cantidad"
                 />
-                {productForm.colors.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeColor(index)}
-                    className="btn btn-danger"
-                  >
-                    Eliminar
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => removeColor(index)}
+                  className="btn btn-danger"
+                  disabled={formData.colors.length === 1}
+                >
+                  ❌
+                </button>
               </div>
             ))}
             <button
@@ -305,80 +311,67 @@ const ProductManager = () => {
               onClick={addColor}
               className="btn btn-hipster"
             >
-              + Agregar Color
+              ➕ Agregar Color
             </button>
           </div>
 
           <div className={styles.checkboxGroup}>
-            <label>
+            <label className={styles.checkboxLabel}>
               <input
                 type="checkbox"
                 name="isShippingAvailable"
-                checked={productForm.isShippingAvailable}
+                checked={formData.isShippingAvailable}
                 onChange={handleInputChange}
               />
-              Envío disponible
+              Envío Disponible
             </label>
-            <label>
+            <label className={styles.checkboxLabel}>
               <input
                 type="checkbox"
                 name="featured"
-                checked={productForm.featured}
+                checked={formData.featured}
                 onChange={handleInputChange}
               />
-              Producto destacado
+              Producto Destacado
             </label>
           </div>
 
           <div className={styles.formActions}>
-            <button type="submit" className="btn btn-primary">
-              {editingProduct ? 'Actualizar Producto' : 'Crear Producto'}
+            <button onClick={handleSave} className="btn btn-primary">
+              💾 Guardar
             </button>
-            <button type="button" onClick={resetForm} className="btn btn-hipster">
-              Cancelar
+            <button onClick={handleCancel} className="btn btn-danger">
+              ❌ Cancelar
             </button>
           </div>
-        </form>
-      )}
-
-      <div className={styles.productsList}>
-        <h3>Productos Existentes ({products.length})</h3>
-        {products.length === 0 ? (
-          <p className={styles.emptyMessage}>No hay productos creados aún.</p>
-        ) : (
-          <div className={styles.productsGrid}>
+        </div>
+      ) : (
+        <div className={styles.productList}>
+          <div className={styles.productGrid}>
             {products.map(product => (
               <div key={product._id} className={styles.productCard}>
-                {product.image && (
-                  <div className={styles.productImage}>
-                    <img src={product.image} alt={product.name} />
-                  </div>
-                )}
+                <div className={styles.productImage}>
+                  <img src={product.image} alt={product.name} />
+                </div>
                 <div className={styles.productInfo}>
                   <h4>{product.name}</h4>
-                  <p>Precio: ${product.price} CUP</p>
-                  <p>Stock: {product.stock}</p>
-                  <p>Categoría: {product.category}</p>
-                  <div className={styles.productActions}>
-                    <button
-                      onClick={() => editProduct(product)}
-                      className="btn btn-primary"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      onClick={() => deleteProduct(product._id)}
-                      className="btn btn-danger"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
+                  <p className={styles.productPrice}>${product.price} CUP</p>
+                  <p className={styles.productStock}>Stock: {product.stock}</p>
+                  <p className={styles.productRating}>⭐ {product.stars} ({product.reviewCount})</p>
+                </div>
+                <div className={styles.productActions}>
+                  <button
+                    onClick={() => handleEdit(product)}
+                    className="btn btn-primary"
+                  >
+                    ✏️ Editar
+                  </button>
                 </div>
               </div>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

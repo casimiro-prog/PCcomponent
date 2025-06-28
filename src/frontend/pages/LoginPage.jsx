@@ -37,24 +37,20 @@ const LoginPage = () => {
     setUserInputs({ ...userInputs, [e.target.name]: e.target.value });
   };
 
-  // used for both the buttons
+  // usado para todos los botones
   const handleSubmit = async (e, clickType) => {
     e.preventDefault();
 
-    const isGuestClick = clickType === LOGIN_CLICK_TYPE.GuestClick;
-    const isAdminClick = clickType === LOGIN_CLICK_TYPE.AdminClick;
-    
     let userInfo;
-    if (isGuestClick) {
+    
+    if (clickType === LOGIN_CLICK_TYPE.GuestClick) {
       userInfo = TEST_USER;
-    } else if (isAdminClick) {
+    } else if (clickType === LOGIN_CLICK_TYPE.AdminClick) {
       userInfo = SUPER_ADMIN;
     } else {
       userInfo = userInputs;
-    }
-
-    // Validaciones básicas para login manual
-    if (!isGuestClick && !isAdminClick) {
+      
+      // Validaciones básicas para login manual
       if (!userInputs.email.trim()) {
         toastHandler(ToastType.Error, 'Por favor ingresa tu email');
         return;
@@ -67,32 +63,14 @@ const LoginPage = () => {
 
     setActiveBtnLoader(clickType);
 
-    if (isGuestClick) {
+    if (clickType === LOGIN_CLICK_TYPE.GuestClick) {
       setUserInputs(TEST_USER);
-    } else if (isAdminClick) {
+    } else if (clickType === LOGIN_CLICK_TYPE.AdminClick) {
       setUserInputs(SUPER_ADMIN);
     }
 
     try {
-      let user, token;
-      
-      if (isAdminClick) {
-        // Crear usuario administrador especial
-        user = {
-          _id: 'super-admin-id',
-          firstName: 'Super',
-          lastName: 'Administrador',
-          email: SUPER_ADMIN.email,
-          isAdmin: true,
-          cart: [],
-          wishlist: []
-        };
-        token = 'super-admin-token';
-      } else {
-        const response = await loginUserService(userInfo);
-        user = response.user;
-        token = response.token;
-      }
+      const { user, token } = await loginUserService(userInfo);
 
       // update AuthContext with data
       updateUserAuth({ user, token });
@@ -102,7 +80,7 @@ const LoginPage = () => {
       setIntoLocalStorage(LOCAL_STORAGE_KEYS.Token, token);
 
       // show success toast
-      const welcomeMessage = isAdminClick 
+      const welcomeMessage = user.email === SUPER_ADMIN.email 
         ? '¡Bienvenido Super Administrador! 👑'
         : `¡Bienvenido ${user.firstName} ${user.lastName}! 😎`;
       
@@ -168,7 +146,7 @@ const LoginPage = () => {
           )}
         </button>
 
-        {/* this Guest Login button is out of the form  */}
+        {/* Guest Login button */}
         <button
           disabled={!!activeBtnLoader}
           className='btn btn-block'
@@ -182,7 +160,7 @@ const LoginPage = () => {
           )}
         </button>
 
-        {/* Super Admin Login button */}
+        {/* Admin Login button */}
         <button
           disabled={!!activeBtnLoader}
           className='btn btn-block btn-danger'

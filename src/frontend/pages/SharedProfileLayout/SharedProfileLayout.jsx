@@ -3,7 +3,7 @@ import { useAuthContext } from '../../contexts/AuthContextProvider';
 import styles from './SharedProfileLayout.module.css';
 
 const SharedProfileLayout = () => {
-  const { user } = useAuthContext();
+  const { isAdmin } = useAuthContext();
   const isProfileActive = useMatch('/profile');
   const isAddressActive = useMatch('/profile/address');
   const isAdminPanelActive = useMatch('/profile/admin');
@@ -20,7 +20,7 @@ const SharedProfileLayout = () => {
             Perfil
           </Link>
 
-          {user?.isAdmin ? (
+          {isAdmin ? (
             <Link
               className={showActiveCSS(isAdminPanelActive)}
               to='/profile/admin'

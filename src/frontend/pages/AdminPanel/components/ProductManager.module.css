@@ -1,5 +1,5 @@
 .productManager {
-  max-width: 100%;
+  width: 100%;
 }
 
 .header {
@@ -11,15 +11,19 @@
 
 .header h2 {
   margin: 0;
-  color: var(--primary-600);
+  color: var(--primary-700);
 }
 
-.productForm {
+.editForm {
   background: var(--grey-50);
   padding: 2rem;
   border-radius: var(--borderRadius);
-  margin-bottom: 2rem;
   border: 2px solid var(--primary-200);
+}
+
+.editForm h3 {
+  margin-top: 0;
+  color: var(--primary-600);
 }
 
 .formGrid {
@@ -40,8 +44,24 @@
   color: var(--grey-700);
 }
 
+.imagePreview {
+  margin-top: 1rem;
+  max-width: 200px;
+}
+
+.imagePreview img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--borderRadius);
+  border: 2px solid var(--grey-200);
+}
+
 .colorsSection {
-  margin: 1rem 0;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  border: 1px solid var(--grey-200);
 }
 
 .colorsSection label {
@@ -69,53 +89,37 @@
 .checkboxGroup {
   display: flex;
   gap: 2rem;
-  margin: 1rem 0;
+  margin: 1.5rem 0;
 }
 
-.checkboxGroup label {
+.checkboxLabel {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-weight: 500;
+  cursor: pointer;
 }
 
-.imagePreview {
-  margin-top: 1rem;
-  max-width: 200px;
-}
-
-.imagePreview img {
-  width: 100%;
-  height: auto;
-  border-radius: var(--borderRadius);
-  border: 2px solid var(--grey-200);
+.checkboxLabel input {
+  width: auto;
 }
 
 .formActions {
   display: flex;
   gap: 1rem;
+  justify-content: flex-end;
   margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--grey-200);
 }
 
-.productsList {
-  margin-top: 3rem;
+.productList {
+  width: 100%;
 }
 
-.productsList h3 {
-  color: var(--primary-600);
-  margin-bottom: 1rem;
-}
-
-.emptyMessage {
-  text-align: center;
-  color: var(--grey-500);
-  font-style: italic;
-  padding: 2rem;
-}
-
-.productsGrid {
+.productGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
@@ -128,7 +132,7 @@
 }
 
 .productCard:hover {
-  box-shadow: var(--shadow-3);
+  box-shadow: var(--shadow-4);
   transform: translateY(-2px);
 }
 
@@ -140,7 +144,7 @@
 .productImage img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .productInfo {
@@ -150,24 +154,32 @@
 .productInfo h4 {
   margin: 0 0 0.5rem 0;
   color: var(--primary-700);
+  font-size: 1.1rem;
 }
 
-.productInfo p {
+.productPrice {
+  font-weight: 600;
+  color: var(--green-medium);
   margin: 0.25rem 0;
+}
+
+.productStock {
   color: var(--grey-600);
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+}
+
+.productRating {
+  color: var(--grey-600);
+  margin: 0.25rem 0;
   font-size: 0.9rem;
 }
 
 .productActions {
+  padding: 1rem;
+  border-top: 1px solid var(--grey-200);
   display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.productActions button {
-  flex: 1;
-  padding: 0.5rem;
-  font-size: 0.9rem;
+  justify-content: center;
 }
 
 @media screen and (max-width: 768px) {
@@ -181,8 +193,8 @@
     grid-template-columns: 1fr;
   }
 
-  .colorRow {
-    flex-wrap: wrap;
+  .formActions {
+    flex-direction: column;
   }
 
   .checkboxGroup {
@@ -190,11 +202,11 @@
     gap: 1rem;
   }
 
-  .formActions {
-    flex-direction: column;
+  .colorRow {
+    flex-wrap: wrap;
   }
 
-  .productsGrid {
+  .productGrid {
     grid-template-columns: 1fr;
   }
 }

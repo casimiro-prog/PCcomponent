@@ -44,7 +44,7 @@ export const TEST_USER = {
 // Super administrador
 export const SUPER_ADMIN = {
   email: 'admin@gadaelectronics.com',
-  password: 'SuperAdmin2024!',
+  password: 'root',
 };
 
 // Usuario alternativo para pruebas
@@ -180,6 +180,15 @@ export const MAX_RESPONSES_IN_CACHE_TO_STORE = 50;
 // WhatsApp de la tienda
 export const STORE_WHATSAPP = '+53 54690878';
 
+// Configuración por defecto de la tienda
+export const DEFAULT_STORE_CONFIG = {
+  storeName: 'Gada Electronics',
+  whatsappNumber: '+53 54690878',
+  storeAddress: 'Santiago de Cuba, Cuba',
+  lastModified: new Date().toISOString(),
+  version: '1.0.0'
+};
+
 // Códigos de países para validación de WhatsApp
 export const COUNTRY_CODES = [
   { code: '+1', country: 'Estados Unidos/Canadá', flag: '🇺🇸' },
@@ -229,17 +238,3 @@ export const COUNTRY_CODES = [
   { code: '+95', country: 'Myanmar', flag: '🇲🇲' },
   { code: '+98', country: 'Irán', flag: '🇮🇷' },
 ];
-
-// Configuración por defecto de la tienda
-export const DEFAULT_STORE_CONFIG = {
-  storeInfo: {
-    name: 'Gada Electronics',
-    whatsapp: '+53 54690878',
-    addressId: 'store-main-address',
-  },
-  products: [],
-  categories: [],
-  coupons: COUPONS,
-  zones: SANTIAGO_ZONES,
-  lastUpdated: new Date().toISOString(),
-};

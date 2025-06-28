@@ -8,17 +8,16 @@ import ConfigManager from './components/ConfigManager';
 import styles from './AdminPanel.module.css';
 
 const AdminPanel = () => {
-  const { user } = useAuthContext();
+  const { isAdmin } = useAuthContext();
   const [activeTab, setActiveTab] = useState('products');
 
-  // Verificar si es administrador
-  if (!user?.isAdmin) {
+  if (!isAdmin) {
     return <Navigate to="/profile" replace />;
   }
 
   const tabs = [
     { id: 'products', label: '📦 Productos', component: ProductManager },
-    { id: 'coupons', label: '🎟️ Cupones', component: CouponManager },
+    { id: 'coupons', label: '🎫 Cupones', component: CouponManager },
     { id: 'settings', label: '⚙️ Configuración', component: StoreSettings },
     { id: 'config', label: '💾 Exportar/Importar', component: ConfigManager },
   ];
@@ -27,7 +26,7 @@ const AdminPanel = () => {
 
   return (
     <div className={styles.adminPanel}>
-      <div className={styles.tabsContainer}>
+      <div className={styles.tabContainer}>
         {tabs.map(tab => (
           <button
             key={tab.id}
