@@ -46,7 +46,19 @@ const LoginPage = () => {
     if (clickType === LOGIN_CLICK_TYPE.GuestClick) {
       userInfo = TEST_USER;
     } else if (clickType === LOGIN_CLICK_TYPE.AdminClick) {
-      userInfo = SUPER_ADMIN;
+      // Para admin, usar las credenciales del formulario
+      if (!userInputs.email.trim() || !userInputs.password.trim()) {
+        toastHandler(ToastType.Error, 'Por favor ingresa las credenciales de administrador');
+        return;
+      }
+      
+      // Verificar que sean las credenciales correctas del super admin
+      if (userInputs.email !== SUPER_ADMIN.email || userInputs.password !== SUPER_ADMIN.password) {
+        toastHandler(ToastType.Error, 'Credenciales de administrador incorrectas');
+        return;
+      }
+      
+      userInfo = userInputs;
     } else {
       userInfo = userInputs;
       
@@ -65,8 +77,6 @@ const LoginPage = () => {
 
     if (clickType === LOGIN_CLICK_TYPE.GuestClick) {
       setUserInputs(TEST_USER);
-    } else if (clickType === LOGIN_CLICK_TYPE.AdminClick) {
-      setUserInputs(SUPER_ADMIN);
     }
 
     try {
@@ -185,6 +195,18 @@ const LoginPage = () => {
             regístrate aquí
           </Link>
         </span>
+      </div>
+
+      <div style={{ marginTop: '1rem', padding: '1rem', background: 'var(--grey-50)', borderRadius: 'var(--borderRadius)', fontSize: '0.9rem' }}>
+        <p style={{ margin: '0 0 0.5rem 0', fontWeight: '600', color: 'var(--primary-600)' }}>
+          👑 Credenciales de Administrador:
+        </p>
+        <p style={{ margin: '0 0 0.25rem 0' }}>
+          <strong>Email:</strong> {SUPER_ADMIN.email}
+        </p>
+        <p style={{ margin: '0' }}>
+          <strong>Contraseña:</strong> {SUPER_ADMIN.password}
+        </p>
       </div>
     </LoginAndSignupLayout>
   );

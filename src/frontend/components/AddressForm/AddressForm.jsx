@@ -1,4 +1,5 @@
-import { SERVICE_TYPES, SANTIAGO_ZONES, ToastType } from '../../constants/constants';
+import { SERVICE_TYPES, ToastType } from '../../constants/constants';
+import { useConfigContext } from '../../contexts/ConfigContextProvider';
 
 import { useAllProductsContext } from '../../contexts/ProductsContextProvider';
 
@@ -16,6 +17,9 @@ import {
 const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
   const { addAddressDispatch, timedMainPageLoader, editAddressDispatch } =
     useAllProductsContext();
+
+  const { storeConfig } = useConfigContext();
+  const SANTIAGO_ZONES = storeConfig.zones || [];
 
   const isEditing = !!isEditingAndData;
 
