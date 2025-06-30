@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { v4 as uuid } from 'uuid';
 import { toastHandler } from '../../../utils/utils';
-import { ToastType, COUPONS } from '../../../constants/constants';
+import { ToastType } from '../../../constants/constants';
+import { useConfigContext } from '../../../contexts/ConfigContextProvider';
 import styles from './CouponManager.module.css';
 
 const CouponManager = () => {
-  const [coupons, setCoupons] = useState(COUPONS);
+  const { storeConfig, updateCoupons } = useConfigContext();
+  const [coupons, setCoupons] = useState([]);
   const [editingCoupon, setEditingCoupon] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
@@ -17,6 +19,11 @@ const CouponManager = () => {
   };
 
   const [couponForm, setCouponForm] = useState(initialCouponState);
+
+  // Cargar cupones desde la configuración
+  useEffect(() => {
+    setCoupons(storeConfig.coupons || []);
+  }, [storeConfig.coupons]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -65,14 +72,18 @@ const CouponManager = () => {
       minCartPriceRequired: parseFloat(couponForm.minCartPriceRequired)
     };
 
+    let updatedCoupons;
     if (editingCoupon) {
-      setCoupons(prev => prev.map(c => c.id === editingCoupon.id ? newCoupon : c));
+      updatedCoupons = coupons.map(c => c.id === editingCoupon.id ? newCoupon : c);
       toastHandler(ToastType.Success, 'Cupón actualizado exitosamente');
     } else {
-      setCoupons(prev => [...prev, newCoupon]);
+      updatedCoupons = [...coupons, newCoupon];
       toastHandler(ToastType.Success, 'Cupón creado exitosamente');
     }
 
+    // Actualizar en el contexto de configuración
+    updateCoupons(updatedCoupons);
+    setCoupons(updatedCoupons);
     resetForm();
   };
 
@@ -95,7 +106,9 @@ const CouponManager = () => {
 
   const deleteCoupon = (couponId) => {
     if (window.confirm('¿Estás seguro de eliminar este cupón?')) {
-      setCoupons(prev => prev.filter(c => c.id !== couponId));
+      const updatedCoupons = coupons.filter(c => c.id !== couponId);
+      updateCoupons(updatedCoupons);
+      setCoupons(updatedCoupons);
       toastHandler(ToastType.Success, 'Cupón eliminado exitosamente');
     }
   };

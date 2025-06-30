@@ -1,10 +1,11 @@
 import { useAllProductsContext } from '../../contexts/ProductsContextProvider';
+import { useConfigContext } from '../../contexts/ConfigContextProvider';
 import Price from '../Price';
 import styles from './CheckoutDetails.module.css';
 import { useState } from 'react';
 import { VscChromeClose } from 'react-icons/vsc';
 
-import { CHARGE_AND_DISCOUNT, ToastType, SERVICE_TYPES, SANTIAGO_ZONES, STORE_WHATSAPP } from '../../constants/constants';
+import { CHARGE_AND_DISCOUNT, ToastType, SERVICE_TYPES } from '../../constants/constants';
 import CouponSearch from './CouponSearch';
 import { toastHandler, Popper, generateOrderNumber } from '../../utils/utils';
 
@@ -25,6 +26,10 @@ const CheckoutDetails = ({
     cart: cartFromContext,
     clearCartDispatch,
   } = useAllProductsContext();
+
+  const { storeConfig } = useConfigContext();
+  const STORE_WHATSAPP = storeConfig.storeInfo?.whatsappNumber || '+53 54690878';
+  const SANTIAGO_ZONES = storeConfig.zones || [];
 
   const {
     user: { firstName, lastName, email },

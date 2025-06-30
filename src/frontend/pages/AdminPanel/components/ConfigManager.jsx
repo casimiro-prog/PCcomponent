@@ -1,44 +1,20 @@
 import React, { useState } from 'react';
 import { toastHandler } from '../../../utils/utils';
-import { ToastType, DEFAULT_STORE_CONFIG } from '../../../constants/constants';
+import { ToastType } from '../../../constants/constants';
+import { useConfigContext } from '../../../contexts/ConfigContextProvider';
 import styles from './ConfigManager.module.css';
 
 const ConfigManager = () => {
+  const { exportConfiguration, importConfiguration, resetConfiguration } = useConfigContext();
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
 
-  const exportConfiguration = async () => {
+  const handleExport = async () => {
     setIsExporting(true);
     
     try {
-      // Simular recolección de datos de la tienda
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const storeConfig = {
-        ...DEFAULT_STORE_CONFIG,
-        exportDate: new Date().toISOString(),
-        version: '1.0.0'
-      };
-
-      // Crear archivo JSON
-      const dataStr = JSON.stringify(storeConfig, null, 2);
-      const dataBlob = new Blob([dataStr], { type: 'application/json' });
-      
-      // Crear enlace de descarga
-      const url = URL.createObjectURL(dataBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `gada-electronics-config-${new Date().toISOString().split('T')[0]}.json`;
-      
-      // Descargar archivo
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // Limpiar URL
-      URL.revokeObjectURL(url);
-      
-      toastHandler(ToastType.Success, 'Configuración exportada exitosamente');
+      exportConfiguration();
     } catch (error) {
       toastHandler(ToastType.Error, 'Error al exportar la configuración');
     } finally {
@@ -46,46 +22,30 @@ const ConfigManager = () => {
     }
   };
 
-  const importConfiguration = async (event) => {
+  const handleImport = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
     setIsImporting(true);
 
     try {
-      const text = await file.text();
-      const config = JSON.parse(text);
-      
-      // Validar estructura del archivo
-      if (!config.storeInfo || !config.lastUpdated) {
-        throw new Error('Archivo de configuración inválido');
-      }
-
-      // Simular importación
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Aquí aplicarías la configuración a la tienda
-      console.log('Configuración importada:', config);
-      
-      toastHandler(ToastType.Success, 'Configuración importada exitosamente');
+      await importConfiguration(file);
     } catch (error) {
-      toastHandler(ToastType.Error, 'Error al importar la configuración: ' + error.message);
+      toastHandler(ToastType.Error, 'Error al importar la configuración');
     } finally {
       setIsImporting(false);
-      event.target.value = ''; // Limpiar input
+      event.target.value = '';
     }
   };
 
-  const resetToDefaults = async () => {
+  const handleReset = async () => {
     if (!window.confirm('¿Estás seguro de restablecer toda la configuración a los valores por defecto? Esta acción no se puede deshacer.')) {
       return;
     }
 
     try {
-      // Simular restablecimiento
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toastHandler(ToastType.Success, 'Configuración restablecida a valores por defecto');
+      resetConfiguration();
     } catch (error) {
       toastHandler(ToastType.Error, 'Error al restablecer la configuración');
     }
@@ -106,7 +66,7 @@ const ConfigManager = () => {
               cupones, zonas de entrega y configuraciones generales en un archivo JSON.
             </p>
             <button 
-              onClick={exportConfiguration}
+              onClick={handleExport}
               disabled={isExporting}
               className={`btn btn-primary ${styles.actionButton}`}
             >
@@ -135,7 +95,7 @@ const ConfigManager = () => {
               <input
                 type="file"
                 accept=".json"
-                onChange={importConfiguration}
+                onChange={handleImport}
                 disabled={isImporting}
                 className={styles.fileInput}
                 id="config-import"
@@ -167,7 +127,7 @@ const ConfigManager = () => {
               <strong> Esta acción no se puede deshacer.</strong>
             </p>
             <button 
-              onClick={resetToDefaults}
+              onClick={handleReset}
               className={`btn btn-danger ${styles.actionButton}`}
             >
               🔄 Restablecer a Valores por Defecto

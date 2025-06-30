@@ -1,19 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toastHandler } from '../../../utils/utils';
-import { ToastType, COUNTRY_CODES, SANTIAGO_ZONES } from '../../../constants/constants';
+import { ToastType, COUNTRY_CODES } from '../../../constants/constants';
+import { useConfigContext } from '../../../contexts/ConfigContextProvider';
 import styles from './StoreSettings.module.css';
 
 const StoreSettings = () => {
+  const { storeConfig, updateStoreInfo, updateZones } = useConfigContext();
   const [storeSettings, setStoreSettings] = useState({
     storeName: 'Gada Electronics',
     whatsappNumber: '+53 54690878',
     storeAddressId: 'store-main-address',
-    zones: SANTIAGO_ZONES
   });
 
+  const [zones, setZones] = useState([]);
   const [editingZone, setEditingZone] = useState(null);
   const [showZoneForm, setShowZoneForm] = useState(false);
   const [zoneForm, setZoneForm] = useState({ id: '', name: '', cost: '' });
+
+  // Cargar configuración desde el contexto
+  useEffect(() => {
+    if (storeConfig.storeInfo) {
+      setStoreSettings({
+        storeName: storeConfig.storeInfo.storeName || 'Gada Electronics',
+        whatsappNumber: storeConfig.storeInfo.whatsappNumber || '+53 54690878',
+        storeAddressId: storeConfig.storeInfo.storeAddressId || 'store-main-address',
+      });
+    }
+    setZones(storeConfig.zones || []);
+  }, [storeConfig]);
 
   const handleSettingsChange = (e) => {
     const { name, value } = e.target;
@@ -24,15 +38,12 @@ const StoreSettings = () => {
   };
 
   const validateWhatsAppNumber = (number) => {
-    // Remover espacios y caracteres especiales excepto +
     const cleanNumber = number.replace(/[^\d+]/g, '');
     
-    // Verificar que empiece con + y tenga al menos 10 dígitos
     if (!cleanNumber.startsWith('+') || cleanNumber.length < 10) {
       return false;
     }
 
-    // Verificar que el código de país sea válido
     const countryCode = COUNTRY_CODES.find(country => 
       cleanNumber.startsWith(country.code)
     );
@@ -47,7 +58,6 @@ const StoreSettings = () => {
       whatsappNumber: number
     }));
 
-    // Validación en tiempo real
     if (number && !validateWhatsAppNumber(number)) {
       e.target.setCustomValidity('Número de WhatsApp inválido');
     } else {
@@ -61,8 +71,7 @@ const StoreSettings = () => {
       return;
     }
 
-    // Aquí guardarías la configuración
-    toastHandler(ToastType.Success, 'Configuración guardada exitosamente');
+    updateStoreInfo(storeSettings);
   };
 
   const handleZoneSubmit = (e) => {
@@ -79,22 +88,19 @@ const StoreSettings = () => {
       cost: parseFloat(zoneForm.cost)
     };
 
+    let updatedZones;
     if (editingZone) {
-      setStoreSettings(prev => ({
-        ...prev,
-        zones: prev.zones.map(zone => 
-          zone.id === editingZone.id ? newZone : zone
-        )
-      }));
+      updatedZones = zones.map(zone => 
+        zone.id === editingZone.id ? newZone : zone
+      );
       toastHandler(ToastType.Success, 'Zona actualizada exitosamente');
     } else {
-      setStoreSettings(prev => ({
-        ...prev,
-        zones: [...prev.zones, newZone]
-      }));
+      updatedZones = [...zones, newZone];
       toastHandler(ToastType.Success, 'Zona creada exitosamente');
     }
 
+    updateZones(updatedZones);
+    setZones(updatedZones);
     resetZoneForm();
   };
 
@@ -116,10 +122,9 @@ const StoreSettings = () => {
 
   const deleteZone = (zoneId) => {
     if (window.confirm('¿Estás seguro de eliminar esta zona?')) {
-      setStoreSettings(prev => ({
-        ...prev,
-        zones: prev.zones.filter(zone => zone.id !== zoneId)
-      }));
+      const updatedZones = zones.filter(zone => zone.id !== zoneId);
+      updateZones(updatedZones);
+      setZones(updatedZones);
       toastHandler(ToastType.Success, 'Zona eliminada exitosamente');
     }
   };
@@ -241,7 +246,7 @@ const StoreSettings = () => {
         )}
 
         <div className={styles.zonesList}>
-          {storeSettings.zones.map(zone => (
+          {zones.map(zone => (
             <div key={zone.id} className={styles.zoneCard}>
               <div className={styles.zoneInfo}>
                 <h4>{zone.name}</h4>

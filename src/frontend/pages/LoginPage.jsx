@@ -46,7 +46,19 @@ const LoginPage = () => {
     if (clickType === LOGIN_CLICK_TYPE.GuestClick) {
       userInfo = TEST_USER;
     } else if (clickType === LOGIN_CLICK_TYPE.AdminClick) {
-      userInfo = SUPER_ADMIN;
+      // Para admin, usar las credenciales del formulario
+      if (!userInputs.email.trim() || !userInputs.password.trim()) {
+        toastHandler(ToastType.Error, 'Por favor ingresa las credenciales de administrador');
+        return;
+      }
+      
+      // Verificar que sean las credenciales correctas del super admin
+      if (userInputs.email !== SUPER_ADMIN.email || userInputs.password !== SUPER_ADMIN.password) {
+        toastHandler(ToastType.Error, 'Credenciales de administrador incorrectas');
+        return;
+      }
+      
+      userInfo = userInputs;
     } else {
       userInfo = userInputs;
       
@@ -65,8 +77,6 @@ const LoginPage = () => {
 
     if (clickType === LOGIN_CLICK_TYPE.GuestClick) {
       setUserInputs(TEST_USER);
-    } else if (clickType === LOGIN_CLICK_TYPE.AdminClick) {
-      setUserInputs(SUPER_ADMIN);
     }
 
     try {

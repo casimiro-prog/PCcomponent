@@ -10,6 +10,7 @@
     "axios": "^1.4.0",
     "canvas-confetti": "^1.6.0",
     "dayjs": "^1.11.7",
+    "jszip": "^3.10.1",
     "jwt-decode": "^3.1.2",
     "jwt-encode": "^1.0.1",
     "miragejs": "^0.1.47",
@@ -25,6 +26,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "dev": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
