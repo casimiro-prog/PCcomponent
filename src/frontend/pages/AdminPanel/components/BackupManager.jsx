@@ -319,8 +319,8 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
       
       URL.revokeObjectURL(url);
       
-      toastHandler(ToastType.Success, '🎉 Backup exportado exitosamente a la carpeta backup');
-      toastHandler(ToastType.Info, 'Los archivos han sido actualizados con todos los cambios realizados en el panel');
+      toastHandler(ToastType.Success, '🎉 Backup exportado exitosamente con todos los cambios sincronizados');
+      toastHandler(ToastType.Info, 'Los archivos incluyen todas las modificaciones realizadas en el panel de control');
       
     } catch (error) {
       console.error('Error al exportar backup:', error);
@@ -340,15 +340,15 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
           <div className={styles.infoItem}>
             <strong>📁 Archivos incluidos:</strong>
             <ul>
-              <li><code>constants.jsx</code> - Configuración de cupones, zonas y WhatsApp</li>
-              <li><code>products.js</code> - Base de datos de productos actualizada</li>
-              <li><code>categories.js</code> - Base de datos de categorías actualizada</li>
-              <li><code>messages.js</code> - Todos los mensajes de la tienda</li>
+              <li><code>constants.jsx</code> - Configuración de cupones, zonas y WhatsApp sincronizada</li>
+              <li><code>products.js</code> - Base de datos de productos actualizada con cambios del panel</li>
+              <li><code>categories.js</code> - Base de datos de categorías actualizada con cambios del panel</li>
+              <li><code>messages.js</code> - Todos los mensajes de la tienda sincronizados</li>
               <li><code>full-config.json</code> - Configuración completa en JSON</li>
             </ul>
           </div>
           <div className={styles.infoItem}>
-            <strong>🔄 Proceso de backup:</strong> Todos los cambios realizados en el panel se exportan a archivos actualizados manteniendo la estructura original del código fuente.
+            <strong>🔄 Sincronización automática:</strong> Todos los cambios realizados en el panel de control se incluyen automáticamente en el backup.
           </div>
           <div className={styles.infoItem}>
             <strong>📦 Formato:</strong> Los archivos se exportan en un archivo ZIP organizado por carpetas según la estructura del proyecto.
@@ -362,21 +362,22 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
       <div className={styles.exportSection}>
         <div className={styles.exportCard}>
           <div className={styles.cardHeader}>
-            <h3>📤 Exportar Backup Completo</h3>
+            <h3>📤 Exportar Backup Completo Sincronizado</h3>
           </div>
           <div className={styles.cardContent}>
             <p>
               Exporta todos los cambios realizados en el panel de control a archivos de código fuente 
-              actualizados. Esto incluye productos, categorías, cupones, zonas, mensajes y configuraciones.
+              actualizados y sincronizados. Esto incluye productos, categorías, cupones, zonas, mensajes y configuraciones.
             </p>
             <div className={styles.changesSummary}>
-              <h4>📊 Resumen de cambios a exportar:</h4>
+              <h4>📊 Resumen de cambios sincronizados:</h4>
               <ul>
                 <li>🎫 {storeConfig.coupons?.length || 0} cupones configurados</li>
                 <li>📍 {storeConfig.zones?.length || 0} zonas de entrega</li>
                 <li>📦 {products?.length || 0} productos en catálogo</li>
                 <li>📂 {categories?.length || 0} categorías disponibles</li>
                 <li>💬 {Object.keys(JSON.parse(localStorage.getItem('storeMessages') || '{}')).length} categorías de mensajes</li>
+                <li>⚙️ Configuración de tienda sincronizada</li>
               </ul>
             </div>
             <button 
@@ -387,10 +388,10 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
               {isExporting ? (
                 <span className={styles.loading}>
                   <span className="loader-2"></span>
-                  Exportando backup...
+                  Exportando backup sincronizado...
                 </span>
               ) : (
-                '📤 Exportar Backup Completo'
+                '📤 Exportar Backup Completo Sincronizado'
               )}
             </button>
           </div>
@@ -409,13 +410,13 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
           <div className={styles.step}>
             <span className={styles.stepNumber}>2</span>
             <div className={styles.stepContent}>
-              <strong>Exportar backup:</strong> Haz clic en "Exportar Backup Completo" para generar los archivos actualizados.
+              <strong>Sincronización automática:</strong> Los cambios se sincronizan automáticamente en memoria y están listos para exportar.
             </div>
           </div>
           <div className={styles.step}>
             <span className={styles.stepNumber}>3</span>
             <div className={styles.stepContent}>
-              <strong>Descargar archivos:</strong> Se descargará un archivo ZIP con todos los archivos de código fuente actualizados.
+              <strong>Exportar backup:</strong> Haz clic en "Exportar Backup Completo Sincronizado" para generar los archivos actualizados.
             </div>
           </div>
           <div className={styles.step}>
