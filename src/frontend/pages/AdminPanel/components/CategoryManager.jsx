@@ -27,42 +27,50 @@ const CategoryManager = () => {
     setLocalCategories(categoriesFromContext || []);
   }, [categoriesFromContext]);
 
-  // Función para redimensionar imagen a 300x200px (tamaño estándar de categories.js)
-  const resizeImage = (file, callback) => {
+  // Función para redimensionar imagen manteniendo responsividad (como en el sitio web)
+  const resizeImageResponsive = (file, callback) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const img = new Image();
     
     img.onload = () => {
-      // Tamaño estándar para categorías: 300x200px
-      canvas.width = 300;
-      canvas.height = 200;
+      // Tamaño optimizado para responsividad: 400x300px (4:3 ratio)
+      // Este tamaño funciona bien en móviles, tablets y desktop para categorías
+      const targetWidth = 400;
+      const targetHeight = 300;
       
-      // Dibujar imagen redimensionada manteniendo proporción
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      
+      // Calcular dimensiones manteniendo proporción
       const aspectRatio = img.width / img.height;
-      let drawWidth = 300;
-      let drawHeight = 200;
+      let drawWidth = targetWidth;
+      let drawHeight = targetHeight;
       let offsetX = 0;
       let offsetY = 0;
       
-      if (aspectRatio > 300/200) {
-        drawHeight = 300 / aspectRatio;
-        offsetY = (200 - drawHeight) / 2;
+      if (aspectRatio > targetWidth/targetHeight) {
+        drawHeight = targetWidth / aspectRatio;
+        offsetY = (targetHeight - drawHeight) / 2;
       } else {
-        drawWidth = 200 * aspectRatio;
-        offsetX = (300 - drawWidth) / 2;
+        drawWidth = targetHeight * aspectRatio;
+        offsetX = (targetWidth - drawWidth) / 2;
       }
       
-      // Fondo blanco
+      // Fondo blanco para mejor contraste
       ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, 300, 200);
+      ctx.fillRect(0, 0, targetWidth, targetHeight);
       
-      // Dibujar imagen centrada
+      // Dibujar imagen centrada y redimensionada
       ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
       
-      // Convertir a base64
-      const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      // Convertir a base64 con buena calidad
+      const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
       callback(resizedDataUrl);
+    };
+    
+    img.onerror = () => {
+      toastHandler(ToastType.Error, 'Error al procesar la imagen');
     };
     
     img.src = URL.createObjectURL(file);
@@ -86,17 +94,17 @@ const CategoryManager = () => {
         return;
       }
       
-      // Validar tamaño (máximo 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toastHandler(ToastType.Error, 'La imagen debe ser menor a 5MB');
+      // Validar tamaño (máximo 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toastHandler(ToastType.Error, 'La imagen debe ser menor a 10MB');
         return;
       }
       
-      // Redimensionar imagen al tamaño estándar
-      resizeImage(file, (resizedDataUrl) => {
+      // Redimensionar imagen para responsividad
+      resizeImageResponsive(file, (resizedDataUrl) => {
         setCategoryForm(prev => ({ ...prev, categoryImage: resizedDataUrl }));
         setHasUnsavedChanges(true);
-        toastHandler(ToastType.Success, 'Imagen redimensionada a 300x200px automáticamente');
+        toastHandler(ToastType.Success, 'Imagen optimizada para móviles y tablets automáticamente');
       });
     }
   };
@@ -144,21 +152,46 @@ const CategoryManager = () => {
       toastHandler(ToastType.Success, '✅ Categoría creada exitosamente');
     }
 
-    // SINCRONIZACIÓN COMPLETA - Mantener estructura exacta
+    // SINCRONIZACIÓN COMPLETA Y INMEDIATA
+    performCompleteSync(updatedCategories);
+    
+    resetForm();
+  };
+
+  // Función para sincronización completa
+  const performCompleteSync = (updatedCategories) => {
+    // 1. Actualizar estado local
     setLocalCategories(updatedCategories);
     
-    // Actualizar en el contexto de configuración para backup
+    // 2. Actualizar en localStorage para persistencia
+    const savedConfig = localStorage.getItem('adminStoreConfig') || '{}';
+    let config = {};
+    
+    try {
+      config = JSON.parse(savedConfig);
+    } catch (error) {
+      console.error('Error al cargar configuración:', error);
+    }
+
+    config.categories = updatedCategories;
+    config.lastModified = new Date().toISOString();
+    localStorage.setItem('adminStoreConfig', JSON.stringify(config));
+    
+    // 3. Actualizar en el contexto de configuración para backup
     updateCategories(updatedCategories);
     
-    // Actualizar en el contexto de productos para sincronización inmediata
+    // 4. Actualizar en el contexto de productos para sincronización inmediata en la tienda
     updateCategoriesFromAdmin(updatedCategories);
     
-    // Disparar evento personalizado para sincronización global
+    // 5. Disparar evento personalizado para sincronización global
     window.dispatchEvent(new CustomEvent('categoriesUpdated', { 
       detail: { categories: updatedCategories } 
     }));
     
-    resetForm();
+    // 6. Forzar re-renderizado de la tienda
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('forceStoreUpdate'));
+    }, 100);
   };
 
   const resetForm = () => {
@@ -187,14 +220,7 @@ const CategoryManager = () => {
     );
 
     // SINCRONIZACIÓN COMPLETA
-    setLocalCategories(updatedCategories);
-    updateCategories(updatedCategories);
-    updateCategoriesFromAdmin(updatedCategories);
-    
-    // Disparar evento personalizado
-    window.dispatchEvent(new CustomEvent('categoriesUpdated', { 
-      detail: { categories: updatedCategories } 
-    }));
+    performCompleteSync(updatedCategories);
     
     const category = localCategories.find(c => c._id === categoryId);
     toastHandler(ToastType.Success, 
@@ -210,14 +236,7 @@ const CategoryManager = () => {
     const updatedCategories = localCategories.filter(c => c._id !== categoryId);
     
     // SINCRONIZACIÓN COMPLETA
-    setLocalCategories(updatedCategories);
-    updateCategories(updatedCategories);
-    updateCategoriesFromAdmin(updatedCategories);
-    
-    // Disparar evento personalizado
-    window.dispatchEvent(new CustomEvent('categoriesUpdated', { 
-      detail: { categories: updatedCategories } 
-    }));
+    performCompleteSync(updatedCategories);
     
     toastHandler(ToastType.Success, '✅ Categoría eliminada exitosamente');
   };
@@ -256,7 +275,7 @@ const CategoryManager = () => {
 
       <div className={styles.infoBox}>
         <h4>ℹ️ Información Importante</h4>
-        <p>Los cambios se aplican automáticamente en la tienda. Las imágenes se redimensionan automáticamente a 300x200px. Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
+        <p>Los cambios se aplican automáticamente en la tienda. Las imágenes se optimizan automáticamente para móviles y tablets (400x300px). Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
       </div>
 
       {showForm && (
@@ -298,7 +317,7 @@ const CategoryManager = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Imagen de la Categoría * (Se redimensionará automáticamente a 300x200px)</label>
+            <label>Imagen de la Categoría * (Optimizada automáticamente para móviles y tablets)</label>
             <input
               type="file"
               accept="image/*"
@@ -318,7 +337,7 @@ const CategoryManager = () => {
             {categoryForm.categoryImage && (
               <div className={styles.imagePreview}>
                 <img src={categoryForm.categoryImage} alt="Preview" />
-                <small>Tamaño: 300x200px (estándar de categorías)</small>
+                <small>Tamaño optimizado: 400x300px (responsivo para móviles y tablets)</small>
               </div>
             )}
           </div>

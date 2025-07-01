@@ -34,42 +34,50 @@ const ProductManager = () => {
     setLocalProducts(products || []);
   }, [products]);
 
-  // Función para redimensionar imagen a 400x300px (tamaño estándar de products.js)
-  const resizeImage = (file, callback) => {
+  // Función para redimensionar imagen manteniendo responsividad (como en el sitio web)
+  const resizeImageResponsive = (file, callback) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const img = new Image();
     
     img.onload = () => {
-      // Tamaño estándar para productos: 400x300px
-      canvas.width = 400;
-      canvas.height = 300;
+      // Tamaño optimizado para responsividad: 600x450px (4:3 ratio)
+      // Este tamaño funciona bien en móviles, tablets y desktop
+      const targetWidth = 600;
+      const targetHeight = 450;
       
-      // Dibujar imagen redimensionada manteniendo proporción
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      
+      // Calcular dimensiones manteniendo proporción
       const aspectRatio = img.width / img.height;
-      let drawWidth = 400;
-      let drawHeight = 300;
+      let drawWidth = targetWidth;
+      let drawHeight = targetHeight;
       let offsetX = 0;
       let offsetY = 0;
       
-      if (aspectRatio > 400/300) {
-        drawHeight = 400 / aspectRatio;
-        offsetY = (300 - drawHeight) / 2;
+      if (aspectRatio > targetWidth/targetHeight) {
+        drawHeight = targetWidth / aspectRatio;
+        offsetY = (targetHeight - drawHeight) / 2;
       } else {
-        drawWidth = 300 * aspectRatio;
-        offsetX = (400 - drawWidth) / 2;
+        drawWidth = targetHeight * aspectRatio;
+        offsetX = (targetWidth - drawWidth) / 2;
       }
       
-      // Fondo blanco
+      // Fondo blanco para mejor contraste
       ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, 400, 300);
+      ctx.fillRect(0, 0, targetWidth, targetHeight);
       
-      // Dibujar imagen centrada
+      // Dibujar imagen centrada y redimensionada
       ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
       
-      // Convertir a base64
-      const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      // Convertir a base64 con buena calidad
+      const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
       callback(resizedDataUrl);
+    };
+    
+    img.onerror = () => {
+      toastHandler(ToastType.Error, 'Error al procesar la imagen');
     };
     
     img.src = URL.createObjectURL(file);
@@ -116,17 +124,17 @@ const ProductManager = () => {
         return;
       }
       
-      // Validar tamaño (máximo 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toastHandler(ToastType.Error, 'La imagen debe ser menor a 5MB');
+      // Validar tamaño (máximo 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toastHandler(ToastType.Error, 'La imagen debe ser menor a 10MB');
         return;
       }
       
-      // Redimensionar imagen al tamaño estándar
-      resizeImage(file, (resizedDataUrl) => {
+      // Redimensionar imagen para responsividad
+      resizeImageResponsive(file, (resizedDataUrl) => {
         setFormData(prev => ({ ...prev, image: resizedDataUrl }));
         setHasUnsavedChanges(true);
-        toastHandler(ToastType.Success, 'Imagen redimensionada a 400x300px automáticamente');
+        toastHandler(ToastType.Success, 'Imagen optimizada para móviles y tablets automáticamente');
       });
     }
   };
@@ -228,21 +236,46 @@ const ProductManager = () => {
       toastHandler(ToastType.Success, '✅ Producto creado exitosamente');
     }
 
-    // SINCRONIZACIÓN COMPLETA - Mantener estructura exacta
+    // SINCRONIZACIÓN COMPLETA Y INMEDIATA
+    performCompleteSync(updatedProducts);
+    
+    resetForm();
+  };
+
+  // Función para sincronización completa
+  const performCompleteSync = (updatedProducts) => {
+    // 1. Actualizar estado local
     setLocalProducts(updatedProducts);
     
-    // Actualizar en el contexto de configuración para backup
+    // 2. Actualizar en localStorage para persistencia
+    const savedConfig = localStorage.getItem('adminStoreConfig') || '{}';
+    let config = {};
+    
+    try {
+      config = JSON.parse(savedConfig);
+    } catch (error) {
+      console.error('Error al cargar configuración:', error);
+    }
+
+    config.products = updatedProducts;
+    config.lastModified = new Date().toISOString();
+    localStorage.setItem('adminStoreConfig', JSON.stringify(config));
+    
+    // 3. Actualizar en el contexto de configuración para backup
     updateProducts(updatedProducts);
     
-    // Actualizar en el contexto de productos para sincronización inmediata en la tienda
+    // 4. Actualizar en el contexto de productos para sincronización inmediata en la tienda
     updateProductsFromAdmin(updatedProducts);
     
-    // Disparar evento personalizado para sincronización global
+    // 5. Disparar evento personalizado para sincronización global
     window.dispatchEvent(new CustomEvent('productsUpdated', { 
       detail: { products: updatedProducts } 
     }));
     
-    resetForm();
+    // 6. Forzar re-renderizado de la tienda
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('forceStoreUpdate'));
+    }, 100);
   };
 
   const resetForm = () => {
@@ -283,14 +316,7 @@ const ProductManager = () => {
     const updatedProducts = localProducts.filter(p => p._id !== productId);
     
     // SINCRONIZACIÓN COMPLETA
-    setLocalProducts(updatedProducts);
-    updateProducts(updatedProducts);
-    updateProductsFromAdmin(updatedProducts);
-    
-    // Disparar evento personalizado
-    window.dispatchEvent(new CustomEvent('productsUpdated', { 
-      detail: { products: updatedProducts } 
-    }));
+    performCompleteSync(updatedProducts);
     
     toastHandler(ToastType.Success, '✅ Producto eliminado exitosamente');
   };
@@ -320,7 +346,7 @@ const ProductManager = () => {
 
       <div className={styles.infoBox}>
         <h4>ℹ️ Información Importante</h4>
-        <p>Los cambios se aplican automáticamente en la tienda. Las imágenes se redimensionan automáticamente a 400x300px. Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
+        <p>Los cambios se aplican automáticamente en la tienda. Las imágenes se optimizan automáticamente para móviles y tablets (600x450px). Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
       </div>
 
       {isEditing ? (
@@ -452,7 +478,7 @@ const ProductManager = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Imagen del Producto * (Se redimensionará automáticamente a 400x300px)</label>
+            <label>Imagen del Producto * (Optimizada automáticamente para móviles y tablets)</label>
             <input
               type="file"
               accept="image/*"
@@ -472,7 +498,7 @@ const ProductManager = () => {
             {formData.image && (
               <div className={styles.imagePreview}>
                 <img src={formData.image} alt="Preview" />
-                <small>Tamaño: 400x300px (estándar de productos)</small>
+                <small>Tamaño optimizado: 600x450px (responsivo para móviles y tablets)</small>
               </div>
             )}
           </div>

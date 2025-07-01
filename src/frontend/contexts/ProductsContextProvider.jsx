@@ -107,24 +107,22 @@ const ProductsContextProvider = ({ children }) => {
     }
   };
 
-  // Función para actualizar productos desde el admin - MEJORADA
+  // Función para actualizar productos desde el admin - MEJORADA CON SINCRONIZACIÓN COMPLETA
   const updateProductsFromAdmin = (newProducts) => {
-    // Actualizar en el reducer
+    // 1. Actualizar en el reducer
     dispatch({
       type: PRODUCTS_ACTION.UPDATE_PRODUCTS_FROM_ADMIN,
       payload: { products: newProducts },
     });
 
-    // Guardar en localStorage para persistencia
-    const savedConfig = localStorage.getItem('adminStoreConfig');
+    // 2. Guardar en localStorage para persistencia
+    const savedConfig = localStorage.getItem('adminStoreConfig') || '{}';
     let config = {};
     
-    if (savedConfig) {
-      try {
-        config = JSON.parse(savedConfig);
-      } catch (error) {
-        console.error('Error al cargar configuración:', error);
-      }
+    try {
+      config = JSON.parse(savedConfig);
+    } catch (error) {
+      console.error('Error al cargar configuración:', error);
     }
 
     config.products = newProducts;
@@ -132,30 +130,30 @@ const ProductsContextProvider = ({ children }) => {
     
     localStorage.setItem('adminStoreConfig', JSON.stringify(config));
     
-    // Disparar evento para sincronización global
-    window.dispatchEvent(new CustomEvent('productsUpdated', { 
-      detail: { products: newProducts } 
-    }));
+    // 3. Disparar evento para sincronización global
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('productsUpdated', { 
+        detail: { products: newProducts } 
+      }));
+    }, 50);
   };
 
-  // Función para actualizar categorías desde el admin - MEJORADA
+  // Función para actualizar categorías desde el admin - MEJORADA CON SINCRONIZACIÓN COMPLETA
   const updateCategoriesFromAdmin = (newCategories) => {
-    // Actualizar en el reducer
+    // 1. Actualizar en el reducer
     dispatch({
       type: PRODUCTS_ACTION.UPDATE_CATEGORIES_FROM_ADMIN,
       payload: { categories: newCategories },
     });
 
-    // Guardar en localStorage para persistencia
-    const savedConfig = localStorage.getItem('adminStoreConfig');
+    // 2. Guardar en localStorage para persistencia
+    const savedConfig = localStorage.getItem('adminStoreConfig') || '{}';
     let config = {};
     
-    if (savedConfig) {
-      try {
-        config = JSON.parse(savedConfig);
-      } catch (error) {
-        console.error('Error al cargar configuración:', error);
-      }
+    try {
+      config = JSON.parse(savedConfig);
+    } catch (error) {
+      console.error('Error al cargar configuración:', error);
     }
 
     config.categories = newCategories;
@@ -163,10 +161,12 @@ const ProductsContextProvider = ({ children }) => {
     
     localStorage.setItem('adminStoreConfig', JSON.stringify(config));
     
-    // Disparar evento para sincronización global
-    window.dispatchEvent(new CustomEvent('categoriesUpdated', { 
-      detail: { categories: newCategories } 
-    }));
+    // 3. Disparar evento para sincronización global
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('categoriesUpdated', { 
+        detail: { categories: newCategories } 
+      }));
+    }, 50);
   };
 
   // useEffects
@@ -181,12 +181,12 @@ const ProductsContextProvider = ({ children }) => {
     updateWishlist(user.wishlist);
   }, [user]);
 
-  // Escuchar eventos de actualización desde el admin - MEJORADO
+  // Escuchar eventos de actualización desde el admin - MEJORADO CON SINCRONIZACIÓN COMPLETA
   useEffect(() => {
     const handleProductsUpdate = (event) => {
       const { products: updatedProducts } = event.detail;
       
-      // Actualizar en el reducer
+      // Actualizar en el reducer inmediatamente
       dispatch({
         type: PRODUCTS_ACTION.UPDATE_PRODUCTS_FROM_ADMIN,
         payload: { products: updatedProducts },
@@ -196,19 +196,45 @@ const ProductsContextProvider = ({ children }) => {
     const handleCategoriesUpdate = (event) => {
       const { categories: updatedCategories } = event.detail;
       
-      // Actualizar en el reducer
+      // Actualizar en el reducer inmediatamente
       dispatch({
         type: PRODUCTS_ACTION.UPDATE_CATEGORIES_FROM_ADMIN,
         payload: { categories: updatedCategories },
       });
     };
 
+    const handleForceUpdate = () => {
+      // Forzar re-renderizado completo
+      const savedConfig = localStorage.getItem('adminStoreConfig');
+      if (savedConfig) {
+        try {
+          const parsedConfig = JSON.parse(savedConfig);
+          if (parsedConfig.products) {
+            dispatch({
+              type: PRODUCTS_ACTION.UPDATE_PRODUCTS_FROM_ADMIN,
+              payload: { products: parsedConfig.products },
+            });
+          }
+          if (parsedConfig.categories) {
+            dispatch({
+              type: PRODUCTS_ACTION.UPDATE_CATEGORIES_FROM_ADMIN,
+              payload: { categories: parsedConfig.categories },
+            });
+          }
+        } catch (error) {
+          console.error('Error al forzar actualización:', error);
+        }
+      }
+    };
+
     window.addEventListener('productsUpdated', handleProductsUpdate);
     window.addEventListener('categoriesUpdated', handleCategoriesUpdate);
+    window.addEventListener('forceStoreUpdate', handleForceUpdate);
 
     return () => {
       window.removeEventListener('productsUpdated', handleProductsUpdate);
       window.removeEventListener('categoriesUpdated', handleCategoriesUpdate);
+      window.removeEventListener('forceStoreUpdate', handleForceUpdate);
     };
   }, []);
 

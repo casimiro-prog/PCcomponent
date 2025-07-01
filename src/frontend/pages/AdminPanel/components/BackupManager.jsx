@@ -231,7 +231,7 @@ export const COUNTRY_CODES = [
       }
     }
 
-    // Mantener estructura exacta del archivo original
+    // Mantener estructura exacta del archivo original con imágenes responsivas
     const productsContent = `/**
  * Product Database can be added here.
  * You can add products of your wish with different attributes
@@ -259,7 +259,7 @@ export const products = ${JSON.stringify(productsToExport, null, 2)};
       }
     }
 
-    // Mantener estructura exacta del archivo original
+    // Mantener estructura exacta del archivo original con imágenes responsivas
     const categoriesContent = `/**
  * Category Database can be added here.
  * You can add category of your wish with different attributes
@@ -300,7 +300,7 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
       // Simular proceso de exportación
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Crear archivos actualizados con estructura exacta
+      // Crear archivos actualizados con estructura exacta y imágenes responsivas
       const files = [
         {
           name: 'constants.jsx',
@@ -381,7 +381,7 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
       URL.revokeObjectURL(url);
       
       toastHandler(ToastType.Success, '🎉 Backup exportado exitosamente');
-      toastHandler(ToastType.Info, 'Los archivos mantienen la estructura exacta con todos los cambios aplicados');
+      toastHandler(ToastType.Info, 'Los archivos mantienen la estructura exacta con imágenes optimizadas para móviles y tablets');
       
     } catch (error) {
       console.error('Error al exportar backup:', error);
@@ -431,20 +431,20 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
             <strong>📁 Archivos incluidos:</strong>
             <ul>
               <li><code>constants.jsx</code> - Configuración de cupones, zonas y WhatsApp</li>
-              <li><code>products.js</code> - Base de datos de productos con estructura exacta</li>
-              <li><code>categories.js</code> - Base de datos de categorías con estructura exacta</li>
+              <li><code>products.js</code> - Base de datos de productos con estructura exacta e imágenes responsivas</li>
+              <li><code>categories.js</code> - Base de datos de categorías con estructura exacta e imágenes responsivas</li>
               <li><code>messages.js</code> - Todos los mensajes de la tienda</li>
               <li><code>full-config.json</code> - Configuración completa en JSON</li>
             </ul>
           </div>
           <div className={styles.infoItem}>
-            <strong>🔄 Proceso de backup:</strong> Todos los cambios realizados en el panel se exportan manteniendo la estructura exacta de los archivos originales.
+            <strong>🔄 Proceso de backup:</strong> Todos los cambios realizados en el panel se exportan manteniendo la estructura exacta de los archivos originales con imágenes optimizadas.
           </div>
           <div className={styles.infoItem}>
             <strong>📦 Formato:</strong> Los archivos se exportan en un archivo ZIP organizado por carpetas según la estructura del proyecto.
           </div>
           <div className={styles.infoItem}>
-            <strong>🖼️ Imágenes:</strong> Las imágenes se redimensionan automáticamente: productos (400x300px), categorías (300x200px).
+            <strong>🖼️ Imágenes responsivas:</strong> Las imágenes se optimizan automáticamente: productos (600x450px), categorías (400x300px) para móviles y tablets.
           </div>
           <div className={styles.infoItem}>
             <strong>🛡️ Seguridad:</strong> Mantiene la integridad del código fuente y permite restaurar fácilmente los cambios.
@@ -460,15 +460,15 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
           <div className={styles.cardContent}>
             <p>
               Exporta todos los cambios realizados en el panel de control a archivos de código fuente 
-              actualizados manteniendo la estructura exacta. Esto incluye productos, categorías, cupones, zonas, mensajes y configuraciones.
+              actualizados manteniendo la estructura exacta con imágenes optimizadas para móviles y tablets. Esto incluye productos, categorías, cupones, zonas, mensajes y configuraciones.
             </p>
             <div className={styles.changesSummary}>
               <h4>📊 Resumen de cambios a exportar:</h4>
               <ul>
                 <li>🎫 {stats.coupons} cupones configurados</li>
                 <li>📍 {stats.zones} zonas de entrega</li>
-                <li>📦 {stats.products} productos en catálogo (con imágenes 400x300px)</li>
-                <li>📂 {stats.categories} categorías disponibles (con imágenes 300x200px)</li>
+                <li>📦 {stats.products} productos en catálogo (con imágenes 600x450px responsivas)</li>
+                <li>📂 {stats.categories} categorías disponibles (con imágenes 400x300px responsivas)</li>
                 <li>💬 {Object.keys(JSON.parse(localStorage.getItem('storeMessages') || '{}')).length} categorías de mensajes</li>
               </ul>
             </div>
@@ -502,7 +502,7 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
           <div className={styles.step}>
             <span className={styles.stepNumber}>2</span>
             <div className={styles.stepContent}>
-              <strong>Verificar cambios:</strong> Los cambios se aplican automáticamente en la tienda en tiempo real.
+              <strong>Verificar cambios:</strong> Los cambios se aplican automáticamente en la tienda en tiempo real con imágenes responsivas.
             </div>
           </div>
           <div className={styles.step}>
