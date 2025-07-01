@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { toastHandler } from '../../../utils/utils';
 import { ToastType } from '../../../constants/constants';
-import { useConfigContext } from '../../../contexts/ConfigContextProvider';
 import styles from './MessagesManager.module.css';
 
 const MessagesManager = () => {
-  const { updateMessages } = useConfigContext();
   const [messages, setMessages] = useState({});
   const [editingMessage, setEditingMessage] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -127,9 +125,9 @@ const MessagesManager = () => {
 
   const saveMessages = (newMessages) => {
     setMessages(newMessages);
-    updateMessages(newMessages);
+    localStorage.setItem('storeMessages', JSON.stringify(newMessages));
     setHasUnsavedChanges(false);
-    toastHandler(ToastType.Success, '✅ Mensajes guardados y sincronizados');
+    toastHandler(ToastType.Success, '✅ Mensajes guardados en memoria');
     toastHandler(ToastType.Info, 'Para aplicar los cambios, ve a "💾 Exportar/Importar" y exporta la configuración');
   };
 
@@ -152,7 +150,7 @@ const MessagesManager = () => {
   const handleResetMessages = () => {
     if (window.confirm('¿Estás seguro de restablecer todos los mensajes a los valores por defecto?')) {
       setMessages(defaultMessages);
-      updateMessages(defaultMessages);
+      localStorage.setItem('storeMessages', JSON.stringify(defaultMessages));
       setHasUnsavedChanges(false);
       toastHandler(ToastType.Success, 'Mensajes restablecidos a valores por defecto');
     }
@@ -230,7 +228,7 @@ const MessagesManager = () => {
 
       <div className={styles.infoBox}>
         <h4>ℹ️ Información Importante</h4>
-        <p>Aquí puedes editar todos los mensajes y textos que aparecen en la tienda. Los cambios se guardan y sincronizan automáticamente. Para aplicarlos permanentemente, ve a la sección "💾 Exportar/Importar" y exporta la configuración.</p>
+        <p>Aquí puedes editar todos los mensajes y textos que aparecen en la tienda. Los cambios se guardan temporalmente en memoria. Para aplicarlos permanentemente, ve a la sección "💾 Exportar/Importar" y exporta la configuración.</p>
       </div>
 
       <div className={styles.statsContainer}>
@@ -332,7 +330,7 @@ const MessagesManager = () => {
             <strong>🔍 Búsqueda:</strong> Busca mensajes por clave o contenido
           </div>
           <div className={styles.infoItem}>
-            <strong>💾 Guardado:</strong> Los cambios se sincronizan automáticamente y se exportan en el JSON de configuración
+            <strong>💾 Guardado:</strong> Los cambios se guardan en memoria y se exportan en el JSON de configuración
           </div>
           <div className={styles.infoItem}>
             <strong>🌐 Idiomas:</strong> Perfecto para crear versiones en diferentes idiomas

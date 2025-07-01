@@ -3,12 +3,10 @@ import { v4 as uuid } from 'uuid';
 import { toastHandler } from '../../../utils/utils';
 import { ToastType } from '../../../constants/constants';
 import { useAllProductsContext } from '../../../contexts/ProductsContextProvider';
-import { useConfigContext } from '../../../contexts/ConfigContextProvider';
 import styles from './CategoryManager.module.css';
 
 const CategoryManager = () => {
   const { categories: categoriesFromContext } = useAllProductsContext();
-  const { updateCategories } = useConfigContext();
   const [localCategories, setLocalCategories] = useState([]);
   const [editingCategory, setEditingCategory] = useState(null);
   const [showForm, setShowForm] = useState(false);
@@ -48,7 +46,7 @@ const CategoryManager = () => {
     }
   };
 
-  // GUARDAR CAMBIOS EN MEMORIA LOCAL Y SINCRONIZAR
+  // GUARDAR CAMBIOS EN MEMORIA LOCAL (NO EXPORTAR)
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -89,9 +87,8 @@ const CategoryManager = () => {
       toastHandler(ToastType.Success, '✅ Categoría creada (cambios en memoria)');
     }
 
-    // GUARDAR EN MEMORIA LOCAL Y SINCRONIZAR
+    // SOLO GUARDAR EN MEMORIA LOCAL - NO EXPORTAR
     setLocalCategories(updatedCategories);
-    updateCategories(updatedCategories);
     resetForm();
 
     // Mostrar mensaje informativo
@@ -124,8 +121,6 @@ const CategoryManager = () => {
     );
 
     setLocalCategories(updatedCategories);
-    updateCategories(updatedCategories);
-    
     const category = localCategories.find(c => c._id === categoryId);
     toastHandler(ToastType.Success, 
       `✅ Categoría ${category.disabled ? 'habilitada' : 'deshabilitada'} (cambios en memoria)`
@@ -140,7 +135,6 @@ const CategoryManager = () => {
 
     const updatedCategories = localCategories.filter(c => c._id !== categoryId);
     setLocalCategories(updatedCategories);
-    updateCategories(updatedCategories);
     toastHandler(ToastType.Success, '✅ Categoría eliminada (cambios en memoria)');
     toastHandler(ToastType.Info, 'Para aplicar los cambios, ve a "💾 Exportar/Importar" y exporta la configuración');
   };

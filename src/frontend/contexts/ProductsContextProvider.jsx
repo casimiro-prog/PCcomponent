@@ -29,34 +29,6 @@ const ProductsContextProvider = ({ children }) => {
 
   const { user, token: tokenFromContext } = useAuthContext();
 
-  // Escuchar cambios en la configuración del admin
-  useEffect(() => {
-    const handleConfigUpdate = (event) => {
-      const updatedConfig = event.detail;
-      
-      // Actualizar productos y categorías si han cambiado
-      if (updatedConfig.products && updatedConfig.products.length > 0) {
-        dispatch({
-          type: PRODUCTS_ACTION.UPDATE_PRODUCTS_FROM_CONFIG,
-          payload: { products: updatedConfig.products }
-        });
-      }
-      
-      if (updatedConfig.categories && updatedConfig.categories.length > 0) {
-        dispatch({
-          type: PRODUCTS_ACTION.UPDATE_CATEGORIES_FROM_CONFIG,
-          payload: { categories: updatedConfig.categories }
-        });
-      }
-    };
-
-    window.addEventListener('storeConfigUpdated', handleConfigUpdate);
-    
-    return () => {
-      window.removeEventListener('storeConfigUpdated', handleConfigUpdate);
-    };
-  }, []);
-
   // fns
   const showMainPageLoader = () => {
     dispatch({ type: PRODUCTS_ACTION.SHOW_LOADER });
@@ -96,43 +68,19 @@ const ProductsContextProvider = ({ children }) => {
 
   const fetchAllProductsAndCategories = async () => {
     dispatch({ type: PRODUCTS_ACTION.GET_ALL_PRODUCTS_BEGIN });
+    // as the response was quick, used wait (check utils) to show Loader for 1000s
     await wait(DELAY_TO_SHOW_LOADER);
 
     try {
-      // Primero intentar cargar desde la configuración del admin
-      const savedConfig = localStorage.getItem('adminStoreConfig');
-      let products = [];
-      let categories = [];
-      
-      if (savedConfig) {
-        const config = JSON.parse(savedConfig);
-        if (config.products && config.products.length > 0) {
-          products = config.products;
-        }
-        if (config.categories && config.categories.length > 0) {
-          categories = config.categories;
-        }
-      }
-      
-      // Si no hay datos en la configuración del admin, cargar desde el servicio
-      if (products.length === 0 || categories.length === 0) {
-        const serviceData = await getAllProductsCategoriesService();
-        products = serviceData.products;
-        categories = serviceData.categories;
-      }
+      const { products, categories } = await getAllProductsCategoriesService();
 
       dispatch({
         type: PRODUCTS_ACTION.GET_ALL_PRODUCTS_FULFILLED,
         payload: { products, categories },
       });
-
-      // Notificar al contexto de configuración sobre los datos cargados
-      window.dispatchEvent(new CustomEvent('productsLoaded', { 
-        detail: { products, categories } 
-      }));
-
     } catch (error) {
       dispatch({ type: PRODUCTS_ACTION.GET_ALL_PRODUCTS_REJECTED });
+
       console.error(error);
     }
   };
@@ -243,6 +191,7 @@ const ProductsContextProvider = ({ children }) => {
   };
 
   const moveToCartDispatch = async (product) => {
+    // this will be called from the wishlist page
     try {
       const [cart, wishlist] = await Promise.all([
         postAddToCartService(product, tokenFromContext),
@@ -273,6 +222,7 @@ const ProductsContextProvider = ({ children }) => {
   };
 
   // address
+
   const addAddressDispatch = (addressObj) => {
     toastHandler(ToastType.Success, 'Added Address Successfully');
     dispatch({
@@ -315,6 +265,15 @@ const ProductsContextProvider = ({ children }) => {
     });
   };
 
+  // const addOrderDispatch = async (orderObj) => {
+  //   dispatch({
+  //     type: PRODUCTS_ACTION.ADD_ORDER,
+  //     payload: {
+  //       order: orderObj,
+  //     },
+  //   });
+  // };
+
   return (
     <ProductsContext.Provider
       value={{
@@ -336,6 +295,7 @@ const ProductsContextProvider = ({ children }) => {
         editAddressDispatch,
         deleteAddressDispatch,
         deleteAllAddressDispatch,
+        // addOrderDispatch,
         clearCartInContext,
         clearWishlistInContext,
         clearAddressInContext,
