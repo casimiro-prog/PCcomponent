@@ -71,7 +71,7 @@ const ConfigContextProvider = ({ children }) => {
     saveConfig(updatedConfig);
   };
 
-  // Actualizar productos - NUEVA IMPLEMENTACIÓN
+  // Actualizar productos - MEJORADA PARA MANTENER ESTRUCTURA EXACTA
   const updateProducts = (newProducts) => {
     const updatedConfig = {
       ...storeConfig,
@@ -79,19 +79,19 @@ const ConfigContextProvider = ({ children }) => {
       lastModified: new Date().toISOString()
     };
     
-    // Guardar en localStorage
+    // Guardar en localStorage manteniendo estructura exacta
     setStoreConfig(updatedConfig);
     localStorage.setItem('adminStoreConfig', JSON.stringify(updatedConfig));
     
-    // Actualizar también en el contexto de productos para sincronización inmediata
-    window.dispatchEvent(new CustomEvent('productsUpdated', { 
+    // Disparar evento para sincronización global
+    window.dispatchEvent(new CustomEvent('productsConfigUpdated', { 
       detail: { products: newProducts } 
     }));
     
-    toastHandler(ToastType.Success, 'Productos actualizados en la tienda');
+    toastHandler(ToastType.Success, 'Productos actualizados en la configuración');
   };
 
-  // Actualizar categorías - NUEVA IMPLEMENTACIÓN
+  // Actualizar categorías - MEJORADA PARA MANTENER ESTRUCTURA EXACTA
   const updateCategories = (newCategories) => {
     const updatedConfig = {
       ...storeConfig,
@@ -99,16 +99,16 @@ const ConfigContextProvider = ({ children }) => {
       lastModified: new Date().toISOString()
     };
     
-    // Guardar en localStorage
+    // Guardar en localStorage manteniendo estructura exacta
     setStoreConfig(updatedConfig);
     localStorage.setItem('adminStoreConfig', JSON.stringify(updatedConfig));
     
-    // Actualizar también en el contexto de productos para sincronización inmediata
-    window.dispatchEvent(new CustomEvent('categoriesUpdated', { 
+    // Disparar evento para sincronización global
+    window.dispatchEvent(new CustomEvent('categoriesConfigUpdated', { 
       detail: { categories: newCategories } 
     }));
     
-    toastHandler(ToastType.Success, 'Categorías actualizadas en la tienda');
+    toastHandler(ToastType.Success, 'Categorías actualizadas en la configuración');
   };
 
   // Exportar configuración

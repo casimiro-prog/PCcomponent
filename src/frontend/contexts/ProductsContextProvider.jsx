@@ -107,20 +107,66 @@ const ProductsContextProvider = ({ children }) => {
     }
   };
 
-  // Función para actualizar productos desde el admin
+  // Función para actualizar productos desde el admin - MEJORADA
   const updateProductsFromAdmin = (newProducts) => {
+    // Actualizar en el reducer
     dispatch({
       type: PRODUCTS_ACTION.UPDATE_PRODUCTS_FROM_ADMIN,
       payload: { products: newProducts },
     });
+
+    // Guardar en localStorage para persistencia
+    const savedConfig = localStorage.getItem('adminStoreConfig');
+    let config = {};
+    
+    if (savedConfig) {
+      try {
+        config = JSON.parse(savedConfig);
+      } catch (error) {
+        console.error('Error al cargar configuración:', error);
+      }
+    }
+
+    config.products = newProducts;
+    config.lastModified = new Date().toISOString();
+    
+    localStorage.setItem('adminStoreConfig', JSON.stringify(config));
+    
+    // Disparar evento para sincronización global
+    window.dispatchEvent(new CustomEvent('productsUpdated', { 
+      detail: { products: newProducts } 
+    }));
   };
 
-  // Función para actualizar categorías desde el admin
+  // Función para actualizar categorías desde el admin - MEJORADA
   const updateCategoriesFromAdmin = (newCategories) => {
+    // Actualizar en el reducer
     dispatch({
       type: PRODUCTS_ACTION.UPDATE_CATEGORIES_FROM_ADMIN,
       payload: { categories: newCategories },
     });
+
+    // Guardar en localStorage para persistencia
+    const savedConfig = localStorage.getItem('adminStoreConfig');
+    let config = {};
+    
+    if (savedConfig) {
+      try {
+        config = JSON.parse(savedConfig);
+      } catch (error) {
+        console.error('Error al cargar configuración:', error);
+      }
+    }
+
+    config.categories = newCategories;
+    config.lastModified = new Date().toISOString();
+    
+    localStorage.setItem('adminStoreConfig', JSON.stringify(config));
+    
+    // Disparar evento para sincronización global
+    window.dispatchEvent(new CustomEvent('categoriesUpdated', { 
+      detail: { categories: newCategories } 
+    }));
   };
 
   // useEffects
@@ -135,14 +181,26 @@ const ProductsContextProvider = ({ children }) => {
     updateWishlist(user.wishlist);
   }, [user]);
 
-  // Escuchar eventos de actualización desde el admin
+  // Escuchar eventos de actualización desde el admin - MEJORADO
   useEffect(() => {
     const handleProductsUpdate = (event) => {
-      updateProductsFromAdmin(event.detail.products);
+      const { products: updatedProducts } = event.detail;
+      
+      // Actualizar en el reducer
+      dispatch({
+        type: PRODUCTS_ACTION.UPDATE_PRODUCTS_FROM_ADMIN,
+        payload: { products: updatedProducts },
+      });
     };
 
     const handleCategoriesUpdate = (event) => {
-      updateCategoriesFromAdmin(event.detail.categories);
+      const { categories: updatedCategories } = event.detail;
+      
+      // Actualizar en el reducer
+      dispatch({
+        type: PRODUCTS_ACTION.UPDATE_CATEGORIES_FROM_ADMIN,
+        payload: { categories: updatedCategories },
+      });
     };
 
     window.addEventListener('productsUpdated', handleProductsUpdate);

@@ -214,7 +214,7 @@ export const COUNTRY_CODES = [
     return constantsContent;
   };
 
-  // Función para generar el contenido de products.js actualizado
+  // Función para generar el contenido de products.js actualizado con estructura exacta
   const generateProductsFile = () => {
     // Obtener productos actualizados desde localStorage o contexto
     const savedConfig = localStorage.getItem('adminStoreConfig');
@@ -231,6 +231,7 @@ export const COUNTRY_CODES = [
       }
     }
 
+    // Mantener estructura exacta del archivo original
     const productsContent = `/**
  * Product Database can be added here.
  * You can add products of your wish with different attributes
@@ -241,7 +242,7 @@ export const products = ${JSON.stringify(productsToExport, null, 2)};
     return productsContent;
   };
 
-  // Función para generar el contenido de categories.js actualizado
+  // Función para generar el contenido de categories.js actualizado con estructura exacta
   const generateCategoriesFile = () => {
     // Obtener categorías actualizadas desde localStorage o contexto
     const savedConfig = localStorage.getItem('adminStoreConfig');
@@ -258,6 +259,7 @@ export const products = ${JSON.stringify(productsToExport, null, 2)};
       }
     }
 
+    // Mantener estructura exacta del archivo original
     const categoriesContent = `/**
  * Category Database can be added here.
  * You can add category of your wish with different attributes
@@ -298,7 +300,7 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
       // Simular proceso de exportación
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Crear archivos actualizados
+      // Crear archivos actualizados con estructura exacta
       const files = [
         {
           name: 'constants.jsx',
@@ -330,7 +332,7 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
       const backupFolder = zip.folder('backup');
       const timestamp = new Date().toISOString().split('T')[0];
       
-      // Agregar archivos al ZIP
+      // Agregar archivos al ZIP manteniendo estructura exacta
       files.forEach(file => {
         const folderPath = file.path.replace('src/', '');
         const folder = backupFolder.folder(folderPath);
@@ -379,7 +381,7 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
       URL.revokeObjectURL(url);
       
       toastHandler(ToastType.Success, '🎉 Backup exportado exitosamente');
-      toastHandler(ToastType.Info, 'Los archivos incluyen todos los cambios realizados en productos, categorías, cupones y configuraciones');
+      toastHandler(ToastType.Info, 'Los archivos mantienen la estructura exacta con todos los cambios aplicados');
       
     } catch (error) {
       console.error('Error al exportar backup:', error);
@@ -429,17 +431,20 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
             <strong>📁 Archivos incluidos:</strong>
             <ul>
               <li><code>constants.jsx</code> - Configuración de cupones, zonas y WhatsApp</li>
-              <li><code>products.js</code> - Base de datos de productos actualizada</li>
-              <li><code>categories.js</code> - Base de datos de categorías actualizada</li>
+              <li><code>products.js</code> - Base de datos de productos con estructura exacta</li>
+              <li><code>categories.js</code> - Base de datos de categorías con estructura exacta</li>
               <li><code>messages.js</code> - Todos los mensajes de la tienda</li>
               <li><code>full-config.json</code> - Configuración completa en JSON</li>
             </ul>
           </div>
           <div className={styles.infoItem}>
-            <strong>🔄 Proceso de backup:</strong> Todos los cambios realizados en el panel se exportan a archivos actualizados manteniendo la estructura original del código fuente.
+            <strong>🔄 Proceso de backup:</strong> Todos los cambios realizados en el panel se exportan manteniendo la estructura exacta de los archivos originales.
           </div>
           <div className={styles.infoItem}>
             <strong>📦 Formato:</strong> Los archivos se exportan en un archivo ZIP organizado por carpetas según la estructura del proyecto.
+          </div>
+          <div className={styles.infoItem}>
+            <strong>🖼️ Imágenes:</strong> Las imágenes se redimensionan automáticamente: productos (400x300px), categorías (300x200px).
           </div>
           <div className={styles.infoItem}>
             <strong>🛡️ Seguridad:</strong> Mantiene la integridad del código fuente y permite restaurar fácilmente los cambios.
@@ -455,15 +460,15 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
           <div className={styles.cardContent}>
             <p>
               Exporta todos los cambios realizados en el panel de control a archivos de código fuente 
-              actualizados. Esto incluye productos, categorías, cupones, zonas, mensajes y configuraciones.
+              actualizados manteniendo la estructura exacta. Esto incluye productos, categorías, cupones, zonas, mensajes y configuraciones.
             </p>
             <div className={styles.changesSummary}>
               <h4>📊 Resumen de cambios a exportar:</h4>
               <ul>
                 <li>🎫 {stats.coupons} cupones configurados</li>
                 <li>📍 {stats.zones} zonas de entrega</li>
-                <li>📦 {stats.products} productos en catálogo</li>
-                <li>📂 {stats.categories} categorías disponibles</li>
+                <li>📦 {stats.products} productos en catálogo (con imágenes 400x300px)</li>
+                <li>📂 {stats.categories} categorías disponibles (con imágenes 300x200px)</li>
                 <li>💬 {Object.keys(JSON.parse(localStorage.getItem('storeMessages') || '{}')).length} categorías de mensajes</li>
               </ul>
             </div>
@@ -503,13 +508,13 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
           <div className={styles.step}>
             <span className={styles.stepNumber}>3</span>
             <div className={styles.stepContent}>
-              <strong>Exportar backup:</strong> Haz clic en "Exportar Backup Completo" para generar los archivos actualizados.
+              <strong>Exportar backup:</strong> Haz clic en "Exportar Backup Completo" para generar los archivos actualizados con estructura exacta.
             </div>
           </div>
           <div className={styles.step}>
             <span className={styles.stepNumber}>4</span>
             <div className={styles.stepContent}>
-              <strong>Aplicar cambios:</strong> Extrae los archivos del ZIP y reemplaza los archivos correspondientes en tu proyecto.
+              <strong>Aplicar cambios:</strong> Extrae los archivos del ZIP y reemplaza los archivos correspondientes en tu proyecto manteniendo la estructura.
             </div>
           </div>
         </div>

@@ -34,6 +34,47 @@ const ProductManager = () => {
     setLocalProducts(products || []);
   }, [products]);
 
+  // Función para redimensionar imagen a 400x300px (tamaño estándar de products.js)
+  const resizeImage = (file, callback) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    img.onload = () => {
+      // Tamaño estándar para productos: 400x300px
+      canvas.width = 400;
+      canvas.height = 300;
+      
+      // Dibujar imagen redimensionada manteniendo proporción
+      const aspectRatio = img.width / img.height;
+      let drawWidth = 400;
+      let drawHeight = 300;
+      let offsetX = 0;
+      let offsetY = 0;
+      
+      if (aspectRatio > 400/300) {
+        drawHeight = 400 / aspectRatio;
+        offsetY = (300 - drawHeight) / 2;
+      } else {
+        drawWidth = 300 * aspectRatio;
+        offsetX = (400 - drawWidth) / 2;
+      }
+      
+      // Fondo blanco
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, 400, 300);
+      
+      // Dibujar imagen centrada
+      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+      
+      // Convertir a base64
+      const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      callback(resizedDataUrl);
+    };
+    
+    img.src = URL.createObjectURL(file);
+  };
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -69,12 +110,24 @@ const ProductManager = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setFormData(prev => ({ ...prev, image: e.target.result }));
+      // Validar que sea una imagen
+      if (!file.type.startsWith('image/')) {
+        toastHandler(ToastType.Error, 'Por favor selecciona un archivo de imagen válido');
+        return;
+      }
+      
+      // Validar tamaño (máximo 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toastHandler(ToastType.Error, 'La imagen debe ser menor a 5MB');
+        return;
+      }
+      
+      // Redimensionar imagen al tamaño estándar
+      resizeImage(file, (resizedDataUrl) => {
+        setFormData(prev => ({ ...prev, image: resizedDataUrl }));
         setHasUnsavedChanges(true);
-      };
-      reader.readAsDataURL(file);
+        toastHandler(ToastType.Success, 'Imagen redimensionada a 400x300px automáticamente');
+      });
     }
   };
 
@@ -144,25 +197,26 @@ const ProductManager = () => {
     // Calcular stock total basado en los colores
     const totalStock = formData.colors.reduce((total, color) => total + parseInt(color.colorQuantity || 0), 0);
 
+    // Crear producto con estructura exacta de products.js
     const newProduct = {
-      _id: selectedProduct ? selectedProduct._id : uuid(),
-      name: formData.name.trim(),
-      price: parseFloat(formData.price),
-      originalPrice: parseFloat(formData.originalPrice),
-      description: formData.description.trim(),
-      category: formData.category,
-      company: formData.company.trim(),
-      stock: totalStock, // Stock calculado automáticamente
-      reviewCount: parseInt(formData.reviewCount) || 0,
-      stars: parseFloat(formData.stars) || 0,
-      colors: formData.colors.map(color => ({
-        color: color.color,
-        colorQuantity: parseInt(color.colorQuantity) || 0
+      "_id": selectedProduct ? selectedProduct._id : uuid(),
+      "name": formData.name.trim(),
+      "price": parseFloat(formData.price),
+      "originalPrice": parseFloat(formData.originalPrice),
+      "description": formData.description.trim(),
+      "category": formData.category,
+      "company": formData.company.trim(),
+      "stock": totalStock,
+      "reviewCount": parseInt(formData.reviewCount) || 0,
+      "stars": parseFloat(formData.stars) || 0,
+      "colors": formData.colors.map(color => ({
+        "color": color.color,
+        "colorQuantity": parseInt(color.colorQuantity) || 0
       })),
-      image: formData.image,
-      isShippingAvailable: formData.isShippingAvailable,
-      featured: formData.featured,
-      id: selectedProduct ? selectedProduct.id : (localProducts.length + 1).toString()
+      "image": formData.image,
+      "isShippingAvailable": formData.isShippingAvailable,
+      "featured": formData.featured,
+      "id": selectedProduct ? selectedProduct.id : (localProducts.length + 1).toString()
     };
 
     let updatedProducts;
@@ -174,14 +228,19 @@ const ProductManager = () => {
       toastHandler(ToastType.Success, '✅ Producto creado exitosamente');
     }
 
-    // SINCRONIZACIÓN COMPLETA
+    // SINCRONIZACIÓN COMPLETA - Mantener estructura exacta
     setLocalProducts(updatedProducts);
     
-    // Actualizar en el contexto de configuración
+    // Actualizar en el contexto de configuración para backup
     updateProducts(updatedProducts);
     
-    // Actualizar en el contexto de productos para sincronización inmediata
+    // Actualizar en el contexto de productos para sincronización inmediata en la tienda
     updateProductsFromAdmin(updatedProducts);
+    
+    // Disparar evento personalizado para sincronización global
+    window.dispatchEvent(new CustomEvent('productsUpdated', { 
+      detail: { products: updatedProducts } 
+    }));
     
     resetForm();
   };
@@ -225,12 +284,13 @@ const ProductManager = () => {
     
     // SINCRONIZACIÓN COMPLETA
     setLocalProducts(updatedProducts);
-    
-    // Actualizar en el contexto de configuración
     updateProducts(updatedProducts);
-    
-    // Actualizar en el contexto de productos para sincronización inmediata
     updateProductsFromAdmin(updatedProducts);
+    
+    // Disparar evento personalizado
+    window.dispatchEvent(new CustomEvent('productsUpdated', { 
+      detail: { products: updatedProducts } 
+    }));
     
     toastHandler(ToastType.Success, '✅ Producto eliminado exitosamente');
   };
@@ -242,7 +302,7 @@ const ProductManager = () => {
   return (
     <div className={styles.productManager}>
       <div className={styles.header}>
-        <h2>Gestión de Productos</h2>
+        <h2>📦 Gestión de Productos</h2>
         <div className={styles.headerActions}>
           {hasChanges && (
             <span className={styles.changesIndicator}>
@@ -260,7 +320,7 @@ const ProductManager = () => {
 
       <div className={styles.infoBox}>
         <h4>ℹ️ Información Importante</h4>
-        <p>Los cambios se aplican automáticamente en la tienda. Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
+        <p>Los cambios se aplican automáticamente en la tienda. Las imágenes se redimensionan automáticamente a 400x300px. Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
       </div>
 
       {isEditing ? (
@@ -392,7 +452,7 @@ const ProductManager = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Imagen del Producto *</label>
+            <label>Imagen del Producto * (Se redimensionará automáticamente a 400x300px)</label>
             <input
               type="file"
               accept="image/*"
@@ -412,6 +472,7 @@ const ProductManager = () => {
             {formData.image && (
               <div className={styles.imagePreview}>
                 <img src={formData.image} alt="Preview" />
+                <small>Tamaño: 400x300px (estándar de productos)</small>
               </div>
             )}
           </div>

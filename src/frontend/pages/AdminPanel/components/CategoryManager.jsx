@@ -27,6 +27,47 @@ const CategoryManager = () => {
     setLocalCategories(categoriesFromContext || []);
   }, [categoriesFromContext]);
 
+  // Función para redimensionar imagen a 300x200px (tamaño estándar de categories.js)
+  const resizeImage = (file, callback) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    img.onload = () => {
+      // Tamaño estándar para categorías: 300x200px
+      canvas.width = 300;
+      canvas.height = 200;
+      
+      // Dibujar imagen redimensionada manteniendo proporción
+      const aspectRatio = img.width / img.height;
+      let drawWidth = 300;
+      let drawHeight = 200;
+      let offsetX = 0;
+      let offsetY = 0;
+      
+      if (aspectRatio > 300/200) {
+        drawHeight = 300 / aspectRatio;
+        offsetY = (200 - drawHeight) / 2;
+      } else {
+        drawWidth = 200 * aspectRatio;
+        offsetX = (300 - drawWidth) / 2;
+      }
+      
+      // Fondo blanco
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, 300, 200);
+      
+      // Dibujar imagen centrada
+      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+      
+      // Convertir a base64
+      const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      callback(resizedDataUrl);
+    };
+    
+    img.src = URL.createObjectURL(file);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCategoryForm(prev => ({
@@ -39,12 +80,24 @@ const CategoryManager = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setCategoryForm(prev => ({ ...prev, categoryImage: e.target.result }));
+      // Validar que sea una imagen
+      if (!file.type.startsWith('image/')) {
+        toastHandler(ToastType.Error, 'Por favor selecciona un archivo de imagen válido');
+        return;
+      }
+      
+      // Validar tamaño (máximo 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toastHandler(ToastType.Error, 'La imagen debe ser menor a 5MB');
+        return;
+      }
+      
+      // Redimensionar imagen al tamaño estándar
+      resizeImage(file, (resizedDataUrl) => {
+        setCategoryForm(prev => ({ ...prev, categoryImage: resizedDataUrl }));
         setHasUnsavedChanges(true);
-      };
-      reader.readAsDataURL(file);
+        toastHandler(ToastType.Success, 'Imagen redimensionada a 300x200px automáticamente');
+      });
     }
   };
 
@@ -73,11 +126,13 @@ const CategoryManager = () => {
       return;
     }
 
+    // Crear categoría con estructura exacta de categories.js
     const newCategory = {
-      ...categoryForm,
-      _id: editingCategory ? editingCategory._id : uuid(),
-      categoryName: categoryForm.categoryName.toLowerCase().trim(),
-      id: editingCategory ? editingCategory.id : (localCategories.length + 1).toString()
+      "_id": editingCategory ? editingCategory._id : uuid(),
+      "categoryName": categoryForm.categoryName.toLowerCase().trim(),
+      "categoryImage": categoryForm.categoryImage,
+      "description": categoryForm.description || "",
+      "id": editingCategory ? editingCategory.id : (localCategories.length + 1).toString()
     };
 
     let updatedCategories;
@@ -89,14 +144,19 @@ const CategoryManager = () => {
       toastHandler(ToastType.Success, '✅ Categoría creada exitosamente');
     }
 
-    // SINCRONIZACIÓN COMPLETA
+    // SINCRONIZACIÓN COMPLETA - Mantener estructura exacta
     setLocalCategories(updatedCategories);
     
-    // Actualizar en el contexto de configuración
+    // Actualizar en el contexto de configuración para backup
     updateCategories(updatedCategories);
     
     // Actualizar en el contexto de productos para sincronización inmediata
     updateCategoriesFromAdmin(updatedCategories);
+    
+    // Disparar evento personalizado para sincronización global
+    window.dispatchEvent(new CustomEvent('categoriesUpdated', { 
+      detail: { categories: updatedCategories } 
+    }));
     
     resetForm();
   };
@@ -128,12 +188,13 @@ const CategoryManager = () => {
 
     // SINCRONIZACIÓN COMPLETA
     setLocalCategories(updatedCategories);
-    
-    // Actualizar en el contexto de configuración
     updateCategories(updatedCategories);
-    
-    // Actualizar en el contexto de productos para sincronización inmediata
     updateCategoriesFromAdmin(updatedCategories);
+    
+    // Disparar evento personalizado
+    window.dispatchEvent(new CustomEvent('categoriesUpdated', { 
+      detail: { categories: updatedCategories } 
+    }));
     
     const category = localCategories.find(c => c._id === categoryId);
     toastHandler(ToastType.Success, 
@@ -150,12 +211,13 @@ const CategoryManager = () => {
     
     // SINCRONIZACIÓN COMPLETA
     setLocalCategories(updatedCategories);
-    
-    // Actualizar en el contexto de configuración
     updateCategories(updatedCategories);
-    
-    // Actualizar en el contexto de productos para sincronización inmediata
     updateCategoriesFromAdmin(updatedCategories);
+    
+    // Disparar evento personalizado
+    window.dispatchEvent(new CustomEvent('categoriesUpdated', { 
+      detail: { categories: updatedCategories } 
+    }));
     
     toastHandler(ToastType.Success, '✅ Categoría eliminada exitosamente');
   };
@@ -176,7 +238,7 @@ const CategoryManager = () => {
   return (
     <div className={styles.categoryManager}>
       <div className={styles.header}>
-        <h2>Gestión de Categorías</h2>
+        <h2>📂 Gestión de Categorías</h2>
         <div className={styles.headerActions}>
           {hasChanges && (
             <span className={styles.changesIndicator}>
@@ -194,7 +256,7 @@ const CategoryManager = () => {
 
       <div className={styles.infoBox}>
         <h4>ℹ️ Información Importante</h4>
-        <p>Los cambios se aplican automáticamente en la tienda. Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
+        <p>Los cambios se aplican automáticamente en la tienda. Las imágenes se redimensionan automáticamente a 300x200px. Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
       </div>
 
       {showForm && (
@@ -236,7 +298,7 @@ const CategoryManager = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Imagen de la Categoría *</label>
+            <label>Imagen de la Categoría * (Se redimensionará automáticamente a 300x200px)</label>
             <input
               type="file"
               accept="image/*"
@@ -256,6 +318,7 @@ const CategoryManager = () => {
             {categoryForm.categoryImage && (
               <div className={styles.imagePreview}>
                 <img src={categoryForm.categoryImage} alt="Preview" />
+                <small>Tamaño: 300x200px (estándar de categorías)</small>
               </div>
             )}
           </div>
