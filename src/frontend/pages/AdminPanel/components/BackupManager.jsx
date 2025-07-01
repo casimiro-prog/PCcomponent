@@ -12,6 +12,19 @@ const BackupManager = () => {
 
   // Función para generar el contenido de constants.jsx actualizado
   const generateConstantsFile = () => {
+    // Obtener datos actualizados desde localStorage
+    const savedConfig = localStorage.getItem('adminStoreConfig');
+    let finalStoreConfig = storeConfig;
+    
+    if (savedConfig) {
+      try {
+        const parsedConfig = JSON.parse(savedConfig);
+        finalStoreConfig = parsedConfig;
+      } catch (error) {
+        console.error('Error al cargar configuración guardada:', error);
+      }
+    }
+
     const constantsContent = `import { AiFillGithub, AiFillLinkedin, AiOutlineTwitter } from 'react-icons/ai';
 import { v4 as uuid } from 'uuid';
 
@@ -124,10 +137,10 @@ export const SERVICE_TYPES = {
 };
 
 // Zonas de Santiago de Cuba con costos de entrega - ACTUALIZADAS
-export const SANTIAGO_ZONES = ${JSON.stringify(storeConfig.zones || [], null, 2)};
+export const SANTIAGO_ZONES = ${JSON.stringify(finalStoreConfig.zones || [], null, 2)};
 
 // Cupones de descuento - ACTUALIZADOS
-export const COUPONS = ${JSON.stringify(storeConfig.coupons || [], null, 2)};
+export const COUPONS = ${JSON.stringify(finalStoreConfig.coupons || [], null, 2)};
 
 export const CHARGE_AND_DISCOUNT = {
   deliveryCharge: 0,
@@ -138,10 +151,10 @@ export const MIN_DISTANCE_BETWEEN_THUMBS = 1000;
 export const MAX_RESPONSES_IN_CACHE_TO_STORE = 50;
 
 // WhatsApp de la tienda - ACTUALIZADO
-export const STORE_WHATSAPP = '${storeConfig.storeInfo?.whatsappNumber || '+53 54690878'}';
+export const STORE_WHATSAPP = '${finalStoreConfig.storeInfo?.whatsappNumber || '+53 54690878'}';
 
 // Configuración por defecto de la tienda - ACTUALIZADA
-export const DEFAULT_STORE_CONFIG = ${JSON.stringify(storeConfig.storeInfo || {
+export const DEFAULT_STORE_CONFIG = ${JSON.stringify(finalStoreConfig.storeInfo || {
   storeName: 'Gada Electronics',
   whatsappNumber: '+53 54690878',
   storeAddress: 'Santiago de Cuba, Cuba',
@@ -203,7 +216,7 @@ export const COUNTRY_CODES = [
 
   // Función para generar el contenido de products.js actualizado
   const generateProductsFile = () => {
-    // Usar los productos del localStorage si están disponibles, sino usar los del contexto
+    // Obtener productos actualizados desde localStorage o contexto
     const savedConfig = localStorage.getItem('adminStoreConfig');
     let productsToExport = products || [];
     
@@ -230,7 +243,7 @@ export const products = ${JSON.stringify(productsToExport, null, 2)};
 
   // Función para generar el contenido de categories.js actualizado
   const generateCategoriesFile = () => {
-    // Usar las categorías del localStorage si están disponibles, sino usar las del contexto
+    // Obtener categorías actualizadas desde localStorage o contexto
     const savedConfig = localStorage.getItem('adminStoreConfig');
     let categoriesToExport = categories || [];
     
@@ -484,13 +497,13 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
           <div className={styles.step}>
             <span className={styles.stepNumber}>2</span>
             <div className={styles.stepContent}>
-              <strong>Exportar backup:</strong> Haz clic en "Exportar Backup Completo" para generar los archivos actualizados.
+              <strong>Verificar cambios:</strong> Los cambios se aplican automáticamente en la tienda en tiempo real.
             </div>
           </div>
           <div className={styles.step}>
             <span className={styles.stepNumber}>3</span>
             <div className={styles.stepContent}>
-              <strong>Descargar archivos:</strong> Se descargará un archivo ZIP con todos los archivos de código fuente actualizados.
+              <strong>Exportar backup:</strong> Haz clic en "Exportar Backup Completo" para generar los archivos actualizados.
             </div>
           </div>
           <div className={styles.step}>

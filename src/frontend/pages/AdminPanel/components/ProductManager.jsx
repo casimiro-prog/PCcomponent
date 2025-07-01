@@ -7,7 +7,7 @@ import { ToastType } from '../../../constants/constants';
 import styles from './ProductManager.module.css';
 
 const ProductManager = () => {
-  const { products, categories } = useAllProductsContext();
+  const { products, categories, updateProductsFromAdmin } = useAllProductsContext();
   const { updateProducts } = useConfigContext();
   const [localProducts, setLocalProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -168,17 +168,20 @@ const ProductManager = () => {
     let updatedProducts;
     if (selectedProduct) {
       updatedProducts = localProducts.map(p => p._id === selectedProduct._id ? newProduct : p);
-      toastHandler(ToastType.Success, '✅ Producto actualizado (cambios en memoria)');
+      toastHandler(ToastType.Success, '✅ Producto actualizado exitosamente');
     } else {
       updatedProducts = [...localProducts, newProduct];
-      toastHandler(ToastType.Success, '✅ Producto creado (cambios en memoria)');
+      toastHandler(ToastType.Success, '✅ Producto creado exitosamente');
     }
 
-    // SOLO GUARDAR EN MEMORIA LOCAL - NO EXPORTAR AUTOMÁTICAMENTE
+    // SINCRONIZACIÓN COMPLETA
     setLocalProducts(updatedProducts);
     
-    // Mostrar mensaje informativo
-    toastHandler(ToastType.Info, 'Para aplicar los cambios, ve a "💾 Exportar/Importar" y exporta la configuración');
+    // Actualizar en el contexto de configuración
+    updateProducts(updatedProducts);
+    
+    // Actualizar en el contexto de productos para sincronización inmediata
+    updateProductsFromAdmin(updatedProducts);
     
     resetForm();
   };
@@ -214,14 +217,22 @@ const ProductManager = () => {
   };
 
   const deleteProduct = (productId) => {
-    if (!window.confirm('¿Estás seguro de eliminar este producto? Los cambios se guardarán en memoria.')) {
+    if (!window.confirm('¿Estás seguro de eliminar este producto?')) {
       return;
     }
 
     const updatedProducts = localProducts.filter(p => p._id !== productId);
+    
+    // SINCRONIZACIÓN COMPLETA
     setLocalProducts(updatedProducts);
-    toastHandler(ToastType.Success, '✅ Producto eliminado (cambios en memoria)');
-    toastHandler(ToastType.Info, 'Para aplicar los cambios, ve a "💾 Exportar/Importar" y exporta la configuración');
+    
+    // Actualizar en el contexto de configuración
+    updateProducts(updatedProducts);
+    
+    // Actualizar en el contexto de productos para sincronización inmediata
+    updateProductsFromAdmin(updatedProducts);
+    
+    toastHandler(ToastType.Success, '✅ Producto eliminado exitosamente');
   };
 
   // Verificar si hay cambios pendientes
@@ -235,7 +246,7 @@ const ProductManager = () => {
         <div className={styles.headerActions}>
           {hasChanges && (
             <span className={styles.changesIndicator}>
-              🔴 Cambios pendientes
+              🟢 Cambios aplicados en tiempo real
             </span>
           )}
           <button 
@@ -249,7 +260,7 @@ const ProductManager = () => {
 
       <div className={styles.infoBox}>
         <h4>ℹ️ Información Importante</h4>
-        <p>Los cambios se guardan temporalmente en memoria. Para aplicarlos permanentemente, ve a la sección "💾 Exportar/Importar" y exporta la configuración.</p>
+        <p>Los cambios se aplican automáticamente en la tienda. Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
       </div>
 
       {isEditing ? (
@@ -468,7 +479,7 @@ const ProductManager = () => {
 
           <div className={styles.formActions}>
             <button onClick={handleSave} className="btn btn-primary">
-              💾 {selectedProduct ? 'Actualizar' : 'Crear'} Producto (En Memoria)
+              💾 {selectedProduct ? 'Actualizar' : 'Crear'} Producto
             </button>
             <button onClick={handleCancel} className="btn btn-danger">
               ❌ Cancelar
@@ -481,8 +492,8 @@ const ProductManager = () => {
             <h3>Productos Existentes ({localProducts.length})</h3>
             {hasChanges && (
               <div className={styles.changesAlert}>
-                <span>🔴 Hay {Math.abs(localProducts.length - products.length)} cambios pendientes</span>
-                <small>Ve a "💾 Exportar/Importar" para aplicar los cambios</small>
+                <span>🟢 Los cambios se han aplicado en tiempo real en la tienda</span>
+                <small>Ve a "🗂️ Sistema Backup" para exportar los cambios</small>
               </div>
             )}
           </div>
@@ -500,6 +511,9 @@ const ProductManager = () => {
                   <p className={styles.productRating}>⭐ {product.stars} ({product.reviewCount})</p>
                   <p className={styles.productCategory}>📂 {product.category}</p>
                   <p className={styles.productCompany}>🏢 {product.company}</p>
+                  <p className={styles.productShipping}>
+                    🚚 {product.isShippingAvailable ? 'Envío disponible' : 'Sin envío'}
+                  </p>
                   {product.featured && <span className={styles.featuredBadge}>⭐ Destacado</span>}
                 </div>
                 <div className={styles.productActions}>

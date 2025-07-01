@@ -68,11 +68,34 @@ const ProductsContextProvider = ({ children }) => {
 
   const fetchAllProductsAndCategories = async () => {
     dispatch({ type: PRODUCTS_ACTION.GET_ALL_PRODUCTS_BEGIN });
-    // as the response was quick, used wait (check utils) to show Loader for 1000s
     await wait(DELAY_TO_SHOW_LOADER);
 
     try {
-      const { products, categories } = await getAllProductsCategoriesService();
+      // Primero intentar cargar desde la configuración guardada
+      const savedConfig = localStorage.getItem('adminStoreConfig');
+      let products = [];
+      let categories = [];
+
+      if (savedConfig) {
+        try {
+          const parsedConfig = JSON.parse(savedConfig);
+          if (parsedConfig.products && parsedConfig.products.length > 0) {
+            products = parsedConfig.products;
+          }
+          if (parsedConfig.categories && parsedConfig.categories.length > 0) {
+            categories = parsedConfig.categories;
+          }
+        } catch (error) {
+          console.error('Error al cargar configuración guardada:', error);
+        }
+      }
+
+      // Si no hay datos guardados, cargar desde el servicio
+      if (products.length === 0 || categories.length === 0) {
+        const serviceData = await getAllProductsCategoriesService();
+        if (products.length === 0) products = serviceData.products;
+        if (categories.length === 0) categories = serviceData.categories;
+      }
 
       dispatch({
         type: PRODUCTS_ACTION.GET_ALL_PRODUCTS_FULFILLED,
@@ -80,9 +103,24 @@ const ProductsContextProvider = ({ children }) => {
       });
     } catch (error) {
       dispatch({ type: PRODUCTS_ACTION.GET_ALL_PRODUCTS_REJECTED });
-
       console.error(error);
     }
+  };
+
+  // Función para actualizar productos desde el admin
+  const updateProductsFromAdmin = (newProducts) => {
+    dispatch({
+      type: PRODUCTS_ACTION.UPDATE_PRODUCTS_FROM_ADMIN,
+      payload: { products: newProducts },
+    });
+  };
+
+  // Función para actualizar categorías desde el admin
+  const updateCategoriesFromAdmin = (newCategories) => {
+    dispatch({
+      type: PRODUCTS_ACTION.UPDATE_CATEGORIES_FROM_ADMIN,
+      payload: { categories: newCategories },
+    });
   };
 
   // useEffects
@@ -96,6 +134,25 @@ const ProductsContextProvider = ({ children }) => {
     updateCart(user.cart);
     updateWishlist(user.wishlist);
   }, [user]);
+
+  // Escuchar eventos de actualización desde el admin
+  useEffect(() => {
+    const handleProductsUpdate = (event) => {
+      updateProductsFromAdmin(event.detail.products);
+    };
+
+    const handleCategoriesUpdate = (event) => {
+      updateCategoriesFromAdmin(event.detail.categories);
+    };
+
+    window.addEventListener('productsUpdated', handleProductsUpdate);
+    window.addEventListener('categoriesUpdated', handleCategoriesUpdate);
+
+    return () => {
+      window.removeEventListener('productsUpdated', handleProductsUpdate);
+      window.removeEventListener('categoriesUpdated', handleCategoriesUpdate);
+    };
+  }, []);
 
   // fns to get data from services and update state
   const addToCartDispatch = async (productToAdd) => {
@@ -265,15 +322,6 @@ const ProductsContextProvider = ({ children }) => {
     });
   };
 
-  // const addOrderDispatch = async (orderObj) => {
-  //   dispatch({
-  //     type: PRODUCTS_ACTION.ADD_ORDER,
-  //     payload: {
-  //       order: orderObj,
-  //     },
-  //   });
-  // };
-
   return (
     <ProductsContext.Provider
       value={{
@@ -295,10 +343,11 @@ const ProductsContextProvider = ({ children }) => {
         editAddressDispatch,
         deleteAddressDispatch,
         deleteAllAddressDispatch,
-        // addOrderDispatch,
         clearCartInContext,
         clearWishlistInContext,
         clearAddressInContext,
+        updateProductsFromAdmin,
+        updateCategoriesFromAdmin,
       }}
     >
       {children}

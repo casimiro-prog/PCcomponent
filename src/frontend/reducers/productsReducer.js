@@ -23,7 +23,6 @@ export const initialProductsState = {
       addressInfo: '9133 Kessler Grove Apt. 325',
     },
   ],
-  // orderDetails: [],
 };
 
 export const productsReducer = (state, action) => {
@@ -98,6 +97,21 @@ export const productsReducer = (state, action) => {
       };
     }
 
+    // NUEVAS ACCIONES PARA SINCRONIZACIÓN DEL ADMIN
+    case PRODUCTS_ACTION.UPDATE_PRODUCTS_FROM_ADMIN: {
+      return {
+        ...state,
+        products: [...action.payload.products],
+      };
+    }
+
+    case PRODUCTS_ACTION.UPDATE_CATEGORIES_FROM_ADMIN: {
+      return {
+        ...state,
+        categories: [...action.payload.categories],
+      };
+    }
+
     case PRODUCTS_ACTION.ADD_ADDRESS: {
       return {
         ...state,
@@ -138,13 +152,6 @@ export const productsReducer = (state, action) => {
         addressList: [],
       };
     }
-
-    // case PRODUCTS_ACTION.ADD_ORDER: {
-    //   return {
-    //     ...state,
-    //     orderDetails: state.orderDetails.concat(action.payload.order),
-    //   };
-    // }
 
     default:
       throw new Error(`${action.type} does not exist`);

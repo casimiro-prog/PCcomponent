@@ -7,7 +7,7 @@ import { useConfigContext } from '../../../contexts/ConfigContextProvider';
 import styles from './CategoryManager.module.css';
 
 const CategoryManager = () => {
-  const { categories: categoriesFromContext } = useAllProductsContext();
+  const { categories: categoriesFromContext, updateCategoriesFromAdmin } = useAllProductsContext();
   const { updateCategories } = useConfigContext();
   const [localCategories, setLocalCategories] = useState([]);
   const [editingCategory, setEditingCategory] = useState(null);
@@ -48,7 +48,6 @@ const CategoryManager = () => {
     }
   };
 
-  // GUARDAR CAMBIOS EN MEMORIA LOCAL Y SINCRONIZAR
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -90,18 +89,16 @@ const CategoryManager = () => {
       toastHandler(ToastType.Success, '✅ Categoría creada exitosamente');
     }
 
-    // GUARDAR EN MEMORIA LOCAL Y SINCRONIZAR CON EL CONTEXTO
+    // SINCRONIZACIÓN COMPLETA
     setLocalCategories(updatedCategories);
     
-    // Actualizar en el contexto de configuración para sincronización
-    if (updateCategories) {
-      updateCategories(updatedCategories);
-    }
+    // Actualizar en el contexto de configuración
+    updateCategories(updatedCategories);
+    
+    // Actualizar en el contexto de productos para sincronización inmediata
+    updateCategoriesFromAdmin(updatedCategories);
     
     resetForm();
-
-    // Mostrar mensaje informativo
-    toastHandler(ToastType.Info, 'Para aplicar los cambios permanentemente, ve a "💾 Exportar/Importar" y exporta la configuración');
   };
 
   const resetForm = () => {
@@ -129,18 +126,19 @@ const CategoryManager = () => {
         : c
     );
 
+    // SINCRONIZACIÓN COMPLETA
     setLocalCategories(updatedCategories);
     
-    // Sincronizar con el contexto
-    if (updateCategories) {
-      updateCategories(updatedCategories);
-    }
+    // Actualizar en el contexto de configuración
+    updateCategories(updatedCategories);
+    
+    // Actualizar en el contexto de productos para sincronización inmediata
+    updateCategoriesFromAdmin(updatedCategories);
     
     const category = localCategories.find(c => c._id === categoryId);
     toastHandler(ToastType.Success, 
       `✅ Categoría ${category.disabled ? 'habilitada' : 'deshabilitada'} exitosamente`
     );
-    toastHandler(ToastType.Info, 'Para aplicar los cambios permanentemente, ve a "💾 Exportar/Importar" y exporta la configuración');
   };
 
   const deleteCategory = (categoryId) => {
@@ -149,15 +147,17 @@ const CategoryManager = () => {
     }
 
     const updatedCategories = localCategories.filter(c => c._id !== categoryId);
+    
+    // SINCRONIZACIÓN COMPLETA
     setLocalCategories(updatedCategories);
     
-    // Sincronizar con el contexto
-    if (updateCategories) {
-      updateCategories(updatedCategories);
-    }
+    // Actualizar en el contexto de configuración
+    updateCategories(updatedCategories);
+    
+    // Actualizar en el contexto de productos para sincronización inmediata
+    updateCategoriesFromAdmin(updatedCategories);
     
     toastHandler(ToastType.Success, '✅ Categoría eliminada exitosamente');
-    toastHandler(ToastType.Info, 'Para aplicar los cambios permanentemente, ve a "💾 Exportar/Importar" y exporta la configuración');
   };
 
   const handleCancel = () => {
@@ -180,7 +180,7 @@ const CategoryManager = () => {
         <div className={styles.headerActions}>
           {hasChanges && (
             <span className={styles.changesIndicator}>
-              🔴 Cambios pendientes
+              🟢 Cambios aplicados en tiempo real
             </span>
           )}
           <button 
@@ -194,7 +194,7 @@ const CategoryManager = () => {
 
       <div className={styles.infoBox}>
         <h4>ℹ️ Información Importante</h4>
-        <p>Los cambios se sincronizan automáticamente en la tienda. Para aplicarlos permanentemente, ve a la sección "💾 Exportar/Importar" y exporta la configuración.</p>
+        <p>Los cambios se aplican automáticamente en la tienda. Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
       </div>
 
       {showForm && (
@@ -276,8 +276,8 @@ const CategoryManager = () => {
           <h3>Categorías Existentes ({localCategories.length})</h3>
           {hasChanges && (
             <div className={styles.changesAlert}>
-              <span>🔴 Hay {Math.abs(localCategories.length - categoriesFromContext.length)} cambios pendientes</span>
-              <small>Ve a "💾 Exportar/Importar" para aplicar los cambios permanentemente</small>
+              <span>🟢 Los cambios se han aplicado en tiempo real en la tienda</span>
+              <small>Ve a "🗂️ Sistema Backup" para exportar los cambios</small>
             </div>
           )}
         </div>

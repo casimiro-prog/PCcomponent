@@ -71,24 +71,44 @@ const ConfigContextProvider = ({ children }) => {
     saveConfig(updatedConfig);
   };
 
-  // Actualizar productos
+  // Actualizar productos - NUEVA IMPLEMENTACIÓN
   const updateProducts = (newProducts) => {
     const updatedConfig = {
       ...storeConfig,
       products: newProducts,
       lastModified: new Date().toISOString()
     };
-    saveConfig(updatedConfig);
+    
+    // Guardar en localStorage
+    setStoreConfig(updatedConfig);
+    localStorage.setItem('adminStoreConfig', JSON.stringify(updatedConfig));
+    
+    // Actualizar también en el contexto de productos para sincronización inmediata
+    window.dispatchEvent(new CustomEvent('productsUpdated', { 
+      detail: { products: newProducts } 
+    }));
+    
+    toastHandler(ToastType.Success, 'Productos actualizados en la tienda');
   };
 
-  // Actualizar categorías
+  // Actualizar categorías - NUEVA IMPLEMENTACIÓN
   const updateCategories = (newCategories) => {
     const updatedConfig = {
       ...storeConfig,
       categories: newCategories,
       lastModified: new Date().toISOString()
     };
-    saveConfig(updatedConfig);
+    
+    // Guardar en localStorage
+    setStoreConfig(updatedConfig);
+    localStorage.setItem('adminStoreConfig', JSON.stringify(updatedConfig));
+    
+    // Actualizar también en el contexto de productos para sincronización inmediata
+    window.dispatchEvent(new CustomEvent('categoriesUpdated', { 
+      detail: { categories: newCategories } 
+    }));
+    
+    toastHandler(ToastType.Success, 'Categorías actualizadas en la tienda');
   };
 
   // Exportar configuración
