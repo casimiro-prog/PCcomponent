@@ -1,13 +1,9 @@
-import { SERVICE_TYPES, ToastType } from '../../constants/constants';
+import { SERVICE_TYPES, ToastType, COUNTRY_CODES } from '../../constants/constants';
 import { useConfigContext } from '../../contexts/ConfigContextProvider';
-
 import { useAllProductsContext } from '../../contexts/ProductsContextProvider';
-
 import { useState } from 'react';
-
 import { v4 as uuid } from 'uuid';
 import FormRow from '../FormRow';
-
 import styles from './AddressForm.module.css';
 import {
   toastHandler,
@@ -26,17 +22,57 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
   const defaultState = {
     username: '',
     mobile: '',
+    countryCode: '+53', // Cuba por defecto
     serviceType: SERVICE_TYPES.HOME_DELIVERY,
     zone: '',
     addressInfo: '',
     receiverName: '',
     receiverPhone: '',
+    receiverCountryCode: '+53', // Cuba por defecto
     additionalInfo: '',
   };
 
   const [inputs, setInputs] = useState(
-    isEditing ? isEditingAndData : defaultState
+    isEditing ? {
+      ...isEditingAndData,
+      countryCode: isEditingAndData.countryCode || '+53',
+      receiverCountryCode: isEditingAndData.receiverCountryCode || '+53'
+    } : defaultState
   );
+
+  const [mobileValidation, setMobileValidation] = useState({
+    isValid: true,
+    message: ''
+  });
+
+  const [receiverPhoneValidation, setReceiverPhoneValidation] = useState({
+    isValid: true,
+    message: ''
+  });
+
+  // Función para validar número móvil
+  const validateMobileNumber = (countryCode, number) => {
+    const country = COUNTRY_CODES.find(c => c.code === countryCode);
+    if (!country) return { isValid: false, message: 'Código de país no válido' };
+
+    const cleanNumber = number.replace(/\D/g, '');
+    
+    if (cleanNumber.length < country.minLength) {
+      return { 
+        isValid: false, 
+        message: `Número muy corto. Mínimo ${country.minLength} dígitos para ${country.country}` 
+      };
+    }
+    
+    if (cleanNumber.length > country.maxLength) {
+      return { 
+        isValid: false, 
+        message: `Número muy largo. Máximo ${country.maxLength} dígitos para ${country.country}` 
+      };
+    }
+
+    return { isValid: true, message: '' };
+  };
 
   const handleInputChange = (e) => {
     const targetEle = e.target;
@@ -53,6 +89,23 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
       ...inputs,
       [targetEleName]: elementValue,
     });
+
+    // Validar números móviles en tiempo real
+    if (targetEleName === 'mobile' || targetEleName === 'countryCode') {
+      const validation = validateMobileNumber(
+        targetEleName === 'countryCode' ? elementValue : inputs.countryCode,
+        targetEleName === 'mobile' ? elementValue : inputs.mobile
+      );
+      setMobileValidation(validation);
+    }
+
+    if (targetEleName === 'receiverPhone' || targetEleName === 'receiverCountryCode') {
+      const validation = validateMobileNumber(
+        targetEleName === 'receiverCountryCode' ? elementValue : inputs.receiverCountryCode,
+        targetEleName === 'receiverPhone' ? elementValue : inputs.receiverPhone
+      );
+      setReceiverPhoneValidation(validation);
+    }
   };
 
   const handleSubmitForm = async (e) => {
@@ -73,11 +126,24 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
       }
     }
 
+    // Validar números móviles
+    if (!mobileValidation.isValid) {
+      toastHandler(ToastType.Error, `Número móvil inválido: ${mobileValidation.message}`);
+      return;
+    }
+
+    if (inputs.serviceType === SERVICE_TYPES.HOME_DELIVERY && !receiverPhoneValidation.isValid) {
+      toastHandler(ToastType.Error, `Teléfono del receptor inválido: ${receiverPhoneValidation.message}`);
+      return;
+    }
+
     await timedMainPageLoader();
 
     const addressData = {
       ...inputs,
       addressId: isEditing ? isEditingAndData.addressId : uuid(),
+      mobile: `${inputs.countryCode} ${inputs.mobile}`,
+      receiverPhone: inputs.receiverPhone ? `${inputs.receiverCountryCode} ${inputs.receiverPhone}` : '',
       deliveryCost: inputs.serviceType === SERVICE_TYPES.HOME_DELIVERY 
         ? SANTIAGO_ZONES.find(zone => zone.id === inputs.zone)?.cost || 0
         : 0
@@ -96,9 +162,13 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
 
   const handleReset = () => {
     setInputs(defaultState);
+    setMobileValidation({ isValid: true, message: '' });
+    setReceiverPhoneValidation({ isValid: true, message: '' });
   };
 
   const isHomeDelivery = inputs.serviceType === SERVICE_TYPES.HOME_DELIVERY;
+  const selectedCountry = COUNTRY_CODES.find(c => c.code === inputs.countryCode);
+  const selectedReceiverCountry = COUNTRY_CODES.find(c => c.code === inputs.receiverCountryCode);
 
   return (
     <div className={styles.formOverlay}>
@@ -116,7 +186,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
 
         <div className={styles.formContent}>
           <FormRow
-            text='Nombre'
+            text='Nombre Completo'
             type='text'
             name='username'
             id='username'
@@ -125,18 +195,46 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
             handleChange={handleInputChange}
           />
 
-          <FormRow
-            text='Número de Móvil'
-            type='tel'
-            name='mobile'
-            id='mobile'
-            placeholder='Tu número de móvil'
-            value={inputs.mobile}
-            handleChange={handleInputChange}
-          />
+          <div className={styles.formGroup}>
+            <label htmlFor='mobile'>📱 Número de Móvil *</label>
+            <div className={styles.phoneContainer}>
+              <select
+                name='countryCode'
+                value={inputs.countryCode}
+                onChange={handleInputChange}
+                className={styles.countrySelect}
+                required
+              >
+                {COUNTRY_CODES.map(country => (
+                  <option key={country.code} value={country.code}>
+                    {country.flag} {country.code} {country.country}
+                  </option>
+                ))}
+              </select>
+              <input
+                type='tel'
+                name='mobile'
+                id='mobile'
+                placeholder='Número móvil'
+                value={inputs.mobile}
+                onChange={handleInputChange}
+                className={`form-input ${!mobileValidation.isValid ? styles.invalidInput : ''}`}
+                required
+              />
+            </div>
+            {selectedCountry && (
+              <div className={styles.countryInfo}>
+                <span className={styles.flag}>{selectedCountry.flag}</span>
+                <span>{selectedCountry.country} - {selectedCountry.minLength}-{selectedCountry.maxLength} dígitos</span>
+              </div>
+            )}
+            {!mobileValidation.isValid && (
+              <div className={styles.errorMessage}>{mobileValidation.message}</div>
+            )}
+          </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor='serviceType'>Tipo de Servicio</label>
+            <label htmlFor='serviceType'>🚚 Tipo de Servicio *</label>
             <select
               className='form-select'
               name='serviceType'
@@ -153,7 +251,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
           {isHomeDelivery ? (
             <div className={styles.deliverySection}>
               <div className={styles.formGroup}>
-                <label htmlFor='zone'>📍 ¿Dónde la entregamos? - Selecciona la zona de tu dirección</label>
+                <label htmlFor='zone'>📍 ¿Dónde la entregamos? - Selecciona la zona de tu dirección *</label>
                 <select
                   className='form-select'
                   name='zone'
@@ -174,12 +272,12 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor='addressInfo'>🏠 Dirección</label>
+                <label htmlFor='addressInfo'>🏠 Dirección Completa *</label>
                 <textarea
                   name='addressInfo'
                   id='addressInfo'
                   className='form-textarea'
-                  placeholder='Dirección completa (calle, número, entre calles, etc.)'
+                  placeholder='Dirección completa (calle, número, entre calles, referencias, etc.)'
                   value={inputs.addressInfo}
                   onChange={handleInputChange}
                   required
@@ -187,7 +285,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
               </div>
 
               <FormRow
-                text='👤 ¿Quién recibe el pedido?'
+                text='👤 ¿Quién recibe el pedido? *'
                 type='text'
                 name='receiverName'
                 id='receiverName'
@@ -196,15 +294,43 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
                 handleChange={handleInputChange}
               />
 
-              <FormRow
-                text='📞 Teléfono'
-                type='tel'
-                name='receiverPhone'
-                id='receiverPhone'
-                placeholder='Teléfono de quien recibe'
-                value={inputs.receiverPhone}
-                handleChange={handleInputChange}
-              />
+              <div className={styles.formGroup}>
+                <label htmlFor='receiverPhone'>📞 Teléfono de quien recibe *</label>
+                <div className={styles.phoneContainer}>
+                  <select
+                    name='receiverCountryCode'
+                    value={inputs.receiverCountryCode}
+                    onChange={handleInputChange}
+                    className={styles.countrySelect}
+                    required
+                  >
+                    {COUNTRY_CODES.map(country => (
+                      <option key={country.code} value={country.code}>
+                        {country.flag} {country.code} {country.country}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type='tel'
+                    name='receiverPhone'
+                    id='receiverPhone'
+                    placeholder='Teléfono del receptor'
+                    value={inputs.receiverPhone}
+                    onChange={handleInputChange}
+                    className={`form-input ${!receiverPhoneValidation.isValid ? styles.invalidInput : ''}`}
+                    required
+                  />
+                </div>
+                {selectedReceiverCountry && (
+                  <div className={styles.countryInfo}>
+                    <span className={styles.flag}>{selectedReceiverCountry.flag}</span>
+                    <span>{selectedReceiverCountry.country} - {selectedReceiverCountry.minLength}-{selectedReceiverCountry.maxLength} dígitos</span>
+                  </div>
+                )}
+                {!receiverPhoneValidation.isValid && (
+                  <div className={styles.errorMessage}>{receiverPhoneValidation.message}</div>
+                )}
+              </div>
             </div>
           ) : (
             <div className={styles.formGroup}>
@@ -213,7 +339,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
                 name='additionalInfo'
                 id='additionalInfo'
                 className='form-textarea'
-                placeholder='Información adicional sobre tu pedido'
+                placeholder='Información adicional sobre tu pedido (opcional)'
                 value={inputs.additionalInfo}
                 onChange={handleInputChange}
               />
@@ -221,18 +347,24 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
           )}
         </div>
 
-        <div className={`btn-container ${styles.formBtnContainer}`}>
-          <button type='submit' className='btn btn-primary'>
+        <div className={styles.formBtnContainer}>
+          <button 
+            type='submit' 
+            className={`btn btn-primary ${styles.primaryButton}`}
+            disabled={!mobileValidation.isValid || (isHomeDelivery && !receiverPhoneValidation.isValid)}
+          >
             {isEditing ? '✅ Actualizar' : '➕ Agregar'}
           </button>
 
-          <button onClick={handleReset} type='button' className='btn btn-hipster'>
-            🔄 Restablecer
-          </button>
+          <div className={styles.secondaryButtons}>
+            <button onClick={handleReset} type='button' className='btn btn-hipster'>
+              🔄 Restablecer
+            </button>
 
-          <button type='button' className='btn btn-danger' onClick={closeForm}>
-            ❌ Cancelar
-          </button>
+            <button type='button' className='btn btn-danger' onClick={closeForm}>
+              ❌ Cancelar
+            </button>
+          </div>
         </div>
       </form>
     </div>

@@ -5,7 +5,7 @@ import styles from './CheckoutDetails.module.css';
 import { useState } from 'react';
 import { VscChromeClose } from 'react-icons/vsc';
 
-import { CHARGE_AND_DISCOUNT, ToastType, SERVICE_TYPES } from '../../constants/constants';
+import { CHARGE_AND_DISCOUNT, ToastType, SERVICE_TYPES, PRODUCT_CATEGORY_ICONS } from '../../constants/constants';
 import CouponSearch from './CouponSearch';
 import { toastHandler, Popper, generateOrderNumber } from '../../utils/utils';
 
@@ -68,79 +68,102 @@ const CheckoutDetails = ({
     toastHandler(ToastType.Warn, 'Cupón removido');
   };
 
+  // Función para obtener icono según categoría del producto
+  const getProductIcon = (category) => {
+    const normalizedCategory = category.toLowerCase();
+    return PRODUCT_CATEGORY_ICONS[normalizedCategory] || PRODUCT_CATEGORY_ICONS.default;
+  };
+
   const sendToWhatsApp = async (orderData) => {
     const orderNumber = generateOrderNumber();
     
     let message = `🛒 *NUEVO PEDIDO #${orderNumber}*\n\n`;
-    message += `═══════════════════════════════\n`;
-    message += `👤 *DATOS DEL CLIENTE*\n`;
-    message += `═══════════════════════════════\n`;
-    message += `📝 *Nombre:* ${firstName} ${lastName}\n`;
-    message += `📧 *Email:* ${email}\n\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
+    message += `👤 *INFORMACIÓN DEL CLIENTE*\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
+    message += `📝 *Nombre Completo:* ${firstName} ${lastName}\n`;
+    message += `📧 *Correo Electrónico:* ${email}\n\n`;
     
-    // Información del servicio
-    message += `🚚 *INFORMACIÓN DE ENTREGA*\n`;
-    message += `═══════════════════════════════\n`;
+    // Información del servicio con mejor formato
+    message += `🚚 *DETALLES DE ENTREGA*\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
     
     if (selectedAddress.serviceType === SERVICE_TYPES.HOME_DELIVERY) {
       const zoneName = SANTIAGO_ZONES.find(z => z.id === selectedAddress.zone)?.name;
-      message += `📦 *Tipo:* Entrega a domicilio\n`;
-      message += `📍 *Zona:* ${zoneName}\n`;
-      message += `🏠 *Dirección:* ${selectedAddress.addressInfo}\n`;
-      message += `👤 *Recibe:* ${selectedAddress.receiverName}\n`;
-      message += `📱 *Teléfono recibe:* ${selectedAddress.receiverPhone}\n`;
-      message += `💰 *Costo entrega:* $${deliveryCost} CUP\n`;
+      message += `📦 *Modalidad:* Entrega a domicilio\n`;
+      message += `📍 *Zona de entrega:* ${zoneName}\n`;
+      message += `🏠 *Dirección completa:* ${selectedAddress.addressInfo}\n`;
+      message += `👤 *Persona que recibe:* ${selectedAddress.receiverName}\n`;
+      message += `📱 *Teléfono del receptor:* ${selectedAddress.receiverPhone}\n`;
+      message += `💰 *Costo de entrega:* $${deliveryCost.toLocaleString()} CUP\n`;
     } else {
-      message += `📦 *Tipo:* Recoger en local\n`;
+      message += `📦 *Modalidad:* Recoger en tienda\n`;
+      message += `🏪 *Ubicación:* Gada Electronics - Santiago de Cuba\n`;
       if (selectedAddress.additionalInfo) {
-        message += `📝 *Info adicional:* ${selectedAddress.additionalInfo}\n`;
+        message += `📝 *Información adicional:* ${selectedAddress.additionalInfo}\n`;
       }
     }
     
-    message += `📞 *Móvil contacto:* ${selectedAddress.mobile}\n\n`;
+    message += `📞 *Teléfono de contacto:* ${selectedAddress.mobile}\n\n`;
     
-    // Productos
-    message += `📦 *PRODUCTOS SOLICITADOS*\n`;
-    message += `═══════════════════════════════\n`;
+    // Productos con iconos y mejor formato
+    message += `🛍️ *PRODUCTOS SOLICITADOS*\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
     cartFromContext.forEach((item, index) => {
+      const productIcon = getProductIcon(item.category);
       const colorHex = item.colors[0]?.color || '#000000';
-      message += `${index + 1}. 📱 *${item.name}*\n`;
-      message += `   🎨 Color: ${colorHex}\n`;
-      message += `   📊 Cantidad: ${item.qty} unidad${item.qty > 1 ? 'es' : ''}\n`;
-      message += `   💵 Precio unitario: $${item.price.toLocaleString()} CUP\n`;
-      message += `   💰 Subtotal: $${(item.price * item.qty).toLocaleString()} CUP\n`;
-      message += `   ─────────────────────────\n`;
+      const subtotal = item.price * item.qty;
+      
+      message += `${index + 1}. ${productIcon} *${item.name}*\n`;
+      message += `   🎨 *Color:* ${colorHex}\n`;
+      message += `   📊 *Cantidad:* ${item.qty} unidad${item.qty > 1 ? 'es' : ''}\n`;
+      message += `   💵 *Precio unitario:* $${item.price.toLocaleString()} CUP\n`;
+      message += `   💰 *Subtotal:* $${subtotal.toLocaleString()} CUP\n`;
+      message += `   ─────────────────────────────────────────────────────────\n`;
     });
     
-    // Resumen de precios
-    message += `\n💵 *RESUMEN DE COSTOS*\n`;
-    message += `═══════════════════════════════\n`;
-    message += `🛍️ Subtotal productos: $${totalAmountFromContext.toLocaleString()} CUP\n`;
+    // Resumen financiero profesional
+    message += `\n💳 *RESUMEN FINANCIERO*\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
+    message += `🛍️ *Subtotal productos:* $${totalAmountFromContext.toLocaleString()} CUP\n`;
     
     if (activeCoupon) {
-      message += `🎫 Descuento (${activeCoupon.couponCode}): -$${Math.abs(priceAfterCouponApplied).toLocaleString()} CUP\n`;
+      message += `🎫 *Descuento aplicado (${activeCoupon.couponCode}):* -$${Math.abs(priceAfterCouponApplied).toLocaleString()} CUP\n`;
     }
     
     if (deliveryCost > 0) {
-      message += `🚚 Costo entrega: $${deliveryCost.toLocaleString()} CUP\n`;
+      message += `🚚 *Costo de entrega:* $${deliveryCost.toLocaleString()} CUP\n`;
     }
     
-    message += `═══════════════════════════════\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
     message += `💰 *TOTAL A PAGAR: $${finalPriceToPay.toLocaleString()} CUP*\n`;
-    message += `═══════════════════════════════\n\n`;
+    message += `═══════════════════════════════════════════════════════════════\n\n`;
     
-    message += `⏰ *Fecha del pedido:* ${new Date().toLocaleString('es-CU', {
+    // Información adicional profesional
+    message += `📅 *Fecha y hora del pedido:*\n`;
+    message += `${new Date().toLocaleString('es-CU', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      timeZone: 'America/Havana'
     })}\n\n`;
     
-    message += `🏪 *Gada Electronics*\n`;
+    message += `📋 *Instrucciones importantes:*\n`;
+    message += `• Confirme la disponibilidad de los productos\n`;
+    message += `• Verifique la dirección de entrega\n`;
+    message += `• Coordine horario de entrega/recogida\n`;
+    message += `• Mantenga este número de pedido para referencia\n\n`;
+    
+    message += `🏪 *GADA ELECTRONICS*\n`;
     message += `"Naam hi kaafi hai" ✨\n`;
-    message += `¡Gracias por confiar en nosotros! 🙏`;
+    message += `📍 Santiago de Cuba, Cuba\n`;
+    message += `📱 WhatsApp: ${STORE_WHATSAPP}\n`;
+    message += `🌐 Tienda online: gada-electronics.com\n\n`;
+    message += `¡Gracias por confiar en nosotros! 🙏\n`;
+    message += `Su satisfacción es nuestra prioridad 💯`;
 
     // Codificar el mensaje para URL
     const encodedMessage = encodeURIComponent(message);
@@ -154,7 +177,7 @@ const CheckoutDetails = ({
 
   const handlePlaceOrder = async () => {
     if (!selectedAddress) {
-      toastHandler(ToastType.Error, 'Por favor selecciona una dirección');
+      toastHandler(ToastType.Error, 'Por favor selecciona una dirección de entrega');
       return;
     }
 

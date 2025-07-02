@@ -107,9 +107,11 @@ const ProductsContextProvider = ({ children }) => {
     }
   };
 
-  // Función para actualizar productos desde el admin - MEJORADA CON SINCRONIZACIÓN COMPLETA
+  // FUNCIÓN MEJORADA PARA SINCRONIZACIÓN COMPLETA E INMEDIATA
   const updateProductsFromAdmin = (newProducts) => {
-    // 1. Actualizar en el reducer
+    console.log('🔄 Iniciando sincronización completa de productos...');
+    
+    // 1. Actualizar en el reducer inmediatamente
     dispatch({
       type: PRODUCTS_ACTION.UPDATE_PRODUCTS_FROM_ADMIN,
       payload: { products: newProducts },
@@ -123,24 +125,37 @@ const ProductsContextProvider = ({ children }) => {
       config = JSON.parse(savedConfig);
     } catch (error) {
       console.error('Error al cargar configuración:', error);
+      config = {};
     }
 
     config.products = newProducts;
     config.lastModified = new Date().toISOString();
-    
     localStorage.setItem('adminStoreConfig', JSON.stringify(config));
     
-    // 3. Disparar evento para sincronización global
+    // 3. Forzar actualización inmediata en toda la aplicación
     setTimeout(() => {
+      // Disparar múltiples eventos para garantizar sincronización
       window.dispatchEvent(new CustomEvent('productsUpdated', { 
         detail: { products: newProducts } 
       }));
+      
+      window.dispatchEvent(new CustomEvent('forceStoreUpdate'));
+      
+      // Forzar re-renderizado del contexto
+      dispatch({
+        type: PRODUCTS_ACTION.FORCE_UPDATE_PRODUCTS,
+        payload: { products: newProducts },
+      });
     }, 50);
+
+    console.log('✅ Sincronización de productos completada');
   };
 
-  // Función para actualizar categorías desde el admin - MEJORADA CON SINCRONIZACIÓN COMPLETA
+  // FUNCIÓN MEJORADA PARA SINCRONIZACIÓN COMPLETA E INMEDIATA
   const updateCategoriesFromAdmin = (newCategories) => {
-    // 1. Actualizar en el reducer
+    console.log('🔄 Iniciando sincronización completa de categorías...');
+    
+    // 1. Actualizar en el reducer inmediatamente
     dispatch({
       type: PRODUCTS_ACTION.UPDATE_CATEGORIES_FROM_ADMIN,
       payload: { categories: newCategories },
@@ -154,19 +169,30 @@ const ProductsContextProvider = ({ children }) => {
       config = JSON.parse(savedConfig);
     } catch (error) {
       console.error('Error al cargar configuración:', error);
+      config = {};
     }
 
     config.categories = newCategories;
     config.lastModified = new Date().toISOString();
-    
     localStorage.setItem('adminStoreConfig', JSON.stringify(config));
     
-    // 3. Disparar evento para sincronización global
+    // 3. Forzar actualización inmediata en toda la aplicación
     setTimeout(() => {
+      // Disparar múltiples eventos para garantizar sincronización
       window.dispatchEvent(new CustomEvent('categoriesUpdated', { 
         detail: { categories: newCategories } 
       }));
+      
+      window.dispatchEvent(new CustomEvent('forceStoreUpdate'));
+      
+      // Forzar re-renderizado del contexto
+      dispatch({
+        type: PRODUCTS_ACTION.FORCE_UPDATE_CATEGORIES,
+        payload: { categories: newCategories },
+      });
     }, 50);
+
+    console.log('✅ Sincronización de categorías completada');
   };
 
   // useEffects
@@ -181,12 +207,12 @@ const ProductsContextProvider = ({ children }) => {
     updateWishlist(user.wishlist);
   }, [user]);
 
-  // Escuchar eventos de actualización desde el admin - MEJORADO CON SINCRONIZACIÓN COMPLETA
+  // ESCUCHAR EVENTOS DE ACTUALIZACIÓN MEJORADOS
   useEffect(() => {
     const handleProductsUpdate = (event) => {
       const { products: updatedProducts } = event.detail;
+      console.log('📡 Evento de actualización de productos recibido');
       
-      // Actualizar en el reducer inmediatamente
       dispatch({
         type: PRODUCTS_ACTION.UPDATE_PRODUCTS_FROM_ADMIN,
         payload: { products: updatedProducts },
@@ -195,8 +221,8 @@ const ProductsContextProvider = ({ children }) => {
 
     const handleCategoriesUpdate = (event) => {
       const { categories: updatedCategories } = event.detail;
+      console.log('📡 Evento de actualización de categorías recibido');
       
-      // Actualizar en el reducer inmediatamente
       dispatch({
         type: PRODUCTS_ACTION.UPDATE_CATEGORIES_FROM_ADMIN,
         payload: { categories: updatedCategories },
@@ -204,7 +230,8 @@ const ProductsContextProvider = ({ children }) => {
     };
 
     const handleForceUpdate = () => {
-      // Forzar re-renderizado completo
+      console.log('🔄 Forzando actualización completa...');
+      
       const savedConfig = localStorage.getItem('adminStoreConfig');
       if (savedConfig) {
         try {
@@ -227,10 +254,12 @@ const ProductsContextProvider = ({ children }) => {
       }
     };
 
+    // Agregar listeners
     window.addEventListener('productsUpdated', handleProductsUpdate);
     window.addEventListener('categoriesUpdated', handleCategoriesUpdate);
     window.addEventListener('forceStoreUpdate', handleForceUpdate);
 
+    // Cleanup
     return () => {
       window.removeEventListener('productsUpdated', handleProductsUpdate);
       window.removeEventListener('categoriesUpdated', handleCategoriesUpdate);
@@ -243,7 +272,7 @@ const ProductsContextProvider = ({ children }) => {
     try {
       const cart = await postAddToCartService(productToAdd, tokenFromContext);
       updateCart(cart);
-      toastHandler(ToastType.Success, 'Successfully Added To Cart');
+      toastHandler(ToastType.Success, 'Agregado al carrito exitosamente');
     } catch (error) {
       console.log(error.response);
     }
@@ -258,7 +287,7 @@ const ProductsContextProvider = ({ children }) => {
 
       updateWishlist(wishlist);
 
-      toastHandler(ToastType.Success, 'Successfully Added To Wishlist');
+      toastHandler(ToastType.Success, 'Agregado a lista de deseos exitosamente');
     } catch (error) {
       console.log(error.response);
     }
@@ -269,7 +298,7 @@ const ProductsContextProvider = ({ children }) => {
       const cart = await deleteFromCartService(productId, tokenFromContext);
 
       updateCart(cart);
-      toastHandler(ToastType.Warn, 'Removed From Cart successfully');
+      toastHandler(ToastType.Warn, 'Removido del carrito exitosamente');
     } catch (error) {
       console.log(error.response);
     }
@@ -283,7 +312,7 @@ const ProductsContextProvider = ({ children }) => {
       );
 
       updateWishlist(wishlist);
-      toastHandler(ToastType.Warn, 'Removed From Wishlist successfully');
+      toastHandler(ToastType.Warn, 'Removido de lista de deseos exitosamente');
     } catch (error) {
       console.log(error.response);
     }
@@ -325,7 +354,7 @@ const ProductsContextProvider = ({ children }) => {
 
       updateCart(cart);
       updateWishlist(wishlist);
-      toastHandler(ToastType.Success, 'Moved to Wishlist successfully');
+      toastHandler(ToastType.Success, 'Movido a lista de deseos exitosamente');
     } catch (error) {
       console.log(error.response);
     }
@@ -341,7 +370,7 @@ const ProductsContextProvider = ({ children }) => {
 
       updateCart(cart);
       updateWishlist(wishlist);
-      toastHandler(ToastType.Success, 'Moved to Cart successfully');
+      toastHandler(ToastType.Success, 'Movido al carrito exitosamente');
     } catch (error) {
       console.log(error.response);
     }
@@ -365,7 +394,7 @@ const ProductsContextProvider = ({ children }) => {
   // address
 
   const addAddressDispatch = (addressObj) => {
-    toastHandler(ToastType.Success, 'Added Address Successfully');
+    toastHandler(ToastType.Success, 'Dirección agregada exitosamente');
     dispatch({
       type: PRODUCTS_ACTION.ADD_ADDRESS,
       payload: {
@@ -375,7 +404,7 @@ const ProductsContextProvider = ({ children }) => {
   };
 
   const editAddressDispatch = (addressObj) => {
-    toastHandler(ToastType.Success, 'Updated Address Successfully');
+    toastHandler(ToastType.Success, 'Dirección actualizada exitosamente');
     dispatch({
       type: PRODUCTS_ACTION.EDIT_ADDRESS,
       payload: {
@@ -385,7 +414,7 @@ const ProductsContextProvider = ({ children }) => {
   };
 
   const deleteAddressDispatch = (addressId) => {
-    toastHandler(ToastType.Success, 'Deleted Address Successfully');
+    toastHandler(ToastType.Success, 'Dirección eliminada exitosamente');
     dispatch({
       type: PRODUCTS_ACTION.DELETE_ADDRESS,
       payloadId: addressId,
@@ -394,7 +423,7 @@ const ProductsContextProvider = ({ children }) => {
 
   const deleteAllAddressDispatch = async () => {
     await timedMainPageLoader();
-    toastHandler(ToastType.Success, 'Deleted All Address Successfully');
+    toastHandler(ToastType.Success, 'Todas las direcciones eliminadas exitosamente');
     dispatch({
       type: PRODUCTS_ACTION.DELETE_ALL_ADDRESS,
     });
