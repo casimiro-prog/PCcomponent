@@ -19,12 +19,15 @@ const Categories = () => {
     navigate('/products');
   };
 
+  // FILTRAR CATEGORÍAS HABILITADAS SOLAMENTE
+  const enabledCategories = categoriesFromContext.filter(category => !category.disabled);
+
   return (
     <section className='section'>
       <Title>Categorías</Title>
 
       <div className={`container ${styles.categoryContainer}`}>
-        {categoriesFromContext.map(({ _id, categoryName, categoryImage }) => (
+        {enabledCategories.map(({ _id, categoryName, categoryImage }) => (
           <article
             key={_id}
             className={styles.category}

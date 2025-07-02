@@ -7,7 +7,7 @@ import { ToastType } from '../../../constants/constants';
 import styles from './ProductManager.module.css';
 
 const ProductManager = () => {
-  const { products, categories, updateProductsFromAdmin } = useAllProductsContext();
+  const { products, categories, updateProductsFromAdmin, cart } = useAllProductsContext();
   const { updateProducts } = useConfigContext();
   const [localProducts, setLocalProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -34,17 +34,17 @@ const ProductManager = () => {
     setLocalProducts(products || []);
   }, [products]);
 
-  // Función para redimensionar imagen manteniendo responsividad (como en el sitio web)
-  const resizeImageResponsive = (file, callback) => {
+  // FUNCIÓN PARA MANTENER EL TAMAÑO ACTUAL DE LAS IMÁGENES (RESPONSIVO)
+  const resizeImageToCurrentSize = (file, callback) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const img = new Image();
     
     img.onload = () => {
-      // Tamaño optimizado para responsividad: 600x450px (4:3 ratio)
-      // Este tamaño funciona bien en móviles, tablets y desktop
-      const targetWidth = 600;
-      const targetHeight = 450;
+      // MANTENER EL TAMAÑO ACTUAL DE LOS PRODUCTOS EXISTENTES
+      // Analizando las imágenes actuales, mantienen proporción 4:3 responsiva
+      const targetWidth = 600;  // Tamaño actual de los productos
+      const targetHeight = 450; // Proporción 4:3 como las actuales
       
       canvas.width = targetWidth;
       canvas.height = targetHeight;
@@ -64,14 +64,14 @@ const ProductManager = () => {
         offsetX = (targetWidth - drawWidth) / 2;
       }
       
-      // Fondo blanco para mejor contraste
+      // Fondo blanco para mejor contraste (como las actuales)
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, targetWidth, targetHeight);
       
       // Dibujar imagen centrada y redimensionada
       ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
       
-      // Convertir a base64 con buena calidad
+      // Convertir a base64 con buena calidad (como las actuales)
       const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
       callback(resizedDataUrl);
     };
@@ -130,11 +130,11 @@ const ProductManager = () => {
         return;
       }
       
-      // Redimensionar imagen para responsividad
-      resizeImageResponsive(file, (resizedDataUrl) => {
+      // Redimensionar imagen manteniendo el tamaño actual
+      resizeImageToCurrentSize(file, (resizedDataUrl) => {
         setFormData(prev => ({ ...prev, image: resizedDataUrl }));
         setHasUnsavedChanges(true);
-        toastHandler(ToastType.Success, 'Imagen optimizada para móviles y tablets automáticamente');
+        toastHandler(ToastType.Success, 'Imagen optimizada manteniendo el tamaño actual de los productos');
       });
     }
   };
@@ -158,6 +158,14 @@ const ProductManager = () => {
     });
     setIsEditing(true);
     setHasUnsavedChanges(false);
+  };
+
+  // FUNCIÓN PARA VERIFICAR SI HAY PRODUCTOS CON ENVÍO EN EL CARRITO
+  const hasShippingAvailableInCart = () => {
+    return cart.some(cartItem => {
+      const product = localProducts.find(p => p._id === cartItem._id.split('#')[0]);
+      return product && product.isShippingAvailable;
+    });
   };
 
   const handleSave = () => {
@@ -244,6 +252,8 @@ const ProductManager = () => {
 
   // Función para sincronización completa
   const performCompleteSync = (updatedProducts) => {
+    console.log('🔄 Sincronizando productos...');
+    
     // 1. Actualizar estado local
     setLocalProducts(updatedProducts);
     
@@ -276,6 +286,8 @@ const ProductManager = () => {
     setTimeout(() => {
       window.dispatchEvent(new CustomEvent('forceStoreUpdate'));
     }, 100);
+
+    console.log('✅ Productos sincronizados exitosamente');
   };
 
   const resetForm = () => {
@@ -346,7 +358,7 @@ const ProductManager = () => {
 
       <div className={styles.infoBox}>
         <h4>ℹ️ Información Importante</h4>
-        <p>Los cambios se aplican automáticamente en la tienda. Las imágenes se optimizan automáticamente para móviles y tablets (600x450px). Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
+        <p>Los cambios se aplican automáticamente en la tienda. Las imágenes mantienen el tamaño actual de los productos existentes (600x450px responsivo). Los productos sin "Envío Disponible" no permiten entrega a domicilio. Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
       </div>
 
       {isEditing ? (
@@ -414,7 +426,7 @@ const ProductManager = () => {
                 required
               >
                 <option value="">Seleccionar categoría</option>
-                {categories.map(cat => (
+                {categories.filter(cat => !cat.disabled).map(cat => (
                   <option key={cat._id} value={cat.categoryName}>
                     {cat.categoryName}
                   </option>
@@ -478,7 +490,7 @@ const ProductManager = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Imagen del Producto * (Optimizada automáticamente para móviles y tablets)</label>
+            <label>Imagen del Producto * (Mantiene el tamaño actual: 600x450px responsivo)</label>
             <input
               type="file"
               accept="image/*"
@@ -498,7 +510,7 @@ const ProductManager = () => {
             {formData.image && (
               <div className={styles.imagePreview}>
                 <img src={formData.image} alt="Preview" />
-                <small>Tamaño optimizado: 600x450px (responsivo para móviles y tablets)</small>
+                <small>Tamaño: 600x450px (igual que los productos actuales)</small>
               </div>
             )}
           </div>
@@ -551,7 +563,7 @@ const ProductManager = () => {
                 checked={formData.isShippingAvailable}
                 onChange={handleInputChange}
               />
-              Envío Disponible
+              🚚 Envío Disponible (Permite entrega a domicilio)
             </label>
             <label className={styles.checkboxLabel}>
               <input
@@ -560,7 +572,7 @@ const ProductManager = () => {
                 checked={formData.featured}
                 onChange={handleInputChange}
               />
-              Producto Destacado
+              ⭐ Producto Destacado
             </label>
           </div>
 
@@ -599,7 +611,7 @@ const ProductManager = () => {
                   <p className={styles.productCategory}>📂 {product.category}</p>
                   <p className={styles.productCompany}>🏢 {product.company}</p>
                   <p className={styles.productShipping}>
-                    🚚 {product.isShippingAvailable ? 'Envío disponible' : 'Sin envío'}
+                    🚚 {product.isShippingAvailable ? 'Envío disponible' : 'Sin envío (Solo recogida)'}
                   </p>
                   {product.featured && <span className={styles.featuredBadge}>⭐ Destacado</span>}
                 </div>

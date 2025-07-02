@@ -27,17 +27,17 @@ const CategoryManager = () => {
     setLocalCategories(categoriesFromContext || []);
   }, [categoriesFromContext]);
 
-  // Función para redimensionar imagen manteniendo responsividad (como en el sitio web)
-  const resizeImageResponsive = (file, callback) => {
+  // FUNCIÓN PARA MANTENER EL TAMAÑO ACTUAL DE LAS IMÁGENES (RESPONSIVO)
+  const resizeImageToCurrentSize = (file, callback) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const img = new Image();
     
     img.onload = () => {
-      // Tamaño optimizado para responsividad: 400x300px (4:3 ratio)
-      // Este tamaño funciona bien en móviles, tablets y desktop para categorías
-      const targetWidth = 400;
-      const targetHeight = 300;
+      // MANTENER EL TAMAÑO ACTUAL DE LAS CATEGORÍAS EXISTENTES
+      // Analizando las imágenes actuales, mantienen proporción 4:3 responsiva
+      const targetWidth = 400;  // Tamaño actual de las categorías
+      const targetHeight = 300; // Proporción 4:3 como las actuales
       
       canvas.width = targetWidth;
       canvas.height = targetHeight;
@@ -57,14 +57,14 @@ const CategoryManager = () => {
         offsetX = (targetWidth - drawWidth) / 2;
       }
       
-      // Fondo blanco para mejor contraste
+      // Fondo blanco para mejor contraste (como las actuales)
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, targetWidth, targetHeight);
       
       // Dibujar imagen centrada y redimensionada
       ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
       
-      // Convertir a base64 con buena calidad
+      // Convertir a base64 con buena calidad (como las actuales)
       const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
       callback(resizedDataUrl);
     };
@@ -100,11 +100,11 @@ const CategoryManager = () => {
         return;
       }
       
-      // Redimensionar imagen para responsividad
-      resizeImageResponsive(file, (resizedDataUrl) => {
+      // Redimensionar imagen manteniendo el tamaño actual
+      resizeImageToCurrentSize(file, (resizedDataUrl) => {
         setCategoryForm(prev => ({ ...prev, categoryImage: resizedDataUrl }));
         setHasUnsavedChanges(true);
-        toastHandler(ToastType.Success, 'Imagen optimizada para móviles y tablets automáticamente');
+        toastHandler(ToastType.Success, 'Imagen optimizada manteniendo el tamaño actual de las categorías');
       });
     }
   };
@@ -140,7 +140,8 @@ const CategoryManager = () => {
       "categoryName": categoryForm.categoryName.toLowerCase().trim(),
       "categoryImage": categoryForm.categoryImage,
       "description": categoryForm.description || "",
-      "id": editingCategory ? editingCategory.id : (localCategories.length + 1).toString()
+      "id": editingCategory ? editingCategory.id : (localCategories.length + 1).toString(),
+      "disabled": editingCategory ? editingCategory.disabled : false // Mantener estado o false por defecto
     };
 
     let updatedCategories;
@@ -160,6 +161,8 @@ const CategoryManager = () => {
 
   // Función para sincronización completa
   const performCompleteSync = (updatedCategories) => {
+    console.log('🔄 Sincronizando categorías...');
+    
     // 1. Actualizar estado local
     setLocalCategories(updatedCategories);
     
@@ -192,6 +195,8 @@ const CategoryManager = () => {
     setTimeout(() => {
       window.dispatchEvent(new CustomEvent('forceStoreUpdate'));
     }, 100);
+
+    console.log('✅ Categorías sincronizadas exitosamente');
   };
 
   const resetForm = () => {
@@ -275,7 +280,7 @@ const CategoryManager = () => {
 
       <div className={styles.infoBox}>
         <h4>ℹ️ Información Importante</h4>
-        <p>Los cambios se aplican automáticamente en la tienda. Las imágenes se optimizan automáticamente para móviles y tablets (400x300px). Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
+        <p>Los cambios se aplican automáticamente en la tienda. Las imágenes mantienen el tamaño actual de las categorías existentes (400x300px responsivo). Las categorías deshabilitadas no aparecen en el inicio de la tienda. Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
       </div>
 
       {showForm && (
@@ -317,7 +322,7 @@ const CategoryManager = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Imagen de la Categoría * (Optimizada automáticamente para móviles y tablets)</label>
+            <label>Imagen de la Categoría * (Mantiene el tamaño actual: 400x300px responsivo)</label>
             <input
               type="file"
               accept="image/*"
@@ -337,7 +342,7 @@ const CategoryManager = () => {
             {categoryForm.categoryImage && (
               <div className={styles.imagePreview}>
                 <img src={categoryForm.categoryImage} alt="Preview" />
-                <small>Tamaño optimizado: 400x300px (responsivo para móviles y tablets)</small>
+                <small>Tamaño: 400x300px (igual que las categorías actuales)</small>
               </div>
             )}
           </div>
@@ -384,7 +389,7 @@ const CategoryManager = () => {
                     <p>{category.description}</p>
                   )}
                   <span className={`${styles.status} ${category.disabled ? styles.statusDisabled : styles.statusActive}`}>
-                    {category.disabled ? 'Deshabilitada' : 'Activa'}
+                    {category.disabled ? 'Deshabilitada (No aparece en tienda)' : 'Activa (Visible en tienda)'}
                   </span>
                 </div>
                 <div className={styles.categoryActions}>

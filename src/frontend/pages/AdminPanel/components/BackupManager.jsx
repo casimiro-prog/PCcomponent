@@ -154,62 +154,55 @@ export const MAX_RESPONSES_IN_CACHE_TO_STORE = 50;
 export const STORE_WHATSAPP = '${finalStoreConfig.storeInfo?.whatsappNumber || '+53 54690878'}';
 
 // Configuración por defecto de la tienda - ACTUALIZADA
-export const DEFAULT_STORE_CONFIG = ${JSON.stringify(finalStoreConfig.storeInfo || {
-  storeName: 'Gada Electronics',
-  whatsappNumber: '+53 54690878',
+export const DEFAULT_STORE_CONFIG = ${JSON.stringify({
+  storeName: finalStoreConfig.storeInfo?.storeName || 'Yero Shop!',
+  whatsappNumber: finalStoreConfig.storeInfo?.whatsappNumber || '+53 54690878',
   storeAddress: 'Santiago de Cuba, Cuba',
   lastModified: new Date().toISOString(),
   version: '1.0.0'
 }, null, 2)};
 
+// CÓDIGOS DE PAÍSES ACTUALIZADOS CON CUBA INCLUIDO
 export const COUNTRY_CODES = [
-  { code: '+1', country: 'Estados Unidos/Canadá', flag: '🇺🇸' },
-  { code: '+7', country: 'Rusia', flag: '🇷🇺' },
-  { code: '+20', country: 'Egipto', flag: '🇪🇬' },
-  { code: '+27', country: 'Sudáfrica', flag: '🇿🇦' },
-  { code: '+30', country: 'Grecia', flag: '🇬🇷' },
-  { code: '+31', country: 'Países Bajos', flag: '🇳🇱' },
-  { code: '+32', country: 'Bélgica', flag: '🇧🇪' },
-  { code: '+33', country: 'Francia', flag: '🇫🇷' },
-  { code: '+34', country: 'España', flag: '🇪🇸' },
-  { code: '+36', country: 'Hungría', flag: '🇭🇺' },
-  { code: '+39', country: 'Italia', flag: '🇮🇹' },
-  { code: '+40', country: 'Rumania', flag: '🇷🇴' },
-  { code: '+41', country: 'Suiza', flag: '🇨🇭' },
-  { code: '+43', country: 'Austria', flag: '🇦🇹' },
-  { code: '+44', country: 'Reino Unido', flag: '🇬🇧' },
-  { code: '+45', country: 'Dinamarca', flag: '🇩🇰' },
-  { code: '+46', country: 'Suecia', flag: '🇸🇪' },
-  { code: '+47', country: 'Noruega', flag: '🇳🇴' },
-  { code: '+48', country: 'Polonia', flag: '🇵🇱' },
-  { code: '+49', country: 'Alemania', flag: '🇩🇪' },
-  { code: '+51', country: 'Perú', flag: '🇵🇪' },
-  { code: '+52', country: 'México', flag: '🇲🇽' },
-  { code: '+53', country: 'Cuba', flag: '🇨🇺' },
-  { code: '+54', country: 'Argentina', flag: '🇦🇷' },
-  { code: '+55', country: 'Brasil', flag: '🇧🇷' },
-  { code: '+56', country: 'Chile', flag: '🇨🇱' },
-  { code: '+57', country: 'Colombia', flag: '🇨🇴' },
-  { code: '+58', country: 'Venezuela', flag: '🇻🇪' },
-  { code: '+60', country: 'Malasia', flag: '🇲🇾' },
-  { code: '+61', country: 'Australia', flag: '🇦🇺' },
-  { code: '+62', country: 'Indonesia', flag: '🇮🇩' },
-  { code: '+63', country: 'Filipinas', flag: '🇵🇭' },
-  { code: '+64', country: 'Nueva Zelanda', flag: '🇳🇿' },
-  { code: '+65', country: 'Singapur', flag: '🇸🇬' },
-  { code: '+66', country: 'Tailandia', flag: '🇹🇭' },
-  { code: '+81', country: 'Japón', flag: '🇯🇵' },
-  { code: '+82', country: 'Corea del Sur', flag: '🇰🇷' },
-  { code: '+84', country: 'Vietnam', flag: '🇻🇳' },
-  { code: '+86', country: 'China', flag: '🇨🇳' },
-  { code: '+90', country: 'Turquía', flag: '🇹🇷' },
-  { code: '+91', country: 'India', flag: '🇮🇳' },
-  { code: '+92', country: 'Pakistán', flag: '🇵🇰' },
-  { code: '+93', country: 'Afganistán', flag: '🇦🇫' },
-  { code: '+94', country: 'Sri Lanka', flag: '🇱🇰' },
-  { code: '+95', country: 'Myanmar', flag: '🇲🇲' },
-  { code: '+98', country: 'Irán', flag: '🇮🇷' },
+  { code: '+53', country: 'Cuba', flag: '🇨🇺', minLength: 8, maxLength: 8 },
+  { code: '+1', country: 'Estados Unidos/Canadá', flag: '🇺🇸', minLength: 10, maxLength: 10 },
+  { code: '+52', country: 'México', flag: '🇲🇽', minLength: 10, maxLength: 10 },
+  { code: '+54', country: 'Argentina', flag: '🇦🇷', minLength: 10, maxLength: 11 },
+  { code: '+55', country: 'Brasil', flag: '🇧🇷', minLength: 10, maxLength: 11 },
+  { code: '+56', country: 'Chile', flag: '🇨🇱', minLength: 8, maxLength: 9 },
+  { code: '+57', country: 'Colombia', flag: '🇨🇴', minLength: 10, maxLength: 10 },
+  { code: '+58', country: 'Venezuela', flag: '🇻🇪', minLength: 10, maxLength: 10 },
+  { code: '+34', country: 'España', flag: '🇪🇸', minLength: 9, maxLength: 9 },
+  { code: '+33', country: 'Francia', flag: '🇫🇷', minLength: 10, maxLength: 10 },
+  { code: '+39', country: 'Italia', flag: '🇮🇹', minLength: 10, maxLength: 10 },
+  { code: '+49', country: 'Alemania', flag: '🇩🇪', minLength: 10, maxLength: 12 },
+  { code: '+44', country: 'Reino Unido', flag: '🇬🇧', minLength: 10, maxLength: 10 },
+  { code: '+7', country: 'Rusia', flag: '🇷🇺', minLength: 10, maxLength: 10 },
+  { code: '+86', country: 'China', flag: '🇨🇳', minLength: 11, maxLength: 11 },
+  { code: '+81', country: 'Japón', flag: '🇯🇵', minLength: 10, maxLength: 11 },
+  { code: '+82', country: 'Corea del Sur', flag: '🇰🇷', minLength: 10, maxLength: 11 },
+  { code: '+91', country: 'India', flag: '🇮🇳', minLength: 10, maxLength: 10 },
 ];
+
+// ICONOS PARA PRODUCTOS POR CATEGORÍA
+export const PRODUCT_CATEGORY_ICONS = {
+  'laptop': '💻',
+  'tv': '📺',
+  'smartwatch': '⌚',
+  'earphone': '🎧',
+  'mobile': '📱',
+  'smartphone': '📱',
+  'tablet': '📱',
+  'computer': '💻',
+  'monitor': '🖥️',
+  'keyboard': '⌨️',
+  'mouse': '🖱️',
+  'speaker': '🔊',
+  'camera': '📷',
+  'gaming': '🎮',
+  'accessories': '🔌',
+  'default': '📦'
+};
 `;
     return constantsContent;
   };
@@ -372,7 +365,7 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
       const url = URL.createObjectURL(content);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `gada-electronics-backup-${timestamp}.zip`;
+      link.download = `yero-shop-backup-${timestamp}.zip`;
       
       document.body.appendChild(link);
       link.click();
@@ -380,8 +373,8 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
       
       URL.revokeObjectURL(url);
       
-      toastHandler(ToastType.Success, '🎉 Backup exportado exitosamente');
-      toastHandler(ToastType.Info, 'Los archivos mantienen la estructura exacta con imágenes optimizadas para móviles y tablets');
+      toastHandler(ToastType.Success, '🎉 Backup de Yero Shop exportado exitosamente');
+      toastHandler(ToastType.Info, 'Los archivos mantienen la estructura exacta con imágenes optimizadas');
       
     } catch (error) {
       console.error('Error al exportar backup:', error);
@@ -422,7 +415,7 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
 
   return (
     <div className={styles.backupManager}>
-      <h2>🗂️ Sistema de Backup Completo</h2>
+      <h2>🗂️ Sistema de Backup Completo - Yero Shop!</h2>
       
       <div className={styles.infoSection}>
         <h3>ℹ️ Información del Sistema de Backup</h3>
@@ -444,7 +437,7 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
             <strong>📦 Formato:</strong> Los archivos se exportan en un archivo ZIP organizado por carpetas según la estructura del proyecto.
           </div>
           <div className={styles.infoItem}>
-            <strong>🖼️ Imágenes responsivas:</strong> Las imágenes se optimizan automáticamente: productos (600x450px), categorías (400x300px) para móviles y tablets.
+            <strong>🖼️ Imágenes responsivas:</strong> Las imágenes se mantienen en el tamaño actual: productos (600x450px), categorías (400x300px) para móviles, tablets y PC.
           </div>
           <div className={styles.infoItem}>
             <strong>🛡️ Seguridad:</strong> Mantiene la integridad del código fuente y permite restaurar fácilmente los cambios.
@@ -460,7 +453,7 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
           <div className={styles.cardContent}>
             <p>
               Exporta todos los cambios realizados en el panel de control a archivos de código fuente 
-              actualizados manteniendo la estructura exacta con imágenes optimizadas para móviles y tablets. Esto incluye productos, categorías, cupones, zonas, mensajes y configuraciones.
+              actualizados manteniendo la estructura exacta con imágenes optimizadas. Esto incluye productos, categorías, cupones, zonas, mensajes y configuraciones.
             </p>
             <div className={styles.changesSummary}>
               <h4>📊 Resumen de cambios a exportar:</h4>

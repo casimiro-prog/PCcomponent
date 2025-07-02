@@ -16,7 +16,7 @@ const Hero = () => {
           <p>
             Descubre el Futuro de la Electrónica: Libera la Innovación, Sumérgete en 
             Calidad Sin Igual. Experimenta nuestra tecnología de vanguardia y 
-            eleva tu día a día con Gada Electronics. Explora lo extraordinario hoy.
+            eleva tu día a día con Yero Shop. Explora lo extraordinario hoy.
           </p>
 
           <Link to='/products' className={`btn ${styles.btnHero}`}>
@@ -28,7 +28,7 @@ const Hero = () => {
           <article className={styles.imageContainer}>
             <img
               src={jethalalBanner}
-              alt='jethalal'
+              alt="jethalal"
               className={styles.banner}
             />
           </article>
