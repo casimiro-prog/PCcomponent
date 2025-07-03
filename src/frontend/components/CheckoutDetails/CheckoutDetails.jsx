@@ -1,5 +1,6 @@
 import { useAllProductsContext } from '../../contexts/ProductsContextProvider';
 import { useConfigContext } from '../../contexts/ConfigContextProvider';
+import { useCurrencyContext } from '../../contexts/CurrencyContextProvider';
 import Price from '../Price';
 import styles from './CheckoutDetails.module.css';
 import { useState } from 'react';
@@ -28,6 +29,7 @@ const CheckoutDetails = ({
   } = useAllProductsContext();
 
   const { storeConfig } = useConfigContext();
+  const { formatPrice, getCurrentCurrency } = useCurrencyContext();
   const STORE_WHATSAPP = storeConfig.storeInfo?.whatsappNumber || '+53 54690878';
   const SANTIAGO_ZONES = storeConfig.zones || [];
 
@@ -76,13 +78,15 @@ const CheckoutDetails = ({
 
   const sendToWhatsApp = async (orderData) => {
     const orderNumber = generateOrderNumber();
+    const currency = getCurrentCurrency();
     
     let message = `🛒 *NUEVO PEDIDO #${orderNumber}*\n\n`;
     message += `═══════════════════════════════════════════════════════════════\n`;
     message += `👤 *INFORMACIÓN DEL CLIENTE*\n`;
     message += `═══════════════════════════════════════════════════════════════\n`;
     message += `📝 *Nombre Completo:* ${firstName} ${lastName}\n`;
-    message += `📧 *Correo Electrónico:* ${email}\n\n`;
+    message += `📧 *Correo Electrónico:* ${email}\n`;
+    message += `💱 *Moneda seleccionada:* ${currency.flag} ${currency.name} (${currency.code})\n\n`;
     
     // Información del servicio con mejor formato
     message += `🚚 *DETALLES DE ENTREGA*\n`;
@@ -95,10 +99,10 @@ const CheckoutDetails = ({
       message += `🏠 *Dirección completa:* ${selectedAddress.addressInfo}\n`;
       message += `👤 *Persona que recibe:* ${selectedAddress.receiverName}\n`;
       message += `📱 *Teléfono del receptor:* ${selectedAddress.receiverPhone}\n`;
-      message += `💰 *Costo de entrega:* $${deliveryCost.toLocaleString()} CUP\n`;
+      message += `💰 *Costo de entrega:* ${formatPrice(deliveryCost)}\n`;
     } else {
       message += `📦 *Modalidad:* Recoger en tienda\n`;
-      message += `🏪 *Ubicación:* Gada Electronics - Santiago de Cuba\n`;
+      message += `🏪 *Ubicación:* Yero Shop! - Santiago de Cuba\n`;
       if (selectedAddress.additionalInfo) {
         message += `📝 *Información adicional:* ${selectedAddress.additionalInfo}\n`;
       }
@@ -117,26 +121,26 @@ const CheckoutDetails = ({
       message += `${index + 1}. ${productIcon} *${item.name}*\n`;
       message += `   🎨 *Color:* ${colorHex}\n`;
       message += `   📊 *Cantidad:* ${item.qty} unidad${item.qty > 1 ? 'es' : ''}\n`;
-      message += `   💵 *Precio unitario:* $${item.price.toLocaleString()} CUP\n`;
-      message += `   💰 *Subtotal:* $${subtotal.toLocaleString()} CUP\n`;
+      message += `   💵 *Precio unitario:* ${formatPrice(item.price)}\n`;
+      message += `   💰 *Subtotal:* ${formatPrice(subtotal)}\n`;
       message += `   ─────────────────────────────────────────────────────────\n`;
     });
     
     // Resumen financiero profesional
-    message += `\n💳 *RESUMEN FINANCIERO*\n`;
+    message += `\n💳 *RESUMEN FINANCIERO (${currency.flag} ${currency.code})*\n`;
     message += `═══════════════════════════════════════════════════════════════\n`;
-    message += `🛍️ *Subtotal productos:* $${totalAmountFromContext.toLocaleString()} CUP\n`;
+    message += `🛍️ *Subtotal productos:* ${formatPrice(totalAmountFromContext)}\n`;
     
     if (activeCoupon) {
-      message += `🎫 *Descuento aplicado (${activeCoupon.couponCode}):* -$${Math.abs(priceAfterCouponApplied).toLocaleString()} CUP\n`;
+      message += `🎫 *Descuento aplicado (${activeCoupon.couponCode}):* -${formatPrice(Math.abs(priceAfterCouponApplied))}\n`;
     }
     
     if (deliveryCost > 0) {
-      message += `🚚 *Costo de entrega:* $${deliveryCost.toLocaleString()} CUP\n`;
+      message += `🚚 *Costo de entrega:* ${formatPrice(deliveryCost)}\n`;
     }
     
     message += `═══════════════════════════════════════════════════════════════\n`;
-    message += `💰 *TOTAL A PAGAR: $${finalPriceToPay.toLocaleString()} CUP*\n`;
+    message += `💰 *TOTAL A PAGAR: ${formatPrice(finalPriceToPay)}*\n`;
     message += `═══════════════════════════════════════════════════════════════\n\n`;
     
     // Información adicional profesional
@@ -157,11 +161,11 @@ const CheckoutDetails = ({
     message += `• Coordine horario de entrega/recogida\n`;
     message += `• Mantenga este número de pedido para referencia\n\n`;
     
-    message += `🏪 *GADA ELECTRONICS*\n`;
-    message += `"Naam hi kaafi hai" ✨\n`;
+    message += `🏪 *Yero Shop!*\n`;
+    message += `"La tienda online de compras hecha a tu medida" ✨\n`;
     message += `📍 Santiago de Cuba, Cuba\n`;
     message += `📱 WhatsApp: ${STORE_WHATSAPP}\n`;
-    message += `🌐 Tienda online: gada-electronics.com\n\n`;
+    message += `🌐 Tienda online: https://yeroshop.vercel.app\n\n`;
     message += `¡Gracias por confiar en nosotros! 🙏\n`;
     message += `Su satisfacción es nuestra prioridad 💯`;
 
@@ -222,7 +226,11 @@ const CheckoutDetails = ({
   return (
     <article className={styles.checkout}>
       <div className={styles.checkoutHeader}>
-        <h3 className='text-center'>💰 Detalles del Precio</h3>
+        <h3 className={styles.priceTitle}>
+          <span className={styles.titleIcon}>💰</span>
+          <span className={styles.titleText}>Detalles del Precio</span>
+          <div className={styles.titleUnderline}></div>
+        </h3>
       </div>
 
       <CouponSearch

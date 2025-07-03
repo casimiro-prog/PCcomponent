@@ -27,6 +27,7 @@ const SingleProductPage = lazy(() =>
 );
 const Address = lazy(() => import('./frontend/pages/Address/Address'));
 const Profile = lazy(() => import('./frontend/pages/Profile/Profile'));
+const CurrencySettings = lazy(() => import('./frontend/pages/CurrencySettings/CurrencySettings'));
 const SharedProfileLayout = lazy(() =>
   import('./frontend/pages/SharedProfileLayout/SharedProfileLayout')
 );
@@ -157,6 +158,14 @@ const App = () => {
                 element={
                   <Suspense fallback={<Fallback />}>
                     <Address />
+                  </Suspense>
+                }
+              />
+              <Route
+                path='currency'
+                element={
+                  <Suspense fallback={<Fallback />}>
+                    <CurrencySettings />
                   </Suspense>
                 }
               />

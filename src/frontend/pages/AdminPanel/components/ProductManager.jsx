@@ -7,7 +7,7 @@ import { ToastType } from '../../../constants/constants';
 import styles from './ProductManager.module.css';
 
 const ProductManager = () => {
-  const { products, categories, updateProductsFromAdmin, cart } = useAllProductsContext();
+  const { products, categories, updateProductsFromAdmin } = useAllProductsContext();
   const { updateProducts } = useConfigContext();
   const [localProducts, setLocalProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -160,14 +160,6 @@ const ProductManager = () => {
     setHasUnsavedChanges(false);
   };
 
-  // FUNCIÓN PARA VERIFICAR SI HAY PRODUCTOS CON ENVÍO EN EL CARRITO
-  const hasShippingAvailableInCart = () => {
-    return cart.some(cartItem => {
-      const product = localProducts.find(p => p._id === cartItem._id.split('#')[0]);
-      return product && product.isShippingAvailable;
-    });
-  };
-
   const handleSave = () => {
     // Validaciones
     if (!formData.name.trim()) {
@@ -244,20 +236,20 @@ const ProductManager = () => {
       toastHandler(ToastType.Success, '✅ Producto creado exitosamente');
     }
 
-    // SINCRONIZACIÓN COMPLETA Y INMEDIATA
+    // SINCRONIZACIÓN COMPLETA Y INMEDIATA MEJORADA
     performCompleteSync(updatedProducts);
     
     resetForm();
   };
 
-  // Función para sincronización completa
+  // Función para sincronización completa MEJORADA
   const performCompleteSync = (updatedProducts) => {
-    console.log('🔄 Sincronizando productos...');
+    console.log('🔄 Iniciando sincronización completa de productos...');
     
-    // 1. Actualizar estado local
+    // 1. Actualizar estado local inmediatamente
     setLocalProducts(updatedProducts);
     
-    // 2. Actualizar en localStorage para persistencia
+    // 2. Actualizar en localStorage para persistencia inmediata
     const savedConfig = localStorage.getItem('adminStoreConfig') || '{}';
     let config = {};
     
@@ -265,6 +257,7 @@ const ProductManager = () => {
       config = JSON.parse(savedConfig);
     } catch (error) {
       console.error('Error al cargar configuración:', error);
+      config = {};
     }
 
     config.products = updatedProducts;
@@ -277,17 +270,37 @@ const ProductManager = () => {
     // 4. Actualizar en el contexto de productos para sincronización inmediata en la tienda
     updateProductsFromAdmin(updatedProducts);
     
-    // 5. Disparar evento personalizado para sincronización global
-    window.dispatchEvent(new CustomEvent('productsUpdated', { 
-      detail: { products: updatedProducts } 
-    }));
-    
-    // 6. Forzar re-renderizado de la tienda
+    // 5. Disparar múltiples eventos para garantizar sincronización completa
     setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('productsUpdated', { 
+        detail: { products: updatedProducts } 
+      }));
+      
       window.dispatchEvent(new CustomEvent('forceStoreUpdate'));
-    }, 100);
+      
+      // Forzar re-renderizado adicional
+      window.dispatchEvent(new CustomEvent('productsConfigUpdated', { 
+        detail: { products: updatedProducts } 
+      }));
+    }, 50);
 
-    console.log('✅ Productos sincronizados exitosamente');
+    // 6. Verificación adicional para asegurar sincronización
+    setTimeout(() => {
+      const currentConfig = localStorage.getItem('adminStoreConfig');
+      if (currentConfig) {
+        try {
+          const parsedConfig = JSON.parse(currentConfig);
+          if (parsedConfig.products && parsedConfig.products.length === updatedProducts.length) {
+            console.log('✅ Sincronización de productos verificada exitosamente');
+            toastHandler(ToastType.Info, '🔄 Productos sincronizados en tiempo real');
+          }
+        } catch (error) {
+          console.error('Error en verificación de sincronización:', error);
+        }
+      }
+    }, 200);
+
+    console.log('✅ Sincronización de productos completada');
   };
 
   const resetForm = () => {

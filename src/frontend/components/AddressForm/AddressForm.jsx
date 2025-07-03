@@ -1,9 +1,11 @@
 import { SERVICE_TYPES, ToastType, COUNTRY_CODES } from '../../constants/constants';
 import { useConfigContext } from '../../contexts/ConfigContextProvider';
+import { useCurrencyContext } from '../../contexts/CurrencyContextProvider';
 import { useAllProductsContext } from '../../contexts/ProductsContextProvider';
 import { useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import FormRow from '../FormRow';
+import Price from '../Price';
 import styles from './AddressForm.module.css';
 import {
   toastHandler,
@@ -11,19 +13,45 @@ import {
 } from '../../utils/utils';
 
 const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
-  const { addAddressDispatch, timedMainPageLoader, editAddressDispatch } =
+  const { addAddressDispatch, timedMainPageLoader, editAddressDispatch, cart } =
     useAllProductsContext();
 
   const { storeConfig } = useConfigContext();
+  const { formatPrice } = useCurrencyContext();
   const SANTIAGO_ZONES = storeConfig.zones || [];
 
   const isEditing = !!isEditingAndData;
+
+  // VERIFICAR SI HAY PRODUCTOS CON ENVÍO DISPONIBLE EN EL CARRITO
+  const hasShippingAvailableInCart = () => {
+    // Obtener productos actualizados desde localStorage
+    const savedConfig = localStorage.getItem('adminStoreConfig');
+    let products = [];
+    
+    if (savedConfig) {
+      try {
+        const parsedConfig = JSON.parse(savedConfig);
+        products = parsedConfig.products || [];
+      } catch (error) {
+        console.error('Error al cargar productos:', error);
+      }
+    }
+
+    return cart.some(cartItem => {
+      // Extraer el ID del producto (sin el color)
+      const productId = cartItem._id.split('#')[0] || cartItem._id;
+      const product = products.find(p => p._id === productId);
+      return product && product.isShippingAvailable;
+    });
+  };
+
+  const canUseHomeDelivery = hasShippingAvailableInCart();
 
   const defaultState = {
     username: '',
     mobile: '',
     countryCode: '+53', // Cuba por defecto
-    serviceType: SERVICE_TYPES.HOME_DELIVERY,
+    serviceType: canUseHomeDelivery ? SERVICE_TYPES.HOME_DELIVERY : SERVICE_TYPES.PICKUP,
     zone: '',
     addressInfo: '',
     receiverName: '',
@@ -235,17 +263,43 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
 
           <div className={styles.formGroup}>
             <label htmlFor='serviceType'>🚚 Tipo de Servicio *</label>
-            <select
-              className='form-select'
-              name='serviceType'
-              id='serviceType'
-              onChange={handleInputChange}
-              value={inputs.serviceType}
-              required
-            >
-              <option value={SERVICE_TYPES.HOME_DELIVERY}>🚚 Entrega a domicilio</option>
-              <option value={SERVICE_TYPES.PICKUP}>🏪 Pedido para recoger en el local</option>
-            </select>
+            <div className={styles.serviceTypeContainer}>
+              <div className={styles.serviceOption}>
+                <input
+                  type="radio"
+                  id="homeDelivery"
+                  name="serviceType"
+                  value={SERVICE_TYPES.HOME_DELIVERY}
+                  checked={inputs.serviceType === SERVICE_TYPES.HOME_DELIVERY}
+                  onChange={handleInputChange}
+                  disabled={!canUseHomeDelivery}
+                />
+                <label htmlFor="homeDelivery" className={!canUseHomeDelivery ? styles.disabledOption : ''}>
+                  🚚 Entrega a domicilio
+                  {!canUseHomeDelivery && (
+                    <span className={styles.lockIcon}>🔒</span>
+                  )}
+                </label>
+              </div>
+              <div className={styles.serviceOption}>
+                <input
+                  type="radio"
+                  id="pickup"
+                  name="serviceType"
+                  value={SERVICE_TYPES.PICKUP}
+                  checked={inputs.serviceType === SERVICE_TYPES.PICKUP}
+                  onChange={handleInputChange}
+                />
+                <label htmlFor="pickup">
+                  🏪 Pedido para recoger en el local
+                </label>
+              </div>
+            </div>
+            {!canUseHomeDelivery && (
+              <div className={styles.shippingWarning}>
+                <span>⚠️ Los productos en tu carrito no tienen envío disponible. Solo puedes recoger en el local.</span>
+              </div>
+            )}
           </div>
 
           {isHomeDelivery ? (
@@ -265,7 +319,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
                   </option>
                   {SANTIAGO_ZONES.map((zone) => (
                     <option key={zone.id} value={zone.id}>
-                      {zone.name} - ${zone.cost} CUP
+                      {zone.name} - <Price amount={zone.cost} />
                     </option>
                   ))}
                 </select>

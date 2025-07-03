@@ -153,20 +153,20 @@ const CategoryManager = () => {
       toastHandler(ToastType.Success, '✅ Categoría creada exitosamente');
     }
 
-    // SINCRONIZACIÓN COMPLETA Y INMEDIATA
+    // SINCRONIZACIÓN COMPLETA Y INMEDIATA MEJORADA
     performCompleteSync(updatedCategories);
     
     resetForm();
   };
 
-  // Función para sincronización completa
+  // Función para sincronización completa MEJORADA
   const performCompleteSync = (updatedCategories) => {
-    console.log('🔄 Sincronizando categorías...');
+    console.log('🔄 Iniciando sincronización completa de categorías...');
     
-    // 1. Actualizar estado local
+    // 1. Actualizar estado local inmediatamente
     setLocalCategories(updatedCategories);
     
-    // 2. Actualizar en localStorage para persistencia
+    // 2. Actualizar en localStorage para persistencia inmediata
     const savedConfig = localStorage.getItem('adminStoreConfig') || '{}';
     let config = {};
     
@@ -174,6 +174,7 @@ const CategoryManager = () => {
       config = JSON.parse(savedConfig);
     } catch (error) {
       console.error('Error al cargar configuración:', error);
+      config = {};
     }
 
     config.categories = updatedCategories;
@@ -186,17 +187,37 @@ const CategoryManager = () => {
     // 4. Actualizar en el contexto de productos para sincronización inmediata en la tienda
     updateCategoriesFromAdmin(updatedCategories);
     
-    // 5. Disparar evento personalizado para sincronización global
-    window.dispatchEvent(new CustomEvent('categoriesUpdated', { 
-      detail: { categories: updatedCategories } 
-    }));
-    
-    // 6. Forzar re-renderizado de la tienda
+    // 5. Disparar múltiples eventos para garantizar sincronización completa
     setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('categoriesUpdated', { 
+        detail: { categories: updatedCategories } 
+      }));
+      
       window.dispatchEvent(new CustomEvent('forceStoreUpdate'));
-    }, 100);
+      
+      // Forzar re-renderizado adicional
+      window.dispatchEvent(new CustomEvent('categoriesConfigUpdated', { 
+        detail: { categories: updatedCategories } 
+      }));
+    }, 50);
 
-    console.log('✅ Categorías sincronizadas exitosamente');
+    // 6. Verificación adicional para asegurar sincronización
+    setTimeout(() => {
+      const currentConfig = localStorage.getItem('adminStoreConfig');
+      if (currentConfig) {
+        try {
+          const parsedConfig = JSON.parse(currentConfig);
+          if (parsedConfig.categories && parsedConfig.categories.length === updatedCategories.length) {
+            console.log('✅ Sincronización de categorías verificada exitosamente');
+            toastHandler(ToastType.Info, '🔄 Categorías sincronizadas en tiempo real');
+          }
+        } catch (error) {
+          console.error('Error en verificación de sincronización:', error);
+        }
+      }
+    }, 200);
+
+    console.log('✅ Sincronización de categorías completada');
   };
 
   const resetForm = () => {

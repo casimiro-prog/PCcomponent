@@ -36,8 +36,8 @@ export const SORT_TYPE = {
 export const RATINGS = [4, 3, 2, 1];
 
 export const TEST_USER = {
-  email: 'jethalal.gada@gmail.com',
-  password: 'babitaji1234',
+  email: 'yero.shop@gmail.com',
+  password: 'yeroi1234',
 };
 
 export const SUPER_ADMIN = {
@@ -54,6 +54,7 @@ export const LOCAL_STORAGE_KEYS = {
   User: 'user',
   Token: 'token',
   StoreConfig: 'storeConfig',
+  Currency: 'selectedCurrency',
 };
 
 export const LOGIN_CLICK_TYPE = {
@@ -113,8 +114,8 @@ export const SERVICE_TYPES = {
 export const SANTIAGO_ZONES = [
   {
     "id": "centro",
-    "name": "Centro Histórico",
-    "cost": 50
+    "name": "Nuevo Vista Alegre",
+    "cost": 100
   },
   {
     "id": "vista_alegre",
@@ -124,42 +125,27 @@ export const SANTIAGO_ZONES = [
   {
     "id": "sueno",
     "name": "Sueño",
-    "cost": 60
+    "cost": 300
   },
   {
     "id": "san_pedrito",
     "name": "San Pedrito",
-    "cost": 80
+    "cost": 250
   },
   {
     "id": "altamira",
     "name": "Altamira",
-    "cost": 70
+    "cost": 500
   },
   {
     "id": "reparto_flores",
     "name": "Reparto Flores",
-    "cost": 65
-  },
-  {
-    "id": "chicharrones",
-    "name": "Chicharrones",
-    "cost": 85
-  },
-  {
-    "id": "los_olmos",
-    "name": "Los Olmos",
-    "cost": 90
-  },
-  {
-    "id": "santa_barbara",
-    "name": "Santa Bárbara",
-    "cost": 95
+    "cost": 350
   },
   {
     "id": "micro_9",
-    "name": "Micro 9",
-    "cost": 100
+    "name": "Micro 7, 8 , 9",
+    "cost": 300
   },
   {
     "id": "micro_4",
@@ -169,53 +155,98 @@ export const SANTIAGO_ZONES = [
   {
     "id": "alameda",
     "name": "Alameda",
-    "cost": 55
+    "cost": 300
   },
   {
     "id": "puerto",
-    "name": "Puerto",
-    "cost": 45
+    "name": "El Caney",
+    "cost": 800
   },
   {
     "id": "siboney",
-    "name": "Siboney",
-    "cost": 120
+    "name": "Quintero",
+    "cost": 500
   },
   {
     "id": "ciudamar",
-    "name": "Ciudamar",
-    "cost": 110
+    "name": "Distrito José Martí",
+    "cost": 500
+  },
+  {
+    "id": "marimon",
+    "name": "Marimon",
+    "cost": 300
+  },
+  {
+    "id": "los_cangrejitos",
+    "name": "Los cangrejitos",
+    "cost": 350
+  },
+  {
+    "id": "trocha",
+    "name": "Trocha",
+    "cost": 350
+  },
+  {
+    "id": "versalles",
+    "name": "Versalles",
+    "cost": 800
+  },
+  {
+    "id": "portuondo",
+    "name": "Portuondo",
+    "cost": 500
+  },
+  {
+    "id": "30_de_noviembre",
+    "name": "30 de Noviembre",
+    "cost": 500
+  },
+  {
+    "id": "rajayoga",
+    "name": "Rajayoga",
+    "cost": 600
+  },
+  {
+    "id": "antonio_maceo",
+    "name": "Antonio Maceo",
+    "cost": 500
+  },
+  {
+    "id": "los_pinos",
+    "name": "Los Pinos",
+    "cost": 400
   }
 ];
 
 // Cupones de descuento - ACTUALIZADOS
 export const COUPONS = [
   {
-    "couponCode": "PEPEP",
+    "couponCode": "100% AHORRO",
     "text": "100% Descuento",
     "discountPercent": 55,
-    "minCartPriceRequired": 150000,
+    "minCartPriceRequired": 300000,
     "id": "b6c7a585-79a2-4fde-93cd-80422ef3acfa"
   },
   {
-    "couponCode": "PEPE 2",
+    "couponCode": "20% REGALO",
     "text": "20% Descuento",
     "discountPercent": 20,
-    "minCartPriceRequired": 100000,
+    "minCartPriceRequired": 200000,
     "id": "ecdff7ad-f653-467f-9257-7fcd0fdea3a8"
   },
   {
-    "couponCode": "PEPE 3",
+    "couponCode": "10% PROMO",
     "text": "10% Descuento",
     "discountPercent": 10,
-    "minCartPriceRequired": 50000,
+    "minCartPriceRequired": 100000,
     "id": "4898bd1c-7227-47b0-b6fe-32159f71072b"
   },
   {
-    "couponCode": "PEPE 4",
+    "couponCode": "5% MENOS",
     "text": "5% Descuento",
     "discountPercent": 5,
-    "minCartPriceRequired": 20000,
+    "minCartPriceRequired": 50000,
     "id": "12ee6cb8-1d2d-463d-b9f7-78bcd415c2e4"
   }
 ];
@@ -235,7 +266,9 @@ export const STORE_WHATSAPP = '+53 54690878';
 export const DEFAULT_STORE_CONFIG = {
   "storeName": "Gada Electronics",
   "whatsappNumber": "+53 54690878",
-  "storeAddressId": "store-main-address"
+  "storeAddress": "Santiago de Cuba, Cuba",
+  "lastModified": "2025-07-03T17:13:30.569Z",
+  "version": "1.0.0"
 };
 
 // CÓDIGOS DE PAÍSES ACTUALIZADOS CON CUBA INCLUIDO
@@ -280,101 +313,36 @@ export const PRODUCT_CATEGORY_ICONS = {
   'default': '📦'
 };
 
-// MENSAJES TRADUCIDOS AL ESPAÑOL
-export const SPANISH_MESSAGES = {
-  // Navegación
-  'Explore': 'Explorar',
-  'Login': 'Iniciar Sesión',
-  'Profile': 'Perfil',
-  'Addresses': 'Direcciones',
-  'Admin Panel': 'Panel de Control',
-  'Logout': 'Cerrar Sesión',
-  
-  // Productos
-  'Featured Products': 'Productos Destacados',
-  'Categories': 'Categorías',
-  'In Stock': 'En Stock',
-  'Out of Stock': 'Agotado',
-  'Shipping Available': 'Envío Disponible',
-  'Add to Cart': 'Agregar al Carrito',
-  'Add to Wishlist': 'Agregar a Lista de Deseos',
-  'Go to Cart': 'Ir al Carrito',
-  'Go to Wishlist': 'Ir a Lista de Deseos',
-  'Move to Wishlist': 'Mover a Lista de Deseos',
-  'Move to Cart': 'Mover al Carrito',
-  'Remove from Cart': 'Remover del Carrito',
-  'Clear Cart': 'Limpiar Carrito',
-  'Clear Wishlist': 'Limpiar Lista de Deseos',
-  
-  // Carrito y Lista
-  'cart': 'carrito',
-  'wishlist': 'lista de deseos',
-  'Cart Price Details': 'Detalles del Precio del Carrito',
-  'Total Price': 'Precio Total',
-  'Checkout': 'Finalizar Compra',
-  'Your cart is empty! ☹️': 'Tu carrito está vacío! ☹️',
-  'Your wishlist is empty! ☹️': 'Tu lista de deseos está vacía! ☹️',
-  
-  // Checkout
-  'Checkout': 'Finalizar Compra',
-  'Choose delivery address': 'Elige una dirección de entrega',
-  'Price Details': 'Detalles del Precio',
-  'Home Delivery': 'Entrega a domicilio',
-  'Store Pickup': 'Recoger en local',
-  'Place Order via WhatsApp': 'Realizar Pedido por WhatsApp',
-  'Your order has been placed successfully 🎉': 'Tu pedido se ha realizado exitosamente 🎉',
-  
-  // Formularios
-  'Name': 'Nombre',
-  'Last Name': 'Apellido',
-  'Email': 'Correo Electrónico',
-  'Password': 'Contraseña',
-  'Confirm Password': 'Confirmar Contraseña',
-  'Login': 'Iniciar Sesión',
-  'Register': 'Registrarse',
-  'Create New Account': 'Crear Nueva Cuenta',
-  'Guest Login': 'Iniciar como Invitado',
-  'Admin Access': 'Acceso Administrador',
-  
-  // Direcciones
-  'New Address': 'Nueva Dirección',
-  'Edit Address': 'Editar Dirección',
-  'Add new address': 'Agregar nueva dirección',
-  'Service Type': 'Tipo de Servicio',
-  'Home delivery': 'Entrega a domicilio',
-  'Store pickup order': 'Pedido para recoger en el local',
-  'Address': 'Dirección',
-  'Mobile Number': 'Número de Móvil',
-  'Who receives the order?': '¿Quién recibe el pedido?',
-  'Want to clarify something?': '¿Quieres aclararnos algo?',
-  
-  // Botones
-  'Save': 'Guardar',
-  'Cancel': 'Cancelar',
-  'Edit': 'Editar',
-  'Delete': 'Eliminar',
-  'Update': 'Actualizar',
-  'Reset': 'Restablecer',
-  'Clear Filters': 'Limpiar Filtros',
-  'Apply': 'Aplicar',
-  'Export': 'Exportar',
-  'Import': 'Importar',
-  'Add': 'Agregar',
-  
-  // Notificaciones
-  'Session closed successfully': 'Sesión cerrada exitosamente',
-  'Product added to cart': 'Producto agregado al carrito',
-  'Product added to wishlist': 'Producto agregado a lista de deseos',
-  'Cart cleared successfully': 'Carrito limpiado exitosamente',
-  'Wishlist cleared successfully': 'Lista de deseos limpiada exitosamente',
-  'Please login to continue': 'Por favor inicia sesión para continuar',
-  'Configuration saved successfully': 'Configuración guardada exitosamente',
-  
-  // Errores
-  'Error': 'Error',
-  'Error: Product Not Found': 'Error: Producto No Encontrado',
-  'Please fill all required fields': 'Por favor completa todos los campos obligatorios',
-  'Please enter a valid email': 'Por favor ingresa un email válido',
-  'Password must be at least 6 characters': 'La contraseña debe tener al menos 6 caracteres',
-  'Passwords do not match': 'Las contraseñas no coinciden'
+// CONSTANTES DE MONEDA
+export const CURRENCIES = {
+  CUP: {
+    code: 'CUP',
+    name: 'Peso Cubano',
+    symbol: '$',
+    flag: '🇨🇺',
+    rate: 1,
+  },
+  USD: {
+    code: 'USD',
+    name: 'Dólar Estadounidense',
+    symbol: '$',
+    flag: '🇺🇸',
+    rate: 320,
+  },
+  EUR: {
+    code: 'EUR',
+    name: 'Euro',
+    symbol: '€',
+    flag: '🇪🇺',
+    rate: 340,
+  },
+  MLC: {
+    code: 'MLC',
+    name: 'Moneda Libremente Convertible',
+    symbol: 'MLC',
+    flag: '🏦',
+    rate: 270,
+  },
 };
+
+export const DEFAULT_CURRENCY = 'CUP';
