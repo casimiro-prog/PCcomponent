@@ -6,7 +6,7 @@ import styles from './CheckoutDetails.module.css';
 import { useState } from 'react';
 import { VscChromeClose } from 'react-icons/vsc';
 
-import { CHARGE_AND_DISCOUNT, ToastType, SERVICE_TYPES, PRODUCT_CATEGORY_ICONS } from '../../constants/constants';
+import { CHARGE_AND_DISCOUNT, ToastType, SERVICE_TYPES, PRODUCT_CATEGORY_ICONS, COLOR_NAMES } from '../../constants/constants';
 import CouponSearch from './CouponSearch';
 import { toastHandler, Popper, generateOrderNumber } from '../../utils/utils';
 
@@ -86,6 +86,11 @@ const CheckoutDetails = ({
     return PRODUCT_CATEGORY_ICONS[normalizedCategory] || PRODUCT_CATEGORY_ICONS.default;
   };
 
+  // Función para obtener nombre del color
+  const getColorName = (colorHex) => {
+    return COLOR_NAMES[colorHex.toLowerCase()] || colorHex;
+  };
+
   const sendToWhatsApp = async (orderData) => {
     const orderNumber = generateOrderNumber();
     const currency = getCurrentCurrency();
@@ -126,10 +131,11 @@ const CheckoutDetails = ({
     cartFromContext.forEach((item, index) => {
       const productIcon = getProductIcon(item.category);
       const colorHex = item.colors[0]?.color || '#000000';
+      const colorName = getColorName(colorHex);
       const subtotal = item.price * item.qty;
       
       message += `${index + 1}. ${productIcon} *${item.name}*\n`;
-      message += `   🎨 *Color:* ${colorHex}\n`;
+      message += `   🎨 *Color:* ${colorName}\n`;
       message += `   📊 *Cantidad:* ${item.qty} unidad${item.qty > 1 ? 'es' : ''}\n`;
       message += `   💵 *Precio unitario:* ${formatPriceWithCode(item.price)}\n`;
       message += `   💰 *Subtotal:* ${formatPriceWithCode(subtotal)}\n`;
@@ -166,20 +172,22 @@ const CheckoutDetails = ({
       timeZone: 'America/Havana'
     })}\n\n`;
     
-    message += `📋 *Instrucciones importantes:*\n`;
-    message += `• Confirme la disponibilidad de los productos\n`;
-    message += `• Verifique la dirección de entrega\n`;
-    message += `• Coordine horario de entrega/recogida\n`;
-    message += `• Mantenga este número de pedido para referencia\n`;
-    message += `• Los precios están en ${currency.name} (${currency.code})\n\n`;
+    message += `📋 *Instrucciones importantes para el cliente:*\n`;
+    message += `• Por favor, confirme la disponibilidad de los productos\n`;
+    message += `• Verifique que la dirección de entrega sea correcta\n`;
+    message += `• Coordine el horario de entrega o recogida que más le convenga\n`;
+    message += `• Guarde este número de pedido para futuras consultas: #${orderNumber}\n`;
+    message += `• Los precios mostrados están en ${currency.name} (${currency.code})\n`;
+    message += `• Si tiene alguna pregunta, no dude en contactarnos\n\n`;
     
     message += `🏪 *Yero Shop!*\n`;
-    message += `"La tienda online de compras hecha a tu medida" ✨\n`;
+    message += `"Su tienda online de confianza en Santiago de Cuba" ✨\n`;
     message += `📍 Santiago de Cuba, Cuba\n`;
     message += `📱 WhatsApp: ${STORE_WHATSAPP}\n`;
     message += `🌐 Tienda online: https://yeroshop.vercel.app\n\n`;
-    message += `¡Gracias por confiar en nosotros! 🙏\n`;
-    message += `Su satisfacción es nuestra prioridad 💯`;
+    message += `¡Gracias por elegirnos! 🙏\n`;
+    message += `Su satisfacción es nuestra prioridad número uno 💯\n`;
+    message += `¡Esperamos servirle pronto! 🚀`;
 
     // Codificar el mensaje para URL
     const encodedMessage = encodeURIComponent(message);
