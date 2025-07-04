@@ -52,7 +52,7 @@ const CurrencyContextProvider = ({ children }) => {
     return amount * rate;
   };
 
-  // Función para formatear precio SIN duplicar código de moneda
+  // Función para formatear precio SIN código de moneda (solo para uso interno)
   const formatPrice = (cupAmount, showCurrency = true) => {
     const convertedAmount = convertFromCUP(cupAmount);
     const currency = CURRENCIES[selectedCurrency];
@@ -75,7 +75,7 @@ const CurrencyContextProvider = ({ children }) => {
       return formattedAmount;
     }
 
-    // Formatear según el tipo de moneda SIN duplicar código
+    // Formatear según el tipo de moneda SIN código
     if (selectedCurrency === 'MLC') {
       return `${formattedAmount} ${currency.symbol}`;
     } else {
@@ -83,11 +83,31 @@ const CurrencyContextProvider = ({ children }) => {
     }
   };
 
-  // Función para formatear precio con código de moneda (para casos específicos)
+  // Función PRINCIPAL para formatear precio con código: $129.99 USD
   const formatPriceWithCode = (cupAmount) => {
-    const basePrice = formatPrice(cupAmount, true);
-    const currency = getCurrentCurrency();
-    return `${basePrice} ${currency.code}`;
+    const convertedAmount = convertFromCUP(cupAmount);
+    const currency = CURRENCIES[selectedCurrency];
+    
+    // Formatear según la moneda
+    let formattedAmount;
+    if (selectedCurrency === 'CUP') {
+      formattedAmount = convertedAmount.toLocaleString('es-CU', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      });
+    } else {
+      formattedAmount = convertedAmount.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+
+    // FORMATO FINAL: $129.99 USD, $41,597 CUP, €120.58 EUR, 148.15 MLC
+    if (selectedCurrency === 'MLC') {
+      return `${formattedAmount} ${currency.symbol} ${currency.code}`;
+    } else {
+      return `${currency.symbol}${formattedAmount} ${currency.code}`;
+    }
   };
 
   // Función para obtener información de la moneda actual
