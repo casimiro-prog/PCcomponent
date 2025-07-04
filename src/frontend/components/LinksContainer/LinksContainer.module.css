@@ -5,74 +5,272 @@
   margin-top: 0.25rem;
   align-items: center;
   justify-content: space-between;
-  gap: 0.1rem;
+  gap: 0.5rem;
 }
 
 .exploreLink {
   margin-bottom: 0.25rem;
   font-size: 1.3rem;
-  font-weight: 600;
+  font-weight: 700;
   font-style: italic;
-  color: var(--primary-500);
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: var(--transition);
+  position: relative;
+  padding: 0.5rem 1rem;
+  border-radius: var(--borderRadius);
+  text-decoration: none;
+}
+
+.exploreLink::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-backdrop);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--borderRadius);
+  opacity: 0;
+  transition: var(--transition);
+  z-index: -1;
+}
+
+.exploreLink:hover::before {
+  opacity: 1;
+}
+
+.exploreLink:hover {
+  transform: translateY(-2px) scale(1.05);
+  filter: drop-shadow(0 5px 15px rgba(102, 126, 234, 0.4));
 }
 
 .linkCSS {
-  color: var(--black);
-  font-size: 1.35rem;
+  color: var(--textColor);
+  font-size: 1.5rem;
   display: block;
   position: relative;
+  padding: 0.75rem;
+  border-radius: var(--borderRadius);
+  transition: var(--transition);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-backdrop);
+  border: 1px solid var(--glass-border);
+  text-decoration: none;
+}
+
+.linkCSS:hover {
+  transform: translateY(-3px) scale(1.1);
+  background: var(--gradient-primary);
+  color: var(--white);
+  box-shadow: var(--shadow-glow);
+  border-color: transparent;
 }
 
 .itemCount {
   position: absolute;
-  width: 1.5rem;
-  height: 1.5rem;
-  bottom: 1rem;
-  left: 0.65rem;
+  width: 1.8rem;
+  height: 1.8rem;
+  bottom: 1.2rem;
+  left: 1rem;
   border-radius: 50%;
-  background: var(--primary-700);
+  background: var(--gradient-danger);
   color: var(--white);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 700;
   display: grid;
   place-content: center;
+  box-shadow: var(--shadow-cosmic);
+  animation: pulse 2s ease-in-out infinite;
+  border: 2px solid var(--white);
 }
 
 .linkCSS.active {
-  color: var(--primary-500);
+  background: var(--gradient-primary);
+  color: var(--white);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+.linkCSS.active .itemCount {
+  background: var(--gradient-success);
+  animation: glow 2s ease-in-out infinite;
 }
 
 .login {
-  font-size: 1.15rem;
-  color: var(--primary-700);
-  font-weight: 600;
+  font-size: 1rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
   margin-top: -0.25rem;
-  border: 3px solid var(--primary-700);
-  padding: 0.35rem;
+  border: 2px solid transparent;
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  background-image: var(--glass-bg), var(--gradient-primary);
+  padding: 0.75rem 1.5rem;
   border-radius: var(--borderRadius);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
 }
 
+.login::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: var(--transition);
+}
+
+.login:hover::before {
+  left: 100%;
+}
+
+.login:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: var(--shadow-cosmic);
+  color: var(--white);
+  background: var(--gradient-primary);
+  -webkit-background-clip: initial;
+  -webkit-text-fill-color: initial;
+}
+
+/* Efectos de Carrito Animado */
+.linkCSS[href="/cart"] {
+  position: relative;
+}
+
+.linkCSS[href="/cart"]:hover {
+  animation: cartBounce 0.6s ease-in-out;
+}
+
+@keyframes cartBounce {
+  0%, 100% { transform: translateY(-3px) scale(1.1); }
+  25% { transform: translateY(-5px) scale(1.15) rotate(-2deg); }
+  50% { transform: translateY(-3px) scale(1.1) rotate(0deg); }
+  75% { transform: translateY(-5px) scale(1.15) rotate(2deg); }
+}
+
+/* Efectos de Corazón para Wishlist */
+.linkCSS[href="/wishlist"]:hover {
+  animation: heartBeat 0.8s ease-in-out;
+}
+
+@keyframes heartBeat {
+  0%, 100% { transform: translateY(-3px) scale(1.1); }
+  25% { transform: translateY(-3px) scale(1.2); }
+  50% { transform: translateY(-3px) scale(1.1); }
+  75% { transform: translateY(-3px) scale(1.2); }
+}
+
+/* Responsive Design */
 @media screen and (max-width: 768px) {
   .linksContainer {
     width: 60%;
     max-width: 15rem;
     margin-bottom: 0.35rem;
     margin-left: -1.5rem;
+    gap: 0.25rem;
   }
 
   .linkCSS {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
+    padding: 0.5rem;
   }
 
   .exploreLink {
-    font-size: 0.9rem;
+    font-size: 1rem;
+    padding: 0.4rem 0.8rem;
   }
+  
   .login {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
   }
 
   .itemCount {
-    width: 1.25rem;
-    height: 1.25rem;
-    font-size: 0.75rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.7rem;
+    bottom: 0.8rem;
+    left: 0.8rem;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .linksContainer {
+    gap: 1rem;
+  }
+  
+  .linkCSS {
+    font-size: 1.6rem;
+    padding: 1rem;
+  }
+  
+  .exploreLink {
+    font-size: 1.5rem;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .itemCount {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Efectos de Glassmorphism Mejorados */
+.linkCSS::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: var(--transition);
+  border-radius: var(--borderRadius);
+  z-index: -1;
+}
+
+.linkCSS:hover::before {
+  opacity: 1;
+}
+
+/* Efectos de Partículas en Hover */
+.linkCSS:hover::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: rippleEffect 0.6s ease-out;
+  pointer-events: none;
+}
+
+@keyframes rippleEffect {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    width: 100px;
+    height: 100px;
+    opacity: 0;
   }
 }
