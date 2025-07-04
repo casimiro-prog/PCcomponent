@@ -267,7 +267,7 @@ export const DEFAULT_STORE_CONFIG = {
   "storeName": "Gada Electronics",
   "whatsappNumber": "+53 54690878",
   "storeAddress": "Santiago de Cuba, Cuba",
-  "lastModified": "2025-07-03T17:13:30.569Z",
+  "lastModified": "2025-07-04T06:02:08.139Z",
   "version": "1.0.0"
 };
 
