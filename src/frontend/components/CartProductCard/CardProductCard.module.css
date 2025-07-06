@@ -1,375 +1,158 @@
 .cartItem {
   height: fit-content;
-  border-radius: var(--borderRadiusLarge);
+  border-radius: var(--borderRadius);
   transition: var(--transition);
-  box-shadow: var(--shadow-cosmic);
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-backdrop);
-  border: 1px solid var(--glass-border);
-  padding: 2rem 1.5rem;
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  position: relative;
-  overflow: hidden;
+  box-shadow: var(--shadow-3);
+  background: var(--white);
+  padding: 2rem 1rem;
+  width: fit-content;
 }
 
-.cartItem::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--gradient-primary);
-  transform: scaleX(0);
-  transition: var(--transition);
-}
-
-.cartItem:hover::before {
-  transform: scaleX(1);
+@media screen and (min-width: 768px) {
+  .cartItem {
+    margin-right: 0;
+    padding: 2rem;
+    padding-bottom: 1.25rem;
+  }
 }
 
 .cartItem:hover {
-  transform: translateY(-5px) scale(1.01);
-  box-shadow: var(--shadow-neon);
-  border-color: var(--primary-400);
+  box-shadow: var(--shadow-4);
 }
 
 .cartItemMain {
   display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
-  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .imgContainer {
-  height: 8rem;
-  width: 8rem;
-  min-width: 8rem;
+  height: 6rem;
+  width: 6rem;
   overflow: hidden;
-  border: 2px solid var(--glass-border);
+  border: 2px solid var(--primary-200);
   border-radius: var(--borderRadius);
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-backdrop);
-  position: relative;
-}
-
-.imgContainer::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-  transform: translateX(-100%);
-  transition: var(--transition);
-}
-
-.imgContainer:hover::before {
-  transform: translateX(100%);
 }
 
 .imgContainer img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transition: var(--transition);
-  padding: 0.5rem;
-}
-
-.imgContainer:hover img {
-  transform: scale(1.1);
-}
-
-.itemInfo {
-  flex: 1;
-  min-width: 0;
 }
 
 .cartItemMain h3 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0.75rem;
-  line-height: 1.3;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--primary-700);
+  margin-bottom: 0.5rem;
 }
 
 .cardMain {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.cardMain span {
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.cardMain span:nth-child(1) {
-  font-weight: 700;
-  font-size: 1.2rem;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.cardMain span:nth-child(2) {
-  color: var(--grey-500);
-  text-decoration: line-through;
-  font-size: 0.95rem;
+  composes: cardMain from '../ProductCard/ProductCard.module.css';
 }
 
 .discount {
-  background: var(--gradient-success);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-weight: 700;
+  color: var(--green-medium);
 }
 
 .counter {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 8rem;
-  margin-top: 1rem;
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-backdrop);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--borderRadius);
-  padding: 0.5rem;
-  box-shadow: var(--shadow-2);
+  width: 5rem;
+  color: var(--grey-500);
+  margin-top: 0.25rem;
 }
 
 .counter button {
-  width: 2.5rem;
-  height: 2.5rem;
+  height: 1.1rem;
+  width: 1.1rem;
   border-radius: 50%;
-  border: none;
+  border-color: transparent;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: var(--gradient-primary);
-  color: var(--white);
+  background: transparent;
+  color: var(--black);
   transition: var(--transition);
-  font-weight: 700;
-  font-size: 1.2rem;
-  box-shadow: var(--shadow-2);
+  margin-bottom: 0.25rem;
 }
 
-.counter button:hover {
-  transform: scale(1.1);
-  box-shadow: var(--shadow-glow);
+.counter button span {
+  font-size: 2rem;
 }
 
-.counter button:active {
-  transform: scale(0.95);
-}
-
-.counter button:disabled {
-  background: var(--grey-300);
-  color: var(--grey-500);
-  cursor: not-allowed;
-  transform: none;
+.counter button:last-child span {
+  margin-bottom: 0.25rem;
 }
 
 .counter div {
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: var(--textColor);
-  min-width: 2rem;
-  text-align: center;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
 }
 
 .cartBtnContainer {
   display: flex;
-  justify-content: center;
-  gap: 1rem;
-  font-size: 0.9rem;
-  margin-top: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.cartBtnContainer button {
-  flex: 1;
-  min-width: 150px;
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--borderRadius);
-  font-weight: 600;
-  transition: var(--transition);
-  position: relative;
-  overflow: hidden;
-}
-
-.cartBtnContainer button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: var(--transition);
-}
-
-.cartBtnContainer button:hover::before {
-  left: 100%;
-}
-
-.cartBtnContainer button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-glow);
+  justify-content: flex-start;
+  font-size: 0.85rem;
 }
 
 .colorCircle {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1rem;
+  height: 1rem;
   border-radius: 50%;
-  margin: 0.5rem 0;
-  border: 3px solid var(--white);
-  box-shadow: var(--shadow-2);
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 0.5rem;
+  margin: 0.25rem 0;
 }
 
-/* Responsive Design */
 @media screen and (min-width: 768px) {
-  .cartItem {
-    padding: 2.5rem;
-    max-width: 700px;
-  }
-
-  .cartItemMain {
-    gap: 2rem;
-    margin-bottom: 1.5rem;
-  }
-
   .cartItemMain h3 {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     margin-bottom: 1rem;
   }
 
+  .cartItemMain {
+    margin-bottom: 1.25rem;
+  }
+
   .cardMain {
-    margin-bottom: 1.5rem;
-    gap: 1rem;
+    margin-bottom: 0.5rem;
   }
 
   .cardMain span {
-    font-size: 1.1rem;
-  }
-
-  .cardMain span:nth-child(1) {
-    font-size: 1.4rem;
+    font-size: 1.15rem;
   }
 
   .imgContainer {
-    height: 12rem;
-    width: 12rem;
-    min-width: 12rem;
+    height: 10rem;
+    width: 10rem;
   }
 
   .counter {
-    width: 10rem;
-    margin-top: 1.5rem;
-    padding: 0.75rem;
+    margin-top: 0.5rem;
   }
 
   .counter button {
-    width: 3rem;
-    height: 3rem;
-    font-size: 1.4rem;
+    width: 1.35rem;
+    height: 1.35rem;
   }
 
+  .counter button span {
+    font-size: 2.5rem;
+  }
   .counter div {
-    font-size: 1.4rem;
+    font-size: 1.25rem;
   }
 
   .colorCircle {
-    width: 2rem;
-    height: 2rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 50%;
+    margin: 0.35rem 0;
   }
 
   .cartBtnContainer {
-    font-size: 1rem;
-    margin-top: 2rem;
+    justify-content: center;
+    font-size: 1.1rem;
   }
-
-  .cartBtnContainer button {
-    padding: 1rem 2rem;
-    font-size: 1rem;
-  }
-}
-
-@media screen and (min-width: 1024px) {
-  .cartItem {
-    max-width: 800px;
-  }
-  
-  .cartItemMain h3 {
-    font-size: 1.6rem;
-  }
-  
-  .cardMain span:nth-child(1) {
-    font-size: 1.6rem;
-  }
-}
-
-/* Efectos Especiales para Animación del Carrito */
-.cartItem {
-  animation: slideInUp 0.6s ease-out;
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Efectos de Hover para el Color */
-.colorCircle {
-  transition: var(--transition);
-}
-
-.colorCircle:hover {
-  transform: scale(1.2);
-  box-shadow: var(--shadow-glow);
-}
-
-/* Efectos de Glassmorphism Mejorados */
-.cartItem::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: var(--transition);
-  pointer-events: none;
-}
-
-.cartItem:hover::after {
-  width: 400px;
-  height: 400px;
 }

@@ -1,0 +1,293 @@
+.footerLinksManager {
+  max-width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header h2 {
+  margin: 0;
+  color: var(--primary-600);
+}
+
+.changesIndicator {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #dc2626;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 2px solid #f87171;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.infoBox {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  border: 2px solid #3b82f6;
+  border-radius: var(--borderRadius);
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+.infoBox h4 {
+  margin: 0 0 0.5rem 0;
+  color: #1e40af;
+}
+
+.infoBox p {
+  margin: 0;
+  color: #1e40af;
+  font-size: 0.9rem;
+}
+
+.statsContainer {
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+  border: 2px solid var(--primary-300);
+  border-radius: var(--borderRadius);
+  padding: 2rem;
+  text-align: center;
+}
+
+.statCard h4 {
+  margin: 0 0 1.5rem 0;
+  color: var(--primary-700);
+  font-size: 1.3rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  box-shadow: var(--shadow-2);
+}
+
+.statNumber {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-600);
+  margin-bottom: 0.5rem;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  color: var(--grey-600);
+  font-weight: 500;
+}
+
+.linkForm {
+  background: var(--grey-50);
+  padding: 2rem;
+  border-radius: var(--borderRadius);
+  margin-bottom: 2rem;
+  border: 2px solid var(--primary-200);
+}
+
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--primary-200);
+}
+
+.formHeader h3 {
+  margin: 0;
+  color: var(--primary-600);
+}
+
+.unsavedIndicator {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid #f59e0b;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--grey-700);
+}
+
+.formActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.linksList {
+  margin-top: 3rem;
+}
+
+.listHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.listHeader h3 {
+  color: var(--primary-600);
+  margin: 0;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem;
+  background: var(--grey-50);
+  border-radius: var(--borderRadius);
+  border: 2px dashed var(--grey-300);
+}
+
+.emptyState h3 {
+  color: var(--grey-600);
+  margin-bottom: 1rem;
+}
+
+.emptyState p {
+  color: var(--grey-500);
+  margin-bottom: 2rem;
+}
+
+.linksGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.linkCard {
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  box-shadow: var(--shadow-2);
+  overflow: hidden;
+  transition: var(--transition);
+  border-left: 4px solid var(--primary-500);
+}
+
+.linkCard:hover {
+  box-shadow: var(--shadow-3);
+  transform: translateY(-2px);
+}
+
+.linkIcon {
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  color: var(--white);
+  padding: 1rem;
+  text-align: center;
+}
+
+.linkIcon span {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.linkInfo {
+  padding: 1rem;
+}
+
+.linkInfo h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--primary-600);
+  font-size: 1.1rem;
+}
+
+.linkUrl {
+  color: var(--grey-600);
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  word-break: break-all;
+}
+
+.linkComponent {
+  display: inline-block;
+  background: var(--grey-100);
+  color: var(--grey-700);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.linkActions {
+  padding: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  border-top: 1px solid var(--grey-200);
+}
+
+.linkActions button {
+  flex: 1;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+}
+
+@media screen and (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .headerActions {
+    flex-direction: column;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .formActions {
+    flex-direction: column;
+  }
+
+  .linksGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}

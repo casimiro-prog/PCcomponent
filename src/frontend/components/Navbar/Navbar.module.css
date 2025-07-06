@@ -2,24 +2,12 @@
   position: sticky;
   top: 0;
   left: 0;
+  bottom: 0;
   right: 0;
   height: 5rem;
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-backdrop);
-  border-bottom: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-cosmic);
+  background: var(--white);
+  box-shadow: var(--shadow-3);
   z-index: 101;
-  transition: var(--transition);
-}
-
-.nav::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--gradient-primary);
 }
 
 .navCenter {
@@ -29,7 +17,6 @@
   justify-content: space-between;
   align-items: center;
   gap: 0.25rem;
-  padding: 0 2rem;
 }
 
 .loginNavCenter {
@@ -37,82 +24,25 @@
 }
 
 .loginNavCenter h3 {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   margin-top: 1rem;
-  animation: float 3s ease-in-out infinite;
 }
 
 .logo {
   margin-top: 0.75rem;
-  color: var(--textColor);
-  font-family: var(--logoFont);
-  font-weight: 800;
-  font-size: 1.8rem;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
-  transition: var(--transition);
-  position: relative;
-  cursor: pointer;
-}
-
-.logo:hover {
-  transform: scale(1.05);
-  filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.8));
-  animation: glow 1s ease-in-out infinite;
+  color: var(--black);
 }
 
 .logoTheme {
-  background: var(--gradient-sunset);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer 3s ease-in-out infinite;
+  color: var(--primary-600);
 }
 
-/* Efectos de Hover para la Navegación */
-.nav:hover {
-  box-shadow: var(--shadow-neon);
-}
-
-/* Responsive Design */
 @media screen and (max-width: 768px) {
   .nav {
     height: 6rem;
   }
-  
-  .navCenter {
-    padding: 0 1rem;
-  }
-  
   .logo {
     margin-top: 0.25rem;
-    font-size: 1.4rem;
+    font-size: 1.15rem;
   }
-}
-
-@media screen and (min-width: 1024px) {
-  .navCenter {
-    padding: 0 3rem;
-  }
-  
-  .logo {
-    font-size: 2rem;
-  }
-}
-
-/* Animaciones específicas para el logo */
-@keyframes logoGlow {
-  0%, 100% {
-    text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
-  }
-  50% {
-    text-shadow: 0 0 50px rgba(102, 126, 234, 0.8);
-  }
-}
-
-.logo:hover {
-  animation: logoGlow 2s ease-in-out infinite;
 }

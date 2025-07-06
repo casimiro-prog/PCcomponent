@@ -120,7 +120,7 @@ export const SANTIAGO_ZONES = [
   {
     "id": "vista_alegre",
     "name": "Vista Alegre",
-    "cost": 75
+    "cost": 500
   },
   {
     "id": "sueno",
@@ -138,29 +138,19 @@ export const SANTIAGO_ZONES = [
     "cost": 500
   },
   {
-    "id": "reparto_flores",
-    "name": "Reparto Flores",
-    "cost": 350
-  },
-  {
     "id": "micro_9",
     "name": "Micro 7, 8 , 9",
     "cost": 300
   },
   {
-    "id": "micro_4",
-    "name": "Micro 4",
-    "cost": 100
-  },
-  {
     "id": "alameda",
     "name": "Alameda",
-    "cost": 300
+    "cost": 250
   },
   {
     "id": "puerto",
     "name": "El Caney",
-    "cost": 800
+    "cost": 1000
   },
   {
     "id": "siboney",
@@ -170,12 +160,12 @@ export const SANTIAGO_ZONES = [
   {
     "id": "ciudamar",
     "name": "Distrito José Martí",
-    "cost": 500
+    "cost": 200
   },
   {
     "id": "marimon",
     "name": "Marimon",
-    "cost": 300
+    "cost": 150
   },
   {
     "id": "los_cangrejitos",
@@ -190,32 +180,32 @@ export const SANTIAGO_ZONES = [
   {
     "id": "versalles",
     "name": "Versalles",
-    "cost": 800
+    "cost": 1000
   },
   {
     "id": "portuondo",
     "name": "Portuondo",
-    "cost": 500
+    "cost": 600
   },
   {
     "id": "30_de_noviembre",
     "name": "30 de Noviembre",
-    "cost": 500
+    "cost": 600
   },
   {
     "id": "rajayoga",
     "name": "Rajayoga",
-    "cost": 600
+    "cost": 800
   },
   {
     "id": "antonio_maceo",
     "name": "Antonio Maceo",
-    "cost": 500
+    "cost": 600
   },
   {
     "id": "los_pinos",
     "name": "Los Pinos",
-    "cost": 400
+    "cost": 300
   }
 ];
 
@@ -267,7 +257,7 @@ export const DEFAULT_STORE_CONFIG = {
   "storeName": "Yero Shop!",
   "whatsappNumber": "+53 54690878",
   "storeAddress": "Santiago de Cuba, Cuba",
-  "lastModified": "2025-07-04T06:02:08.139Z",
+  "lastModified": "2025-07-05T03:46:50.315Z",
   "version": "1.0.0"
 };
 
@@ -327,194 +317,22 @@ export const CURRENCIES = {
     name: 'Dólar Estadounidense',
     symbol: '$',
     flag: '🇺🇸',
-    rate: 320,
+    rate: 384,
   },
   EUR: {
     code: 'EUR',
     name: 'Euro',
     symbol: '€',
     flag: '🇪🇺',
-    rate: 340,
+    rate: 425,
   },
   MLC: {
     code: 'MLC',
     name: 'Moneda Libremente Convertible',
     symbol: 'MLC',
     flag: '🏦',
-    rate: 270,
+    rate: 250,
   },
 };
 
 export const DEFAULT_CURRENCY = 'CUP';
-
-// MAPEO DE COLORES HEXADECIMALES A NOMBRES
-export const COLOR_NAMES = {
-  '#000000': 'Negro',
-  '#ffffff': 'Blanco',
-  '#ff0000': 'Rojo',
-  '#00ff00': 'Verde',
-  '#0000ff': 'Azul',
-  '#ffff00': 'Amarillo',
-  '#ff00ff': 'Magenta',
-  '#00ffff': 'Cian',
-  '#800000': 'Marrón',
-  '#808000': 'Oliva',
-  '#008000': 'Verde Oscuro',
-  '#800080': 'Púrpura',
-  '#008080': 'Verde Azulado',
-  '#000080': 'Azul Marino',
-  '#c0c0c0': 'Plata',
-  '#808080': 'Gris',
-  '#ffa500': 'Naranja',
-  '#ffc0cb': 'Rosa',
-  '#a52a2a': 'Marrón Rojizo',
-  '#dda0dd': 'Ciruela',
-  '#98fb98': 'Verde Pálido',
-  '#f0e68c': 'Caqui',
-  '#deb887': 'Madera',
-  '#5f9ea0': 'Azul Cadete',
-  '#ff1493': 'Rosa Intenso',
-  '#00bfff': 'Azul Cielo',
-  '#32cd32': 'Verde Lima',
-  '#ffd700': 'Dorado',
-  '#dc143c': 'Carmesí',
-  '#00ced1': 'Turquesa Oscuro',
-  '#ff6347': 'Tomate',
-  '#40e0d0': 'Turquesa',
-  '#ee82ee': 'Violeta',
-  '#90ee90': 'Verde Claro',
-  '#ffb6c1': 'Rosa Claro',
-  '#add8e6': 'Azul Claro',
-  '#f0f8ff': 'Azul Alicia',
-  '#faebd7': 'Blanco Antiguo',
-  '#7fffd4': 'Aguamarina',
-  '#f5f5dc': 'Beige',
-  '#ffe4c4': 'Bizcocho',
-  '#a52a2a': 'Marrón',
-  '#deb887': 'Madera Clara',
-  '#5f9ea0': 'Azul Cadete',
-  '#7fff00': 'Verde Chartreuse',
-  '#d2691e': 'Chocolate',
-  '#ff7f50': 'Coral',
-  '#6495ed': 'Azul Aciano',
-  '#fff8dc': 'Seda de Maíz',
-  '#dc143c': 'Carmesí',
-  '#00008b': 'Azul Oscuro',
-  '#008b8b': 'Cian Oscuro',
-  '#b8860b': 'Vara de Oro Oscura',
-  '#a9a9a9': 'Gris Oscuro',
-  '#006400': 'Verde Oscuro',
-  '#bdb76b': 'Caqui Oscuro',
-  '#8b008b': 'Magenta Oscuro',
-  '#556b2f': 'Verde Oliva Oscuro',
-  '#ff8c00': 'Naranja Oscuro',
-  '#9932cc': 'Orquídea Oscuro',
-  '#8b0000': 'Rojo Oscuro',
-  '#e9967a': 'Salmón Oscuro',
-  '#8fbc8f': 'Verde Mar Oscuro',
-  '#483d8b': 'Azul Pizarra Oscuro',
-  '#2f4f4f': 'Gris Pizarra Oscuro',
-  '#00ced1': 'Turquesa Oscuro',
-  '#9400d3': 'Violeta Oscuro',
-  '#ff1493': 'Rosa Intenso',
-  '#00bfff': 'Azul Cielo Intenso',
-  '#696969': 'Gris Tenue',
-  '#1e90ff': 'Azul Dodger',
-  '#b22222': 'Ladrillo Refractario',
-  '#fffaf0': 'Blanco Floral',
-  '#228b22': 'Verde Bosque',
-  '#dcdcdc': 'Gainsboro',
-  '#f8f8ff': 'Blanco Fantasma',
-  '#ffd700': 'Oro',
-  '#daa520': 'Vara de Oro',
-  '#808080': 'Gris',
-  '#008000': 'Verde',
-  '#adff2f': 'Verde Amarillo',
-  '#f0fff0': 'Rocío de Miel',
-  '#ff69b4': 'Rosa Caliente',
-  '#cd5c5c': 'Rojo Indio',
-  '#4b0082': 'Índigo',
-  '#fffff0': 'Marfil',
-  '#f0e68c': 'Caqui',
-  '#e6e6fa': 'Lavanda',
-  '#fff0f5': 'Rubor Lavanda',
-  '#7cfc00': 'Verde Césped',
-  '#fffacd': 'Gasa de Limón',
-  '#add8e6': 'Azul Claro',
-  '#f08080': 'Coral Claro',
-  '#e0ffff': 'Cian Claro',
-  '#fafad2': 'Vara de Oro Clara',
-  '#d3d3d3': 'Gris Claro',
-  '#90ee90': 'Verde Claro',
-  '#ffb6c1': 'Rosa Claro',
-  '#ffa07a': 'Salmón Claro',
-  '#20b2aa': 'Verde Mar Claro',
-  '#87cefa': 'Azul Cielo Claro',
-  '#778899': 'Gris Pizarra Claro',
-  '#b0c4de': 'Azul Acero Claro',
-  '#ffffe0': 'Amarillo Claro',
-  '#00ff00': 'Lima',
-  '#32cd32': 'Verde Lima',
-  '#faf0e6': 'Lino',
-  '#ff00ff': 'Magenta',
-  '#800000': 'Granate',
-  '#66cdaa': 'Aguamarina Medio',
-  '#0000cd': 'Azul Medio',
-  '#ba55d3': 'Orquídea Medio',
-  '#9370db': 'Púrpura Medio',
-  '#3cb371': 'Verde Mar Medio',
-  '#7b68ee': 'Azul Pizarra Medio',
-  '#00fa9a': 'Verde Primavera Medio',
-  '#48d1cc': 'Turquesa Medio',
-  '#c71585': 'Rojo Violeta Medio',
-  '#191970': 'Azul Medianoche',
-  '#f5fffa': 'Crema de Menta',
-  '#ffe4e1': 'Rosa Brumoso',
-  '#ffe4b5': 'Mocasín',
-  '#ffdead': 'Blanco Navajo',
-  '#000080': 'Azul Marino',
-  '#fdf5e6': 'Encaje Antiguo',
-  '#808000': 'Oliva',
-  '#6b8e23': 'Verde Oliva Opaco',
-  '#ffa500': 'Naranja',
-  '#ff4500': 'Rojo Naranja',
-  '#da70d6': 'Orquídea',
-  '#eee8aa': 'Vara de Oro Pálida',
-  '#98fb98': 'Verde Pálido',
-  '#afeeee': 'Turquesa Pálido',
-  '#db7093': 'Rojo Violeta Pálido',
-  '#ffefd5': 'Látigo de Papaya',
-  '#ffdab9': 'Melocotón',
-  '#cd853f': 'Perú',
-  '#ffc0cb': 'Rosa',
-  '#dda0dd': 'Ciruela',
-  '#b0e0e6': 'Azul Polvo',
-  '#800080': 'Púrpura',
-  '#ff0000': 'Rojo',
-  '#bc8f8f': 'Rosa Marrón',
-  '#4169e1': 'Azul Real',
-  '#8b4513': 'Marrón Silla',
-  '#fa8072': 'Salmón',
-  '#f4a460': 'Marrón Arena',
-  '#2e8b57': 'Verde Mar',
-  '#fff5ee': 'Concha Marina',
-  '#a0522d': 'Siena',
-  '#c0c0c0': 'Plata',
-  '#87ceeb': 'Azul Cielo',
-  '#6a5acd': 'Azul Pizarra',
-  '#708090': 'Gris Pizarra',
-  '#fffafa': 'Nieve',
-  '#00ff7f': 'Verde Primavera',
-  '#4682b4': 'Azul Acero',
-  '#d2b48c': 'Bronceado',
-  '#008080': 'Verde Azulado',
-  '#d8bfd8': 'Cardo',
-  '#ff6347': 'Tomate',
-  '#40e0d0': 'Turquesa',
-  '#ee82ee': 'Violeta',
-  '#f5deb3': 'Trigo',
-  '#ffffff': 'Blanco',
-  '#f5f5f5': 'Humo Blanco',
-  '#ffff00': 'Amarillo',
-  '#9acd32': 'Verde Amarillo'
-};

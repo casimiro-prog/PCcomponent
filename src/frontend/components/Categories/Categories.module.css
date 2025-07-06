@@ -1,59 +1,30 @@
 .categoryContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  padding: 2rem 0;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
 }
-
 .category {
   display: grid;
   place-items: center;
-  height: 18rem;
+  height: 15rem;
   color: var(--white);
   letter-spacing: var(--letterSpacing);
-  border-radius: var(--borderRadiusLarge);
-  font-size: 1.4rem;
-  font-weight: 700;
+  border-radius: var(--borderRadius);
+  font-size: 1.25rem;
   transition: var(--transition);
-  box-shadow: var(--shadow-cosmic);
+  box-shadow: var(--shadow-2);
+  font-weight: bold;
   cursor: pointer;
   text-transform: capitalize;
   position: relative;
   overflow: hidden;
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-backdrop);
-  border: 1px solid var(--glass-border);
-}
-
-.category::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-  transform: translateX(-100%);
-  transition: var(--transition);
-  z-index: 2;
-}
-
-.category:hover::before {
-  transform: translateX(100%);
 }
 
 .categoryContainer img {
   height: 100%;
   width: 100%;
-  object-fit: cover;
-  filter: blur(1px) brightness(0.7);
-  transition: var(--transition);
-  border-radius: var(--borderRadiusLarge);
-}
-
-.category:hover img {
-  filter: blur(0px) brightness(0.9);
-  transform: scale(1.1);
+  object-fit: contain;
+  filter: blur(2.5px);
 }
 
 .category div {
@@ -63,186 +34,20 @@
   height: 100%;
   width: 100%;
   color: var(--white);
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3));
+  background: rgba(0, 0, 0, 0.5);
   text-align: center;
   display: grid;
   place-content: center;
-  border-radius: var(--borderRadiusLarge);
-  transition: var(--transition);
-  z-index: 1;
-  backdrop-filter: blur(5px);
-  font-family: var(--headingFont);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
-}
-
-.category:hover div {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
-  transform: scale(1.02);
-}
-
-.category:hover {
-  transform: translateY(-8px) scale(1.03);
-  box-shadow: var(--shadow-neon);
-  border-color: var(--primary-400);
-}
-
-.category:active {
-  transform: translateY(-4px) scale(1.01);
-}
-
-/* Efectos de Glassmorphism Mejorados */
-.category::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: var(--transition);
-  pointer-events: none;
-  z-index: 3;
-}
-
-.category:hover::after {
-  width: 300px;
-  height: 300px;
-}
-
-/* Animaciones de Entrada */
-.category {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-.category:nth-child(1) { animation-delay: 0.1s; }
-.category:nth-child(2) { animation-delay: 0.2s; }
-.category:nth-child(3) { animation-delay: 0.3s; }
-.category:nth-child(4) { animation-delay: 0.4s; }
-.category:nth-child(5) { animation-delay: 0.5s; }
-.category:nth-child(6) { animation-delay: 0.6s; }
-
-/* Responsive Design */
-@media screen and (max-width: 768px) {
-  .categoryContainer {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    padding: 1rem 0;
-  }
-  
-  .category {
-    height: 14rem;
-    font-size: 1.1rem;
-  }
 }
 
 @media screen and (min-width: 768px) {
   .categoryContainer {
-    gap: 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.5rem;
   }
-  
-  .category {
-    height: 20rem;
-    font-size: 1.6rem;
+
+  .category:hover {
+    box-shadow: var(--shadow-4);
+    scale: 1.05;
   }
-}
-
-@media screen and (min-width: 1024px) {
-  .categoryContainer {
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 3rem;
-  }
-  
-  .category {
-    height: 22rem;
-    font-size: 1.8rem;
-  }
-}
-
-/* Efectos de Hover Específicos por Categoría */
-.category[data-category="laptop"]:hover div {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(147, 51, 234, 0.8));
-}
-
-.category[data-category="mobile"]:hover div {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.8), rgba(59, 130, 246, 0.8));
-}
-
-.category[data-category="tv"]:hover div {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(245, 101, 101, 0.8));
-}
-
-.category[data-category="earphone"]:hover div {
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.8), rgba(236, 72, 153, 0.8));
-}
-
-.category[data-category="smartwatch"]:hover div {
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.8), rgba(245, 158, 11, 0.8));
-}
-
-/* Efectos de Partículas para Categorías */
-.category:hover {
-  position: relative;
-}
-
-.category:hover::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: 
-    radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.3), transparent),
-    radial-gradient(1px 1px at 40px 70px, rgba(255, 255, 255, 0.2), transparent);
-  background-repeat: repeat;
-  background-size: 100px 80px;
-  animation: particlesFloat 10s linear infinite;
-  pointer-events: none;
-  z-index: 4;
-  border-radius: var(--borderRadiusLarge);
-}
-
-/* Efectos de Texto Brillante */
-.category div {
-  position: relative;
-}
-
-.category:hover div::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent 25%, rgba(255, 255, 255, 0.3) 50%, transparent 75%);
-  background-size: 200% 100%;
-  animation: shimmer 2s ease-in-out infinite;
-  border-radius: var(--borderRadiusLarge);
-}
-
-/* Efectos de Ripple */
-.category {
-  position: relative;
-  overflow: hidden;
-}
-
-.category::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-  z-index: 5;
-}
-
-.category:active::before {
-  width: 400px;
-  height: 400px;
 }
