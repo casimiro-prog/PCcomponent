@@ -33,26 +33,53 @@ export const initialFiltersState = {
   }
 */
 
+// Función para calcular rangos de precio dinámicos y adaptativos
+const calculateDynamicPriceRange = (products) => {
+  if (!products || products.length === 0) {
+    return { minPrice: 0, maxPrice: 100000 };
+  }
+
+  const prices = products.map(({ price }) => price).filter(price => price > 0);
+  
+  if (prices.length === 0) {
+    return { minPrice: 0, maxPrice: 100000 };
+  }
+
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+  
+  // Agregar un margen del 5% para mejor UX
+  const priceRange = maxPrice - minPrice;
+  const margin = priceRange * 0.05;
+  
+  const adjustedMinPrice = Math.max(0, Math.floor(minPrice - margin));
+  const adjustedMaxPrice = Math.ceil(maxPrice + margin);
+  
+  // Redondear a números más amigables
+  const roundedMinPrice = Math.floor(adjustedMinPrice / 1000) * 1000;
+  const roundedMaxPrice = Math.ceil(adjustedMaxPrice / 1000) * 1000;
+  
+  console.log(`💰 Rango de precios calculado: ${roundedMinPrice.toLocaleString()} - ${roundedMaxPrice.toLocaleString()} CUP`);
+  
+  return {
+    minPrice: roundedMinPrice,
+    maxPrice: roundedMaxPrice
+  };
+};
+
 export const filtersReducer = (state, action) => {
   switch (action.type) {
     case FILTERS_ACTION.GET_PRODUCTS_FROM_PRODUCT_CONTEXT:
       const allProductsCloned = structuredClone(action.payload?.products);
 
-      const allPrices = allProductsCloned.map(({ price }) => price);
-
       const filteredProducts = givePaginatedList(allProductsCloned);
 
-      const allCategoryNames = action.payload?.categories.map(
-        ({ categoryName }) => categoryName
-      );
+      const allCategoryNames = action.payload?.categories
+        ?.filter(category => !category.disabled) // Solo categorías habilitadas
+        ?.map(({ categoryName }) => categoryName) || [];
 
-      let minPrice = 0,
-        maxPrice = 0;
-
-      if (allProductsCloned.length > 1) {
-        maxPrice = Math.max(...allPrices);
-        minPrice = Math.min(...allPrices);
-      }
+      // Calcular rango de precios dinámico y adaptativo
+      const { minPrice, maxPrice } = calculateDynamicPriceRange(allProductsCloned);
 
       return {
         ...state,
@@ -117,6 +144,10 @@ export const filtersReducer = (state, action) => {
       const allUncheckedCategoryObj = convertArrayToObjectWithPropertyFALSE(
         Object.keys(category)
       );
+      
+      // Recalcular rango de precios al limpiar filtros
+      const { minPrice: resetMinPrice, maxPrice: resetMaxPrice } = calculateDynamicPriceRange(state.allProducts);
+      
       return {
         ...state,
         filters: {
@@ -124,7 +155,7 @@ export const filtersReducer = (state, action) => {
           search: '',
           category: allUncheckedCategoryObj,
           company: 'all',
-          price: [state.minPrice, state.maxPrice],
+          price: [resetMinPrice, resetMaxPrice],
           rating: -1,
           sortByOption: '',
         },

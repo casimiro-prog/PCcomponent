@@ -19,18 +19,18 @@ const FooterLinksManager = () => {
 
   const [linkForm, setLinkForm] = useState(initialLinkState);
 
-  // Iconos predefinidos disponibles
+  // Iconos predefinidos disponibles con emojis modernos
   const availableIcons = [
-    { value: 'AiOutlineTwitter', label: '🐦 Twitter', component: 'AiOutlineTwitter' },
-    { value: 'AiFillLinkedin', label: '💼 LinkedIn', component: 'AiFillLinkedin' },
-    { value: 'AiFillGithub', label: '🐙 GitHub', component: 'AiFillGithub' },
-    { value: 'AiFillFacebook', label: '📘 Facebook', component: 'AiFillFacebook' },
-    { value: 'AiFillInstagram', label: '📷 Instagram', component: 'AiFillInstagram' },
-    { value: 'AiFillYoutube', label: '📺 YouTube', component: 'AiFillYoutube' },
-    { value: 'AiOutlineWhatsApp', label: '💬 WhatsApp', component: 'AiOutlineWhatsApp' },
-    { value: 'AiOutlineMail', label: '📧 Email', component: 'AiOutlineMail' },
-    { value: 'AiOutlinePhone', label: '📞 Teléfono', component: 'AiOutlinePhone' },
-    { value: 'AiOutlineGlobal', label: '🌐 Sitio Web', component: 'AiOutlineGlobal' }
+    { value: 'AiOutlineTwitter', label: '🐦 Twitter', component: 'AiOutlineTwitter', social: 'twitter' },
+    { value: 'AiFillLinkedin', label: '💼 LinkedIn', component: 'AiFillLinkedin', social: 'linkedin' },
+    { value: 'AiFillGithub', label: '🐙 GitHub', component: 'AiFillGithub', social: 'github' },
+    { value: 'AiFillFacebook', label: '📘 Facebook', component: 'AiFillFacebook', social: 'facebook' },
+    { value: 'AiFillInstagram', label: '📷 Instagram', component: 'AiFillInstagram', social: 'instagram' },
+    { value: 'AiFillYoutube', label: '📺 YouTube', component: 'AiFillYoutube', social: 'youtube' },
+    { value: 'AiOutlineWhatsApp', label: '💬 WhatsApp', component: 'AiOutlineWhatsApp', social: 'whatsapp' },
+    { value: 'AiOutlineMail', label: '📧 Email', component: 'AiOutlineMail', social: 'email' },
+    { value: 'AiOutlinePhone', label: '📞 Teléfono', component: 'AiOutlinePhone', social: 'phone' },
+    { value: 'AiOutlineGlobal', label: '🌐 Sitio Web', component: 'AiOutlineGlobal', social: 'website' }
   ];
 
   // Cargar footer links desde localStorage
@@ -204,6 +204,11 @@ const FooterLinksManager = () => {
     return icon ? icon.label : iconName;
   };
 
+  const getSocialType = (iconName) => {
+    const icon = availableIcons.find(i => i.value === iconName);
+    return icon ? icon.social : 'default';
+  };
+
   return (
     <div className={styles.footerLinksManager}>
       <div className={styles.header}>
@@ -225,7 +230,7 @@ const FooterLinksManager = () => {
 
       <div className={styles.infoBox}>
         <h4>ℹ️ Información Importante</h4>
-        <p>Los cambios se aplican automáticamente en el footer de la tienda. Los links se muestran como iconos sociales en la parte inferior de todas las páginas. Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
+        <p>Los cambios se aplican automáticamente en el footer de la tienda con iconos modernos y animados. Los links se muestran como iconos sociales con efectos visuales atractivos en la parte inferior de todas las páginas. Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
       </div>
 
       {/* ESTADÍSTICAS */}
@@ -238,7 +243,7 @@ const FooterLinksManager = () => {
               <span className={styles.statLabel}>Total Links</span>
             </div>
             <div className={styles.statItem}>
-              <span className={styles.statNumber}>{footerLinks.filter(link => link.url.includes('social')).length}</span>
+              <span className={styles.statNumber}>{footerLinks.filter(link => link.url.includes('social') || link.url.includes('twitter') || link.url.includes('facebook') || link.url.includes('instagram')).length}</span>
               <span className={styles.statLabel}>Redes Sociales</span>
             </div>
             <div className={styles.statItem}>
@@ -336,7 +341,11 @@ const FooterLinksManager = () => {
         ) : (
           <div className={styles.linksGrid}>
             {footerLinks.map(link => (
-              <div key={link.id} className={styles.linkCard}>
+              <div 
+                key={link.id} 
+                className={styles.linkCard}
+                data-social={getSocialType(link.icon)}
+              >
                 <div className={styles.linkIcon}>
                   <span>{getIconDisplay(link.icon)}</span>
                 </div>
@@ -350,13 +359,13 @@ const FooterLinksManager = () => {
                     onClick={() => editLink(link)}
                     className="btn btn-primary"
                   >
-                    Editar
+                    ✏️ Editar
                   </button>
                   <button
                     onClick={() => deleteLink(link.id)}
                     className="btn btn-danger"
                   >
-                    Eliminar
+                    🗑️ Eliminar
                   </button>
                 </div>
               </div>

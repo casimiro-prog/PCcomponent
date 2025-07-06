@@ -301,7 +301,7 @@ const CheckoutDetails = ({
       message += `   📊 *Cantidad:* ${item.qty} unidad${item.qty > 1 ? 'es' : ''}\n`;
       message += `   💵 *Precio unitario:* ${formatPriceWithCode(item.price)}\n`;
       message += `   💰 *Subtotal:* ${formatPriceWithCode(subtotal)}\n`;
-      message += `   ─────────────────────────────────────────────────────────\n`;
+      message += `   ───────────────────────────────────\n`;
     });
     
     // Resumen financiero profesional
@@ -341,11 +341,13 @@ const CheckoutDetails = ({
     message += `• Mantenga este número de pedido para referencia\n`;
     message += `• Los precios están en ${currency.name} (${currency.code})\n\n`;
     
+    message += `───────────────────────────────────\n`;
     message += `🏪 *Yero Shop!*\n`;
     message += `"La tienda online de compras hecha a tu medida" ✨\n`;
     message += `📍 Santiago de Cuba, Cuba\n`;
     message += `📱 WhatsApp: ${STORE_WHATSAPP}\n`;
-    message += `🌐 Tienda online: https://yeroshop.vercel.app\n\n`;
+    message += `🌐 Tienda online: https://yeroshop.vercel.app\n`;
+    message += `───────────────────────────────────\n\n`;
     message += `¡Gracias por confiar en nosotros! 🙏\n`;
     message += `Su satisfacción es nuestra prioridad 💯`;
 
