@@ -33,37 +33,91 @@ export const initialFiltersState = {
   }
 */
 
-// Función para calcular rangos de precio dinámicos y adaptativos
+// Función mejorada para calcular rangos de precio dinámicos y adaptativos
 const calculateDynamicPriceRange = (products) => {
-  if (!products || products.length === 0) {
-    return { minPrice: 0, maxPrice: 100000 };
-  }
-
-  const prices = products.map(({ price }) => price).filter(price => price > 0);
+  console.log('🔍 Calculando rango de precios para', products?.length || 0, 'productos');
   
-  if (prices.length === 0) {
+  if (!products || products.length === 0) {
+    console.log('⚠️ No hay productos, usando rango por defecto');
     return { minPrice: 0, maxPrice: 100000 };
   }
 
+  // Filtrar productos con precios válidos
+  const validProducts = products.filter(product => 
+    product && 
+    typeof product.price === 'number' && 
+    product.price > 0 && 
+    !isNaN(product.price)
+  );
+  
+  if (validProducts.length === 0) {
+    console.log('⚠️ No hay productos con precios válidos, usando rango por defecto');
+    return { minPrice: 0, maxPrice: 100000 };
+  }
+
+  const prices = validProducts.map(({ price }) => price);
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
   
-  // Agregar un margen del 5% para mejor UX
+  console.log(`📊 Precios encontrados: Min=${minPrice.toLocaleString()}, Max=${maxPrice.toLocaleString()}`);
+  
+  // Calcular rango y margen adaptativo
   const priceRange = maxPrice - minPrice;
-  const margin = priceRange * 0.05;
   
-  const adjustedMinPrice = Math.max(0, Math.floor(minPrice - margin));
-  const adjustedMaxPrice = Math.ceil(maxPrice + margin);
+  // Margen adaptativo: 10% para rangos pequeños, 5% para rangos grandes
+  const marginPercent = priceRange < 50000 ? 0.1 : 0.05;
+  const margin = priceRange * marginPercent;
   
-  // Redondear a números más amigables
-  const roundedMinPrice = Math.floor(adjustedMinPrice / 1000) * 1000;
-  const roundedMaxPrice = Math.ceil(adjustedMaxPrice / 1000) * 1000;
+  // Aplicar margen con límites sensatos
+  const adjustedMinPrice = Math.max(0, minPrice - margin);
+  const adjustedMaxPrice = maxPrice + margin;
   
-  console.log(`💰 Rango de precios calculado: ${roundedMinPrice.toLocaleString()} - ${roundedMaxPrice.toLocaleString()} CUP`);
+  // Redondeo inteligente basado en el rango de precios
+  let roundingFactor;
+  if (adjustedMaxPrice <= 10000) {
+    roundingFactor = 100; // Redondear a centenas
+  } else if (adjustedMaxPrice <= 100000) {
+    roundingFactor = 1000; // Redondear a miles
+  } else {
+    roundingFactor = 10000; // Redondear a decenas de miles
+  }
+  
+  const roundedMinPrice = Math.floor(adjustedMinPrice / roundingFactor) * roundingFactor;
+  const roundedMaxPrice = Math.ceil(adjustedMaxPrice / roundingFactor) * roundingFactor;
+  
+  // Verificar que el rango sea sensato
+  const finalMinPrice = Math.max(0, roundedMinPrice);
+  const finalMaxPrice = Math.max(finalMinPrice + roundingFactor, roundedMaxPrice);
+  
+  console.log(`💰 Rango final calculado: ${finalMinPrice.toLocaleString()} - ${finalMaxPrice.toLocaleString()} CUP`);
+  console.log(`🎯 Factor de redondeo usado: ${roundingFactor.toLocaleString()}`);
+  console.log(`📈 Margen aplicado: ${marginPercent * 100}%`);
   
   return {
-    minPrice: roundedMinPrice,
-    maxPrice: roundedMaxPrice
+    minPrice: finalMinPrice,
+    maxPrice: finalMaxPrice
+  };
+};
+
+// Función para sincronizar el rango de precios con productos actualizados
+const syncPriceRangeWithProducts = (state, newProducts) => {
+  const { minPrice, maxPrice } = calculateDynamicPriceRange(newProducts);
+  
+  // Actualizar el rango de precios en los filtros si es necesario
+  const currentPriceFilter = state.filters.price;
+  const needsUpdate = 
+    currentPriceFilter[0] < minPrice || 
+    currentPriceFilter[1] > maxPrice ||
+    (currentPriceFilter[0] === state.minPrice && currentPriceFilter[1] === state.maxPrice);
+  
+  const updatedPriceFilter = needsUpdate ? [minPrice, maxPrice] : currentPriceFilter;
+  
+  console.log(`🔄 Sincronización de precios: ${needsUpdate ? 'ACTUALIZADO' : 'MANTENIDO'}`);
+  
+  return {
+    minPrice,
+    maxPrice,
+    priceFilter: updatedPriceFilter
   };
 };
 
@@ -145,11 +199,15 @@ export const filtersReducer = (state, action) => {
         Object.keys(category)
       );
       
-      // Recalcular rango de precios al limpiar filtros
+      // Recalcular rango de precios al limpiar filtros para asegurar sincronización
       const { minPrice: resetMinPrice, maxPrice: resetMaxPrice } = calculateDynamicPriceRange(state.allProducts);
+      
+      console.log('🧹 Limpiando filtros y recalculando rango de precios');
       
       return {
         ...state,
+        minPrice: resetMinPrice,
+        maxPrice: resetMaxPrice,
         filters: {
           ...state.filters,
           search: '',
@@ -271,6 +329,13 @@ export const filtersReducer = (state, action) => {
 
       // pagination logic
       tempProducts = givePaginatedList(tempProducts);
+
+      // Verificar si necesitamos sincronizar el rango de precios después del filtrado
+      const filteredProductsFlat = tempProducts.flat();
+      if (filteredProductsFlat.length > 0) {
+        const { minPrice: filteredMinPrice, maxPrice: filteredMaxPrice } = calculateDynamicPriceRange(filteredProductsFlat);
+        console.log(`🎯 Productos filtrados: rango ${filteredMinPrice.toLocaleString()} - ${filteredMaxPrice.toLocaleString()}`);
+      }
 
       return {
         ...state,
