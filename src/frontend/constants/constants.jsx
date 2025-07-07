@@ -16,7 +16,7 @@ export const FOOTER_LINKS = [
     id: 3,
     icon: <AiFillGithub />,
     url: 'https://github.com/swastikpatro',
-  },
+  }
 ];
 
 export const ToastType = {
@@ -257,7 +257,7 @@ export const DEFAULT_STORE_CONFIG = {
   "storeName": "Yero Shop!",
   "whatsappNumber": "+53 54690878",
   "storeAddress": "Santiago de Cuba, Cuba",
-  "lastModified": "2025-07-05T03:46:50.315Z",
+  "lastModified": "2025-07-07T03:37:42.991Z",
   "version": "1.0.0"
 };
 
@@ -303,36 +303,36 @@ export const PRODUCT_CATEGORY_ICONS = {
   'default': '📦'
 };
 
-// CONSTANTES DE MONEDA
+// CONSTANTES DE MONEDA - ACTUALIZADAS DINÁMICAMENTE
 export const CURRENCIES = {
-  CUP: {
-    code: 'CUP',
-    name: 'Peso Cubano',
-    symbol: '$',
-    flag: '🇨🇺',
-    rate: 1,
+  "CUP": {
+    "code": "CUP",
+    "name": "Peso Cubano",
+    "symbol": "$",
+    "flag": "🇨🇺",
+    "rate": 1
   },
-  USD: {
-    code: 'USD',
-    name: 'Dólar Estadounidense',
-    symbol: '$',
-    flag: '🇺🇸',
-    rate: 384,
+  "USD": {
+    "code": "USD",
+    "name": "Dólar Estadounidense",
+    "symbol": "$",
+    "flag": "🇺🇸",
+    "rate": 384
   },
-  EUR: {
-    code: 'EUR',
-    name: 'Euro',
-    symbol: '€',
-    flag: '🇪🇺',
-    rate: 425,
+  "EUR": {
+    "code": "EUR",
+    "name": "Euro",
+    "symbol": "€",
+    "flag": "🇪🇺",
+    "rate": 425
   },
-  MLC: {
-    code: 'MLC',
-    name: 'Moneda Libremente Convertible',
-    symbol: 'MLC',
-    flag: '🏦',
-    rate: 250,
-  },
+  "MLC": {
+    "code": "MLC",
+    "name": "Moneda Libremente Convertible",
+    "symbol": "MLC",
+    "flag": "🏦",
+    "rate": 250
+  }
 };
 
 export const DEFAULT_CURRENCY = 'CUP';
