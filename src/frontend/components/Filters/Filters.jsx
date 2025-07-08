@@ -71,6 +71,19 @@ const Filters = ({
   // Calcular valores para mostrar en el slider
   const displayMinPrice = Math.max(0, minPriceFromContext);
   const displayMaxPrice = Math.max(displayMinPrice + 1000, maxPriceFromContext);
+  
+  // Usar el paso recomendado del contexto o calcular uno inteligente
+  const getSmartStep = () => {
+    const range = displayMaxPrice - displayMinPrice;
+    if (range <= 100) return 5;
+    if (range <= 500) return 25;
+    if (range <= 2000) return 50;
+    if (range <= 10000) return 250;
+    if (range <= 50000) return 500;
+    return 2500;
+  };
+  
+  const smartStep = getSmartStep();
   const currentPriceRange = [
     Math.max(displayMinPrice, priceFromContext[0]),
     Math.min(displayMaxPrice, priceFromContext[1])
@@ -100,7 +113,8 @@ const Filters = ({
         <legend>Rango de Precio</legend>
         
         <div className={styles.priceInfo}>
-          <small>Rango disponible: ${displayMinPrice.toLocaleString()} - ${displayMaxPrice.toLocaleString()} CUP</small>
+          <small>💰 Rango disponible: ${displayMinPrice.toLocaleString()} - ${displayMaxPrice.toLocaleString()} CUP</small>
+          <small>🎯 Paso inteligente: ${smartStep.toLocaleString()} CUP</small>
         </div>
 
         <Slider
@@ -111,7 +125,7 @@ const Filters = ({
           max={displayMaxPrice}
           value={currentPriceRange}
           onChange={updatePriceFilter}
-          step={Math.max(1000, Math.floor((displayMaxPrice - displayMinPrice) / 100))}
+          step={smartStep}
           disableSwap
           valueLabelFormat={(value) => `$${value.toLocaleString()}`}
           style={{
