@@ -34,7 +34,9 @@ const Checkout = () => {
   useEffect(() => {
     const currentTimer = timer.current;
     return () => {
-      clearTimeout(currentTimer);
+      if (currentTimer) {
+        clearTimeout(currentTimer);
+      }
     };
   }, []);
 

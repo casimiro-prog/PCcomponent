@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { STORE_LOCATION } from '../../constants/constants';
 import { toastHandler } from '../../utils/utils';
 import { ToastType } from '../../constants/constants';
 import styles from './StoreLocationMap.module.css';
 
 const StoreLocationMap = () => {
-  const [userLocation, setUserLocation] = useState(null);
   const [distanceData, setDistanceData] = useState(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [locationError, setLocationError] = useState(null);
@@ -27,7 +26,6 @@ const StoreLocationMap = () => {
           lat: position.coords.latitude,
           lng: position.coords.longitude
         };
-        setUserLocation(userCoords);
         calculateDistance(userCoords);
       },
       (error) => {

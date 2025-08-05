@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { toastHandler } from '../../../utils/utils';
 import { ToastType } from '../../../constants/constants';
 import styles from './MessagesManager.module.css';
@@ -10,7 +10,7 @@ const MessagesManager = () => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   // Mensajes predefinidos de la tienda organizados por categorías
-  const defaultMessages = {
+  const defaultMessages = useMemo(() => ({
     navigation: {
       'Explorar': 'Explorar',
       'Iniciar Sesión': 'Iniciar Sesión',
@@ -106,7 +106,7 @@ const MessagesManager = () => {
       'La contraseña debe tener al menos 6 caracteres': 'La contraseña debe tener al menos 6 caracteres',
       'Las contraseñas no coinciden': 'Las contraseñas no coinciden'
     }
-  };
+  }), []);
 
   useEffect(() => {
     // Cargar mensajes desde localStorage o usar los predeterminados
