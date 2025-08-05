@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://f005.backblazeb2.com/file/120000/Yero+Shop/jethalalBanner.png" height="300" width="300" alt="logo"/>
+  <img src="https://f005.backblazeb2.com/file/120000/Yero+Shop/lovepik.png" height="300" width="300" alt="logo"/>
 
 # Yero Shop!
 
@@ -13,11 +13,11 @@
 
 ## **Enlace en vivo :**
 
-[Yero Shop!](https://yero-shop.vercel.app/)
+[Yero Shop!](https://yeroshop.vercel.app/)
 
 ## **DEMO**
 
-<a href="https://yero-shop.vercel.app/>
+<a href="https://yeroshop.vercel.app/>
     <p>Yero Shop! App 📱 - Watch Video</p>
     <img style="max-width:300px;" src="">
   </a>
