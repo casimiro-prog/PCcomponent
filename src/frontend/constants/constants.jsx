@@ -1,5 +1,6 @@
 import { AiFillLinkedin, AiOutlineTwitter } from 'react-icons/ai';
 import { MdOutlineFacebook } from 'react-icons/md';
+import { v4 as uuid } from 'uuid';
 
 export const FOOTER_LINKS = [
   {
@@ -251,17 +252,6 @@ export const MAX_RESPONSES_IN_CACHE_TO_STORE = 50;
 
 // WhatsApp de la tienda - ACTUALIZADO
 export const STORE_WHATSAPP = '+53 54690878';
-
-// Ubicación de la tienda
-export const STORE_LOCATION = {
-  name: 'Yero Shop!',
-  address: 'Reparto Nuevo Vista Alegre, Santiago de Cuba',
-  coordinates: {
-    lat: 20.039585,
-    lng: -75.849663
-  },
-  googleMapsUrl: 'https://www.google.com/maps/place/20%C2%B002\'22.5%22N+75%C2%B050\'58.8%22W/@20.0394604,-75.8495414,180m/data=!3m1!1e3!4m4!3m3!8m2!3d20.039585!4d-75.849663?entry=ttu&g_ep=EgoyMDI1MDczMC4wIKXMDSoASAFQAw%3D%3D'
-};
 
 // Configuración por defecto de la tienda - ACTUALIZADA
 export const DEFAULT_STORE_CONFIG = {

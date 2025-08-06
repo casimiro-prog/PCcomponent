@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { v4 as uuid } from 'uuid';
 import FormRow from '../FormRow';
 import Price from '../Price';
-import StoreLocationMap from './StoreLocationMap';
+import StoreLocationMap from '../StoreLocationMap/StoreLocationMap';
 import styles from './AddressForm.module.css';
 import {
   toastHandler,
@@ -446,20 +446,20 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
               </div>
             </div>
           ) : (
-            <>
-              <StoreLocationMap />
-              <div className={styles.formGroup}>
-                <label htmlFor='additionalInfo'>💬 ¿Quieres aclararnos algo?</label>
-                <textarea
-                  name='additionalInfo'
-                  id='additionalInfo'
-                  className='form-textarea'
-                  placeholder='Información adicional sobre tu pedido (opcional)'
-                  value={inputs.additionalInfo}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </>
+           <div className={styles.pickupSection}>
+             <StoreLocationMap />
+            <div className={styles.formGroup}>
+              <label htmlFor='additionalInfo'>💬 ¿Quieres aclararnos algo?</label>
+              <textarea
+                name='additionalInfo'
+                id='additionalInfo'
+                className='form-textarea'
+                placeholder='Información adicional sobre tu pedido (opcional)'
+                value={inputs.additionalInfo}
+                onChange={handleInputChange}
+              />
+            </div>
+           </div>
           )}
         </div>
 
