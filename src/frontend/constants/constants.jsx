@@ -253,6 +253,16 @@ export const MAX_RESPONSES_IN_CACHE_TO_STORE = 50;
 // WhatsApp de la tienda - ACTUALIZADO
 export const STORE_WHATSAPP = '+53 54690878';
 
+// Ubicación de la tienda - ACTUALIZADA
+export const STORE_LOCATION = {
+  name: 'Yero Shop!',
+  address: 'Santiago de Cuba, Cuba',
+  coordinates: {
+    lat: 20.039585,
+    lng: -75.849663
+  }
+};
+
 // Configuración por defecto de la tienda - ACTUALIZADA
 export const DEFAULT_STORE_CONFIG = {
   "storeName": "Yero Shop!",

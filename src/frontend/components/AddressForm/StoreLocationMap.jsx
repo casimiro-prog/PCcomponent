@@ -9,6 +9,13 @@ const StoreLocationMap = () => {
   const [isCalculating, setIsCalculating] = useState(false);
   const [locationError, setLocationError] = useState(null);
 
+  // Coordenadas de la tienda Yero Shop!
+  const STORE_COORDINATES = {
+    lat: 20.039585,
+    lng: -75.849663,
+    address: 'Santiago de Cuba, Cuba'
+  };
+
   // Función para obtener la ubicación del usuario
   const getUserLocation = () => {
     setIsCalculating(true);
@@ -59,12 +66,12 @@ const StoreLocationMap = () => {
   // Función para calcular distancia usando la fórmula de Haversine
   const calculateDistance = (userCoords) => {
     const R = 6371; // Radio de la Tierra en km
-    const dLat = (STORE_LOCATION.coordinates.lat - userCoords.lat) * Math.PI / 180;
-    const dLng = (STORE_LOCATION.coordinates.lng - userCoords.lng) * Math.PI / 180;
+    const dLat = (STORE_COORDINATES.lat - userCoords.lat) * Math.PI / 180;
+    const dLng = (STORE_COORDINATES.lng - userCoords.lng) * Math.PI / 180;
     
     const a = 
       Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(userCoords.lat * Math.PI / 180) * Math.cos(STORE_LOCATION.coordinates.lat * Math.PI / 180) * 
+      Math.cos(userCoords.lat * Math.PI / 180) * Math.cos(STORE_COORDINATES.lat * Math.PI / 180) * 
       Math.sin(dLng/2) * Math.sin(dLng/2);
     
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
@@ -108,7 +115,7 @@ const StoreLocationMap = () => {
 
   // Función para generar URLs de mapas
   const generateMapUrls = () => {
-    const { lat, lng } = STORE_LOCATION.coordinates;
+    const { lat, lng } = STORE_COORDINATES;
     
     return {
       googleMaps: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`,
@@ -123,13 +130,13 @@ const StoreLocationMap = () => {
     <div className={styles.storeLocationContainer}>
       <div className={styles.locationHeader}>
         <h4>🏪 Ubicación de Nuestra Tienda</h4>
-        <p>{STORE_LOCATION.name}</p>
-        <p className={styles.address}>{STORE_LOCATION.address}</p>
+        <p>Yero Shop!</p>
+        <p className={styles.address}>{STORE_COORDINATES.address}</p>
       </div>
 
       <div className={styles.mapContainer}>
         <iframe
-          src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d235.0!2d${STORE_LOCATION.coordinates.lng}!3d${STORE_LOCATION.coordinates.lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjDCsDAyJzIyLjUiTiA3NcKwNTAnNTguOCJX!5e0!3m2!1ses!2scu!4v1640000000000!5m2!1ses!2scu`}
+          src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d235.0!2d${STORE_COORDINATES.lng}!3d${STORE_COORDINATES.lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjDCsDAyJzIyLjUiTiA3NcKwNTAnNTguOCJX!5e0!3m2!1ses!2scu!4v1640000000000!5m2!1ses!2scu`}
           width="100%"
           height="200"
           style={{ border: 0, borderRadius: 'var(--borderRadius)' }}
@@ -141,7 +148,7 @@ const StoreLocationMap = () => {
       </div>
 
       <div className={styles.coordinatesInfo}>
-        <p><strong>📍 Coordenadas:</strong> {STORE_LOCATION.coordinates.lat}, {STORE_LOCATION.coordinates.lng}</p>
+        <p><strong>📍 Coordenadas:</strong> {STORE_COORDINATES.lat}, {STORE_COORDINATES.lng}</p>
       </div>
 
       <div className={styles.distanceSection}>
