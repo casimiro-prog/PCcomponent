@@ -6,6 +6,7 @@ import { v4 as uuid } from 'uuid';
 import FormRow from '../FormRow';
 import Price from '../Price';
 import StoreLocationMap from '../StoreLocationMap/StoreLocationMap';
+import PaymentMethodSelector from '../PaymentMethodSelector/PaymentMethodSelector';
 import styles from './AddressForm.module.css';
 import {
   toastHandler,
@@ -23,6 +24,12 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
   // ESTADO REACTIVO PARA DETECTAR CAMBIOS EN TIEMPO REAL
   const [canUseHomeDelivery, setCanUseHomeDelivery] = useState(false);
 
+  // ESTADO PARA EL MÉTODO DE PAGO
+  const [paymentMethodData, setPaymentMethodData] = useState({
+    method: 'cash',
+    fee: 0,
+    total: 0
+  });
   // EFECTO PARA ACTUALIZAR EL ESTADO CUANDO CAMBIE EL CARRITO O LA CONFIGURACIÓN
   useEffect(() => {
     // FUNCIÓN MEJORADA PARA VERIFICAR ENVÍO DISPONIBLE CON SINCRONIZACIÓN EN TIEMPO REAL
@@ -106,13 +113,19 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
     receiverPhone: '',
     receiverCountryCode: '+53', // Cuba por defecto
     additionalInfo: '',
+    paymentMethod: 'cash',
+    bankTransferFee: 0,
+    totalWithPaymentMethod: 0,
   };
 
   const [inputs, setInputs] = useState(
     isEditing ? {
       ...isEditingAndData,
       countryCode: isEditingAndData.countryCode || '+53',
-      receiverCountryCode: isEditingAndData.receiverCountryCode || '+53'
+      receiverCountryCode: isEditingAndData.receiverCountryCode || '+53',
+      paymentMethod: isEditingAndData.paymentMethod || 'cash',
+      bankTransferFee: isEditingAndData.bankTransferFee || 0,
+      totalWithPaymentMethod: isEditingAndData.totalWithPaymentMethod || 0,
     } : defaultState
   );
 
@@ -232,7 +245,10 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
       receiverPhone: inputs.receiverPhone ? `${inputs.receiverCountryCode} ${inputs.receiverPhone}` : '',
       deliveryCost: inputs.serviceType === SERVICE_TYPES.HOME_DELIVERY 
         ? SANTIAGO_ZONES.find(zone => zone.id === inputs.zone)?.cost || 0
-        : 0
+        : 0,
+      paymentMethod: paymentMethodData.method,
+      bankTransferFee: paymentMethodData.fee,
+      totalWithPaymentMethod: paymentMethodData.total
     };
 
     if (isAdding) {
@@ -463,6 +479,12 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
           )}
         </div>
 
+        {/* Selector de Método de Pago */}
+        <PaymentMethodSelector 
+          onPaymentMethodChange={handlePaymentMethodChange}
+          selectedMethod={inputs.paymentMethod}
+        />
+
         <div className={styles.formBtnContainer}>
           <button 
             type='submit' 
@@ -487,4 +509,14 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
   );
 };
 
+  // Manejar cambio de método de pago
+  const handlePaymentMethodChange = (paymentData) => {
+    setPaymentMethodData(paymentData);
+    setInputs(prev => ({
+      ...prev,
+      paymentMethod: paymentData.method,
+      bankTransferFee: paymentData.fee,
+      totalWithPaymentMethod: paymentData.total
+    }));
+  };
 export default AddressForm;

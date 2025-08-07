@@ -49,6 +49,9 @@ const CheckoutDetails = ({
     ? (selectedAddress?.deliveryCost || 0)
     : 0;
 
+  // Calcular recargo por método de pago
+  const paymentMethodFee = selectedAddress?.bankTransferFee || 0;
+  const isUsingBankTransfer = selectedAddress?.paymentMethod === 'bank_transfer';
   // Calcular descuento del cupón según la moneda seleccionada
   const priceAfterCouponApplied = activeCoupon
     ? -Math.floor((totalAmountFromContext * activeCoupon.discountPercent) / 100)
@@ -58,7 +61,8 @@ const CheckoutDetails = ({
     totalAmountFromContext +
     deliveryCost +
     CHARGE_AND_DISCOUNT.discount +
-    priceAfterCouponApplied;
+    priceAfterCouponApplied +
+    paymentMethodFee;
 
   const updateActiveCoupon = (couponObjClicked) => {
     setActiveCoupon(couponObjClicked);
@@ -434,6 +438,32 @@ const CheckoutDetails = ({
       }
     }
     
+    // INFORMACIÓN DEL MÉTODO DE PAGO
+    message += `\n`;
+    message += `---------------------\n`;
+    message += `💳 *MÉTODO DE PAGO*\n`;
+    message += `---------------------\n`;
+    if (isUsingBankTransfer) {
+      message += `🏦 *Modalidad:* Transferencia Bancaria\n`;
+      message += `⚠️ *Recargo aplicado:* +20% sobre productos\n`;
+      message += `💰 *Recargo en ${currency.code}:* ${formatPriceWithCode(paymentMethodFee)}\n`;
+      message += `📋 *Datos bancarios:*\n`;
+      message += `   • Banco: Banco Popular de Ahorro (BPA)\n`;
+      message += `   • Cuenta: 9205-9876-5432-1098\n`;
+      message += `   • Titular: Yero Shop S.A.\n`;
+      message += `   • CI: 12345678901\n`;
+      message += `📝 *Instrucciones:*\n`;
+      message += `   1. Transferir el monto total exacto\n`;
+      message += `   2. Enviar comprobante por WhatsApp\n`;
+      message += `   3. Incluir número de pedido #${orderNumber}\n`;
+      message += `   4. Esperar confirmación antes de recoger\n`;
+    } else {
+      message += `💰 *Modalidad:* Pago en Efectivo\n`;
+      message += `✅ *Sin recargos adicionales*\n`;
+      message += `🏪 *Lugar de pago:* Directamente en la tienda\n`;
+      message += `💵 *Monedas aceptadas:* CUP, USD, EUR, MLC\n`;
+    }
+    
     message += `\n`;
     
     // Productos con iconos y mejor formato MEJORADO
@@ -473,9 +503,18 @@ const CheckoutDetails = ({
       message += `🚛 *Costo de entrega:* GRATIS (Recogida en tienda)\n`;
     }
     
+    if (isUsingBankTransfer && paymentMethodFee > 0) {
+      message += `🏦 *Recargo transferencia bancaria (+20%):* ${formatPriceWithCode(paymentMethodFee)}\n`;
+    }
+    
     message += `---------------------------\n`;
     message += `💳 *TOTAL A PAGAR:* ${formatPriceWithCode(finalPriceToPay)}\n`;
     message += `💰 *Moneda:* ${currency.flag} ${currency.name} (${currency.code})\n`;
+    if (isUsingBankTransfer) {
+      message += `🏦 *Método:* Transferencia Bancaria (incluye recargo del 20%)\n`;
+    } else {
+      message += `💰 *Método:* Pago en Efectivo (sin recargos)\n`;
+    }
     message += `---------------------------\n\n`;
     
     // Información adicional profesional
@@ -646,6 +685,14 @@ const CheckoutDetails = ({
           <Price amount={totalAmountFromContext} />
         </div>
 
+        {isUsingBankTransfer && paymentMethodFee > 0 && (
+          <div className={styles.row}>
+            <span>🏦 Recargo transferencia bancaria (+20%)</span>
+            <span className={styles.bankFeeAmount}>
+              +<Price amount={paymentMethodFee} />
+            </span>
+          </div>
+        )}
         {activeCoupon && (
           <div className={styles.row}>
             <div className={styles.couponApplied}>
@@ -675,6 +722,23 @@ const CheckoutDetails = ({
 
       <hr />
 
+      {/* Indicador visual del método de pago */}
+      <div className={`${styles.paymentMethodIndicator} ${isUsingBankTransfer ? styles.bankTransfer : styles.cash}`}>
+        <div className={styles.paymentIcon}>
+          {isUsingBankTransfer ? '🏦' : '💰'}
+        </div>
+        <div className={styles.paymentText}>
+          <span className={styles.paymentLabel}>Método de Pago:</span>
+          <span className={styles.paymentName}>
+            {isUsingBankTransfer ? 'Transferencia Bancaria' : 'Pago en Efectivo'}
+          </span>
+          {isUsingBankTransfer && (
+            <span className={styles.paymentFee}>
+              (+20% recargo incluido)
+            </span>
+          )}
+        </div>
+      </div>
       <div className={`${styles.row} ${styles.totalPrice}`}>
         <span>💰 Precio Total</span>
         <Price amount={finalPriceToPay} />
