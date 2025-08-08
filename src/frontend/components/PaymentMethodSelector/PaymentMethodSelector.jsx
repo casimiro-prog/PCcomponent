@@ -1,6 +1,7 @@
 import React from 'react';
-import { PAYMENT_TYPES } from '../../constants/constants';
+import { PAYMENT_TYPES, getBankTransferSurcharge } from '../../constants/constants';
 import { useCurrencyContext } from '../../contexts/CurrencyContextProvider';
+import { useAllProductsContext } from '../../contexts/ProductsContextProvider';
 import Price from '../Price';
 import styles from './PaymentMethodSelector.module.css';
 
@@ -11,6 +12,7 @@ const PaymentMethodSelector = ({
   bankTransferSurcharge 
 }) => {
   const { getCurrentCurrency, formatPriceWithCode } = useCurrencyContext();
+  const { cart: cartFromContext } = useAllProductsContext();
   const currency = getCurrentCurrency();
 
   const handlePaymentChange = (paymentType) => {
@@ -19,6 +21,20 @@ const PaymentMethodSelector = ({
 
   const totalWithSurcharge = cartTotal + bankTransferSurcharge;
 
+  // Calcular recargo promedio para mostrar información
+  const calculateAverageSurcharge = () => {
+    if (cartFromContext.length === 0) return 0;
+    
+    let totalSurchargePercent = 0;
+    cartFromContext.forEach(cartItem => {
+      const productSurcharge = getBankTransferSurcharge(cartItem.category);
+      totalSurchargePercent += productSurcharge;
+    });
+    
+    return Math.round((totalSurchargePercent / cartFromContext.length) * 100) / 100;
+  };
+
+  const averageSurcharge = calculateAverageSurcharge();
   return (
     <div className={styles.paymentSelector}>
       <div className={styles.selectorHeader}>
@@ -107,7 +123,7 @@ const PaymentMethodSelector = ({
                   <Price amount={cartTotal} />
                 </div>
                 <div className={styles.priceRow}>
-                  <span>Recargo transferencia (20%):</span>
+                  <span>Recargo transferencia bancaria ({averageSurcharge}% promedio):</span>
                   <span className={styles.surchargeAmount}>
                     +<Price amount={bankTransferSurcharge} />
                   </span>

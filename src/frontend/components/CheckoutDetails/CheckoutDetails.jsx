@@ -13,7 +13,7 @@ import { toastHandler, Popper, generateOrderNumber } from '../../utils/utils';
 import { useAuthContext } from '../../contexts/AuthContextProvider';
 import { useNavigate } from 'react-router-dom';
 import PaymentMethodSelector from '../PaymentMethodSelector/PaymentMethodSelector';
-import { PAYMENT_TYPES, BANK_TRANSFER_SURCHARGE } from '../../constants/constants';
+import { PAYMENT_TYPES, getBankTransferSurcharge } from '../../constants/constants';
 
 const CheckoutDetails = ({
   timer,
@@ -57,10 +57,26 @@ const CheckoutDetails = ({
     ? -Math.floor((totalAmountFromContext * activeCoupon.discountPercent) / 100)
     : 0;
 
-  // Calcular recargo por transferencia bancaria (20% sobre el subtotal)
-  const bankTransferSurcharge = selectedPaymentMethod === PAYMENT_TYPES.BANK_TRANSFER
-    ? Math.floor((totalAmountFromContext * BANK_TRANSFER_SURCHARGE) / 100)
-    : 0;
+  // Calcular recargo por transferencia bancaria dinámico basado en productos del carrito
+  const calculateBankTransferSurcharge = () => {
+    if (selectedPaymentMethod !== PAYMENT_TYPES.BANK_TRANSFER) {
+      return 0;
+    }
+
+    let totalSurcharge = 0;
+    
+    cartFromContext.forEach(cartItem => {
+      const productCategory = cartItem.category;
+      const productSurcharge = getBankTransferSurcharge(productCategory);
+      const itemTotal = cartItem.price * cartItem.qty;
+      const itemSurcharge = (itemTotal * productSurcharge) / 100;
+      totalSurcharge += itemSurcharge;
+    });
+
+    return Math.floor(totalSurcharge);
+  };
+
+  const bankTransferSurcharge = calculateBankTransferSurcharge();
 
   const finalPriceToPay =
     totalAmountFromContext +
@@ -91,10 +107,10 @@ const CheckoutDetails = ({
     
     const currency = getCurrentCurrency();
     if (paymentMethod === PAYMENT_TYPES.BANK_TRANSFER) {
-      const surchargeAmount = Math.floor((totalAmountFromContext * BANK_TRANSFER_SURCHARGE) / 100);
+      const surchargeAmount = bankTransferSurcharge;
       toastHandler(
         ToastType.Info, 
-        `🏦 Transferencia bancaria seleccionada: +${BANK_TRANSFER_SURCHARGE}% recargo (${formatPriceWithCode(surchargeAmount)})`
+        `🏦 Transferencia bancaria seleccionada: recargo aplicado (${formatPriceWithCode(surchargeAmount)})`
       );
     } else {
       toastHandler(ToastType.Success, '💵 Pago en efectivo seleccionado: sin recargos adicionales');
@@ -702,7 +718,7 @@ const CheckoutDetails = ({
 
         {selectedPaymentMethod === PAYMENT_TYPES.BANK_TRANSFER && (
           <div className={styles.row}>
-            <span>🏦 Recargo transferencia bancaria ({BANK_TRANSFER_SURCHARGE}%)</span>
+            <span>🏦 Recargo transferencia bancaria</span>
             <span className={styles.surchargeAmount}>
               +<Price amount={bankTransferSurcharge} />
             </span>
