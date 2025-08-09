@@ -232,33 +232,6 @@ const SingleProductPage = () => {
           <p>{activeColorObj.colorQuantity}</p>
         </div>
 
-        {bankTransferEnabled && (
-          <div className={styles.bankTransferInfo}>
-            <h4>🏦 Información de Transferencia Bancaria</h4>
-            <div className={styles.bankTransferDetails}>
-              <div className={styles.bankTransferRow}>
-                <span>💵 Precio en efectivo:</span>
-                <Price amount={price} />
-              </div>
-              <div className={styles.bankTransferRow}>
-                <span>🏦 Recargo por transferencia ({productBankTransferSurcharge}%):</span>
-                <span className={styles.surchargeAmount}>+{formatPriceWithCode(bankTransferAmount)}</span>
-              </div>
-              <div className={`${styles.bankTransferRow} ${styles.totalRow}`}>
-                <span>💰 Total por transferencia bancaria:</span>
-                <span className={styles.totalAmount}>{formatPriceWithCode(totalWithBankTransfer)}</span>
-              </div>
-            </div>
-            <div className={styles.bankTransferNote}>
-              <span className={styles.noteIcon}>ℹ️</span>
-              <span className={styles.noteText}>
-                Este producto tiene un recargo del {productBankTransferSurcharge}% cuando se paga por transferencia bancaria. 
-                El recargo se aplica automáticamente al seleccionar este método de pago en el checkout.
-              </span>
-            </div>
-          </div>
-        )}
-
         <hr />
 
         <div className='btn-container'>

@@ -190,13 +190,6 @@ const ProductCard = ({ product }) => {
           ))}
         </div>
 
-        {showBankTransferInfo && (
-          <div className={styles.bankTransferBadge}>
-            <span className={styles.bankIcon}>🏦</span>
-            <span className={styles.bankText}>+{productBankTransferSurcharge}% transferencia</span>
-          </div>
-        )}
-
         <footer className={styles.footer}>
           <button
             disabled={isBothDisable || !inStock}
