@@ -34,6 +34,10 @@ const ProductCard = ({ product }) => {
   const { colors, stock } = product;
   const inStock = stock > 0;
 
+  // Obtener información de pago
+  const paymentType = product.paymentType || 'both';
+  const transferFeePercentage = product.transferFeePercentage || 5;
+
   const [activeColorObj, setActiveColorObj] = useState(colors[0]);
 
   const [isBothDisable, setIsBothBtnDisable] = useState(false);
@@ -166,6 +170,22 @@ const ProductCard = ({ product }) => {
             </>
           )}
         </main>
+
+        <div className={styles.paymentInfo}>
+          {paymentType === 'cash' && (
+            <span className={styles.paymentCash}>💰 Solo Efectivo</span>
+          )}
+          {paymentType === 'transfer' && (
+            <span className={styles.paymentTransfer}>
+              💳 Solo Transferencia (+{transferFeePercentage}%)
+            </span>
+          )}
+          {paymentType === 'both' && (
+            <span className={styles.paymentBoth}>
+              💰💳 Efectivo y Transferencia (+{transferFeePercentage}%)
+            </span>
+          )}
+        </div>
 
         <div
           className={

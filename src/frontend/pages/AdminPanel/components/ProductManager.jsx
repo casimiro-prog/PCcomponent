@@ -30,6 +30,11 @@ const ProductManager = () => {
     canUseCoupons: true // NUEVA PROPIEDAD PARA CUPONES
   });
 
+  const [paymentSettings, setPaymentSettings] = useState({
+    paymentType: 'both',
+    transferFeePercentage: 5
+  });
+
   // Cargar productos desde el contexto
   useEffect(() => {
     setLocalProducts(products || []);
@@ -89,6 +94,15 @@ const ProductManager = () => {
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
+    }));
+    setHasUnsavedChanges(true);
+  };
+
+  const handlePaymentSettingsChange = (e) => {
+    const { name, value } = e.target;
+    setPaymentSettings(prev => ({
+      ...prev,
+      [name]: value
     }));
     setHasUnsavedChanges(true);
   };
@@ -157,6 +171,10 @@ const ProductManager = () => {
       isShippingAvailable: product.isShippingAvailable,
       featured: product.featured || false,
       canUseCoupons: product.canUseCoupons !== undefined ? product.canUseCoupons : true // CARGAR CONFIGURACIÓN DE CUPONES
+    });
+    setPaymentSettings({
+      paymentType: product.paymentType || 'both',
+      transferFeePercentage: product.transferFeePercentage || 5
     });
     setIsEditing(true);
     setHasUnsavedChanges(false);
@@ -227,6 +245,8 @@ const ProductManager = () => {
       "isShippingAvailable": formData.isShippingAvailable,
       "featured": formData.featured,
       "canUseCoupons": formData.canUseCoupons, // NUEVA PROPIEDAD
+      "paymentType": paymentSettings.paymentType,
+      "transferFeePercentage": parseFloat(paymentSettings.transferFeePercentage) || 5,
       "id": selectedProduct ? selectedProduct.id : (localProducts.length + 1).toString()
     };
 
@@ -333,6 +353,13 @@ const ProductManager = () => {
       isShippingAvailable: true,
       featured: false,
       canUseCoupons: true // VALOR POR DEFECTO PARA CUPONES
+    });
+    setPaymentSettings({
+      paymentType: 'both',
+      transferFeePercentage: 5
+    },
+    paymentType: 'both',
+    transferFeePercentage: 5
     });
     setSelectedProduct(null);
     setIsEditing(false);
@@ -619,6 +646,66 @@ const ProductManager = () => {
             </label>
           </div>
 
+          <div className={styles.paymentSection}>
+            <h4>💳 Configuración de Métodos de Pago</h4>
+            <div className={styles.paymentGrid}>
+              <div className={styles.formGroup}>
+                <label>Tipo de Pago Permitido *</label>
+                <select
+                  name="paymentType"
+                  value={paymentSettings.paymentType}
+                  onChange={handlePaymentSettingsChange}
+                  className="form-select"
+                  required
+                >
+                  <option value="both">💰💳 Efectivo y Transferencia</option>
+                  <option value="cash">💰 Solo Efectivo</option>
+                  <option value="transfer">💳 Solo Transferencia Bancaria</option>
+                </select>
+              </div>
+
+              {(paymentSettings.paymentType === 'transfer' || paymentSettings.paymentType === 'both') && (
+                <div className={styles.formGroup}>
+                  <label>Porcentaje de Recargo por Transferencia * (%)</label>
+                  <input
+                    type="number"
+                    name="transferFeePercentage"
+                    value={paymentSettings.transferFeePercentage}
+                    onChange={handlePaymentSettingsChange}
+                    className="form-input"
+                    min="0"
+                    max="20"
+                    step="0.1"
+                    placeholder="5"
+                    required
+                  />
+                  <small className={styles.feeNote}>
+                    💡 Este porcentaje se aplicará al precio del producto si el cliente elige pago por transferencia
+                  </small>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.paymentPreview}>
+              <h5>📊 Vista Previa de Precios:</h5>
+              <div className={styles.previewGrid}>
+                <div className={styles.previewItem}>
+                  <span className={styles.previewLabel}>💰 Precio en Efectivo:</span>
+                  <span className={styles.previewPrice}>${parseFloat(formData.price || 0).toLocaleString()} CUP</span>
+                </div>
+                {(paymentSettings.paymentType === 'transfer' || paymentSettings.paymentType === 'both') && (
+                  <div className={styles.previewItem}>
+                    <span className={styles.previewLabel}>💳 Precio por Transferencia:</span>
+                    <span className={styles.previewPrice}>
+                      ${(parseFloat(formData.price || 0) * (1 + parseFloat(paymentSettings.transferFeePercentage || 0) / 100)).toLocaleString()} CUP
+                      <small> (+{paymentSettings.transferFeePercentage}%)</small>
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
           <div className={styles.formActions}>
             <button onClick={handleSave} className="btn btn-primary">
               💾 {selectedProduct ? 'Actualizar' : 'Crear'} Producto
@@ -658,6 +745,11 @@ const ProductManager = () => {
                   </p>
                   <p className={`${styles.productCoupons} ${product.canUseCoupons !== false ? styles.couponsEnabled : styles.couponsDisabled}`}>
                     🎫 {product.canUseCoupons !== false ? 'Puede usar cupones' : 'Sin cupones de descuento'}
+                  </p>
+                  <p className={`${styles.productPayment} ${styles[`payment${product.paymentType || 'both'}`]}`}>
+                    💳 {product.paymentType === 'cash' ? 'Solo Efectivo' : 
+                         product.paymentType === 'transfer' ? `Solo Transferencia (+${product.transferFeePercentage || 5}%)` :
+                         `Efectivo y Transferencia (+${product.transferFeePercentage || 5}%)`}
                   </p>
                   {product.featured && <span className={styles.featuredBadge}>⭐ Destacado</span>}
                 </div>

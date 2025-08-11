@@ -11,6 +11,8 @@ import BackupManager from './components/BackupManager';
 import CouponProductManager from './components/CouponProductManager';
 import styles from './AdminPanel.module.css';
 
+import PaymentConfigManager from './components/PaymentConfigManager';
+
 const AdminPanel = () => {
   const { isAdmin } = useAuthContext();
   const [activeTab, setActiveTab] = useState('products');
@@ -22,6 +24,7 @@ const AdminPanel = () => {
   const tabs = [
     { id: 'products', label: '📦 Productos', component: ProductManager },
     { id: 'categories', label: '📂 Categorías', component: CategoryManager },
+    { id: 'payment-config', label: '💳 Métodos de Pago', component: PaymentConfigManager },
     { id: 'coupon-products', label: '🎫 Control Cupones', component: CouponProductManager },
     { id: 'messages', label: '💬 Mensajes', component: MessagesManager },
     { id: 'coupons', label: '🏷️ Cupones', component: CouponManager },
