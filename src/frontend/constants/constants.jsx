@@ -318,7 +318,7 @@ export const CURRENCIES = {
     name: 'Dólar Estadounidense',
     symbol: '$',
     flag: '🇺🇸',
-    rate: 395,
+    rate: 398,
   },
   EUR: {
     code: 'EUR',
@@ -332,7 +332,7 @@ export const CURRENCIES = {
     name: 'Moneda Libremente Convertible',
     symbol: 'MLC',
     flag: '🏦',
-    rate: 220,
+    rate: 210,
   },
 };
 

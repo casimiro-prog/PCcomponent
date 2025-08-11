@@ -586,24 +586,6 @@ button:disabled {
   background-clip: text;
   animation: yero-gradient-animation 3s ease-in-out infinite;
   font-weight: 700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  filter: drop-shadow(0 2px 8px rgba(30, 64, 175, 0.4)) drop-shadow(0 0 20px rgba(124, 58, 237, 0.3));
-  position: relative;
-}
-
-.yero-shop-text::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, #1e40af, #7c3aed, #0891b2, #059669, #d97706, #dc2626);
-  background-size: 300% 300%;
-  animation: yero-gradient-animation 3s ease-in-out infinite;
-  filter: blur(8px);
-  opacity: 0.2;
-  z-index: -1;
 }
 
 @keyframes yero-gradient-animation {
@@ -627,25 +609,7 @@ button:disabled {
   background-clip: text;
   animation: yero-hero-animation 4s ease-in-out infinite;
   font-weight: 800;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
-  filter: drop-shadow(0 3px 12px rgba(30, 64, 175, 0.5)) drop-shadow(0 0 25px rgba(124, 58, 237, 0.4));
-  position: relative;
   letter-spacing: 2px;
-}
-
-.yero-shop-text-hero::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, #1e40af, #7c3aed, #0891b2, #059669, #d97706, #dc2626, #be185d);
-  background-size: 400% 400%;
-  animation: yero-hero-animation 4s ease-in-out infinite;
-  filter: blur(12px);
-  opacity: 0.25;
-  z-index: -1;
 }
 
 @keyframes yero-hero-animation {
@@ -675,8 +639,6 @@ button:disabled {
   background-clip: text;
   animation: yero-small-animation 2s ease-in-out infinite;
   font-weight: 600;
-  filter: drop-shadow(0 1px 4px rgba(30, 64, 175, 0.3)) drop-shadow(0 0 10px rgba(124, 58, 237, 0.2));
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes yero-small-animation {
@@ -694,102 +656,4 @@ button:disabled {
 .yero-shop-text-small:hover {
   animation-duration: 1s;
   transform: scale(1.05);
-  filter: drop-shadow(0 4px 16px rgba(30, 64, 175, 0.6)) drop-shadow(0 0 30px rgba(124, 58, 237, 0.5));
-  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
-}
-
-/* Variantes específicas para diferentes fondos */
-
-/* Para fondos oscuros (como el footer negro) */
-.footer .yero-shop-text,
-.footer .yero-shop-text-small {
-  background: linear-gradient(45deg, #60a5fa, #a78bfa, #22d3ee, #34d399, #fbbf24, #f87171);
-  background-size: 300% 300%;
-  filter: drop-shadow(0 2px 8px rgba(96, 165, 250, 0.6)) drop-shadow(0 0 20px rgba(167, 139, 250, 0.4));
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-}
-
-.footer .yero-shop-text::before {
-  background: linear-gradient(45deg, #60a5fa, #a78bfa, #22d3ee, #34d399, #fbbf24, #f87171);
-  filter: blur(10px);
-  opacity: 0.4;
-}
-
-/* Para fondos claros (como cards blancos) */
-.productCard .yero-shop-text,
-.form .yero-shop-text,
-.modal .yero-shop-text {
-  background: linear-gradient(45deg, #1e40af, #6b21a8, #0c4a6e, #047857, #b45309, #b91c1c);
-  filter: drop-shadow(0 2px 6px rgba(30, 64, 175, 0.4)) drop-shadow(0 0 15px rgba(107, 33, 168, 0.3));
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-/* Para fondos de gradiente (como headers) */
-.cardHeader .yero-shop-text,
-.formHeader .yero-shop-text,
-.checkoutHeader .yero-shop-text {
-  background: linear-gradient(45deg, #ffffff, #f0f9ff, #ecfdf5, #fef3c7, #fee2e2);
-  background-size: 300% 300%;
-  filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 15px rgba(240, 249, 255, 0.6));
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-/* Para el navbar */
-.nav .yero-shop-text,
-.navCenter .yero-shop-text {
-  background: linear-gradient(45deg, #1e40af, #7c3aed, #0891b2, #059669, #d97706, #dc2626);
-  filter: drop-shadow(0 2px 6px rgba(30, 64, 175, 0.4)) drop-shadow(0 0 12px rgba(124, 58, 237, 0.3));
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-/* Efecto especial para fondos con overlay */
-.overlay .yero-shop-text,
-.modal .yero-shop-text {
-  background: linear-gradient(45deg, #60a5fa, #a78bfa, #22d3ee, #34d399, #fbbf24, #f87171);
-  filter: drop-shadow(0 3px 8px rgba(96, 165, 250, 0.7)) drop-shadow(0 0 20px rgba(167, 139, 250, 0.5));
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
-}
-
-/* Adaptación automática según el tema del contenedor padre */
-[data-theme="dark"] .yero-shop-text,
-[data-theme="dark"] .yero-shop-text-hero,
-[data-theme="dark"] .yero-shop-text-small {
-  background: linear-gradient(45deg, #60a5fa, #a78bfa, #22d3ee, #34d399, #fbbf24, #f87171);
-  filter: drop-shadow(0 2px 8px rgba(96, 165, 250, 0.6)) drop-shadow(0 0 20px rgba(167, 139, 250, 0.4));
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-}
-
-[data-theme="light"] .yero-shop-text,
-[data-theme="light"] .yero-shop-text-hero,
-[data-theme="light"] .yero-shop-text-small {
-  background: linear-gradient(45deg, #1e40af, #6b21a8, #0c4a6e, #047857, #b45309, #b91c1c);
-  filter: drop-shadow(0 2px 6px rgba(30, 64, 175, 0.4)) drop-shadow(0 0 15px rgba(107, 33, 168, 0.3));
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-/* Mejora de legibilidad en diferentes contextos */
-@media (prefers-contrast: high) {
-  .yero-shop-text,
-  .yero-shop-text-hero,
-  .yero-shop-text-small {
-    background: linear-gradient(45deg, #000000, #1e40af, #7c3aed);
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
-    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
-  }
-}
-
-/* Efecto responsivo para dispositivos móviles */
-@media screen and (max-width: 768px) {
-  .yero-shop-text,
-  .yero-shop-text-hero,
-  .yero-shop-text-small {
-    filter: drop-shadow(0 1px 4px rgba(30, 64, 175, 0.5)) drop-shadow(0 0 12px rgba(124, 58, 237, 0.3));
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-  }
-  
-  .yero-shop-text::before,
-  .yero-shop-text-hero::before {
-    filter: blur(6px);
-    opacity: 0.15;
-  }
 }
