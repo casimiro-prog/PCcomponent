@@ -5,12 +5,35 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/navbar";
-import {
-  Movie,
-  techMovieIds,
-  processMovieResponse,
-  MovieApiResponse,
-} from "@/components/movieData";
+import { Movie } from "@/components/movieData";
+
+interface TMDbMovieDetails {
+  id: number;
+  title?: string;
+  name?: string;
+  release_date?: string;
+  first_air_date?: string;
+  overview: string;
+  poster_path: string;
+  genres: Array<{ id: number; name: string }>;
+  vote_average: number;
+  runtime?: number;
+  number_of_seasons?: number;
+  number_of_episodes?: number;
+  created_by?: Array<{ name: string }>;
+  credits?: {
+    crew: Array<{ job: string; name: string }>;
+  };
+}
+
+interface TMDbVideoResponse {
+  results: Array<{
+    key: string;
+    type: string;
+    site: string;
+    name: string;
+  }>;
+}
 
 const MovieDetail = () => {
   const { id } = useParams();
@@ -26,66 +49,144 @@ const MovieDetail = () => {
   useEffect(() => {
     const fetchMovieDetails = async () => {
       try {
-        if (!techMovieIds.includes(id as (typeof techMovieIds)[number])) {
-          setError("Movie not found");
-          setLoading(false);
-          return;
+        const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+        if (!apiKey) {
+          throw new Error("TMDb API key not configured");
         }
 
-        // Fetch movie details from OMDB API
-        const response = await fetch(
-          `https://www.omdbapi.com/?i=${id}&apikey=${
-            process.env.NEXT_PUBLIC_OMDB_API_KEY || "your_api_key"
-          }`
+        // First, try as movie
+        let movieResponse = await fetch(
+          `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&append_to_response=credits`
         );
+        
+        let isTV = false;
+        let data: TMDbMovieDetails;
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch movie details");
+        if (!movieResponse.ok) {
+          // If movie fails, try as TV show
+          const tvResponse = await fetch(
+            `https://api.themoviedb.org/3/tv/${id}?api_key=${apiKey}&append_to_response=credits`
+          );
+          
+          if (!tvResponse.ok) {
+            throw new Error("Content not found");
+          }
+          
+          data = await tvResponse.json();
+          isTV = true;
+        } else {
+          data = await movieResponse.json();
         }
 
-        const data: MovieApiResponse = await response.json();
-        const processedMovie = processMovieResponse(data);
-
-        if (!processedMovie) {
-          setError("Failed to process movie data");
-          setLoading(false);
-          return;
+        // Get director/creator
+        let director = 'Unknown';
+        if (isTV && data.created_by && data.created_by.length > 0) {
+          director = data.created_by[0].name;
+        } else if (data.credits?.crew) {
+          const directorInfo = data.credits.crew.find(person => person.job === 'Director');
+          if (directorInfo) director = directorInfo.name;
         }
+
+        // Determine media type
+        let mediaType: 'movie' | 'tv' | 'animation' = isTV ? 'tv' : 'movie';
+        if (data.genres?.some(genre => genre.id === 16)) {
+          mediaType = 'animation';
+        }
+
+        // Generate tags based on genres and content
+        const tags: string[] = [];
+        data.genres?.forEach(genre => {
+          switch (genre.id) {
+            case 878: // Science Fiction
+              tags.push('Sci-Fi', 'Tech');
+              break;
+            case 16: // Animation
+              tags.push('Tech');
+              break;
+            case 99: // Documentary
+              tags.push('Tech');
+              break;
+            case 53: // Thriller
+            case 80: // Crime
+              tags.push('Hacking');
+              break;
+            case 28: // Action
+            case 18: // Drama
+              tags.push('Tech');
+              break;
+          }
+        });
+
+        // Check for tech keywords in overview and title
+        const overview = data.overview?.toLowerCase() || '';
+        const title = (data.title || data.name || '').toLowerCase();
+        
+        const techKeywords = [
+          {word: 'computer', category: 'Coding'},
+          {word: 'artificial intelligence', category: 'AI'},
+          {word: 'robot', category: 'AI'},
+          {word: 'hack', category: 'Hacking'},
+          {word: 'cyber', category: 'Hacking'},
+          {word: 'virtual reality', category: 'VirtualReality'},
+          {word: 'technology', category: 'Tech'}
+        ];
+
+        techKeywords.forEach(({word, category}) => {
+          if (overview.includes(word) || title.includes(word)) {
+            if (!tags.includes(category)) tags.push(category);
+          }
+        });
+
+        const processedMovie: Movie = {
+          id: data.id.toString(),
+          title: data.title || data.name || 'Unknown Title',
+          year: parseInt((data.release_date || data.first_air_date || '').split('-')[0]) || 0,
+          imdbRating: Math.round(data.vote_average * 10) / 10,
+          poster: data.poster_path 
+            ? `https://image.tmdb.org/t/p/w500${data.poster_path}` 
+            : '/placeholder-poster.jpg',
+          tags: tags.slice(0, 5),
+          plot: data.overview || 'No description available',
+          director,
+          genre: data.genres?.map(g => g.name) || [],
+          mediaType
+        };
 
         setMovie(processedMovie);
         setLoading(false);
 
-        // Fetch YouTube trailer using YouTube API
-        const apiKey = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
-        if (!apiKey) {
-          throw new Error("YouTube API key not configured");
+        // Fetch trailer
+        try {
+          const videoResponse = await fetch(
+            `https://api.themoviedb.org/3/${isTV ? 'tv' : 'movie'}/${id}/videos?api_key=${apiKey}`
+          );
+          
+          if (videoResponse.ok) {
+            const videoData: TMDbVideoResponse = await videoResponse.json();
+            const trailerVideo = videoData.results.find(
+              video => video.type === 'Trailer' && video.site === 'YouTube'
+            );
+            
+            setTrailer({
+              loading: false,
+              error: trailerVideo ? null : "No trailer found",
+              videoId: trailerVideo?.key || null,
+            });
+          } else {
+            setTrailer({
+              loading: false,
+              error: "No trailer found",
+              videoId: null,
+            });
+          }
+        } catch (err) {
+          console.error("Error fetching trailer:", err);
+          setTrailer({
+            loading: false,
+            error: "Failed to load trailer",
+            videoId: null,
+          });
         }
-
-        const searchQuery = `${processedMovie.title} ${processedMovie.year} official trailer`;
-        const youtubeResponse = await fetch(
-          `https://www.googleapis.com/youtube/v3/search?` +
-            new URLSearchParams({
-              part: "snippet",
-              q: searchQuery,
-              maxResults: "1",
-              type: "video",
-              key: apiKey,
-              order: "relevance",
-            })
-        );
-
-        if (!youtubeResponse.ok) {
-          throw new Error("Failed to fetch YouTube trailer");
-        }
-
-        const youtubeData = await youtubeResponse.json();
-        const videoId = youtubeData.items?.[0]?.id?.videoId;
-
-        setTrailer({
-          loading: false,
-          error: videoId ? null : "No trailer found",
-          videoId: videoId || null,
-        });
       } catch (err) {
         console.error("Error:", err);
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -115,7 +216,7 @@ const MovieDetail = () => {
         <Navbar />
         <div className="container mx-auto px-4 py-10 text-center">
           <h1 className="text-3xl font-bold text-red-500 mb-4">Error</h1>
-          <p className="text-gray-400">{error || "Movie not found"}</p>
+          <p className="text-gray-400">{error || "Content not found"}</p>
           <Link
             href="/"
             className="inline-block mt-6 px-6 py-3 bg-[#3B82F6] text-white rounded-md hover:bg-blue-700 transition"
@@ -160,7 +261,14 @@ const MovieDetail = () => {
                 <div className="text-gray-400 hidden md:block">|</div>
                 <div className="text-gray-300">{movie.genre.join(", ")}</div>
                 <div className="text-gray-400 hidden md:block">|</div>
-                <div className="text-gray-300">Director: {movie.director}</div>
+                <div className="text-gray-300">
+                  {movie.mediaType === 'tv' ? 'Creator' : 'Director'}: {movie.director}
+                </div>
+                <div className="text-gray-400 hidden md:block">|</div>
+                <div className="text-blue-400 font-medium">
+                  {movie.mediaType === 'tv' ? 'TV Series' : 
+                   movie.mediaType === 'animation' ? 'Animation' : 'Movie'}
+                </div>
               </div>
               
               <div className="flex flex-wrap gap-2 mb-4">
@@ -187,7 +295,6 @@ const MovieDetail = () => {
         <div className="container mx-auto px-1 py-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
-
               <h2 className="text-xl font-bold mb-3 border-b border-gray-800 pb-1">
                 Trailer
               </h2>
@@ -236,7 +343,7 @@ const MovieDetail = () => {
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full text-white py-2 px-4 rounded-lg text-center block border mb-4"
+                  className="w-full text-white py-2 px-4 rounded-lg text-center block border mb-4 hover:bg-gray-700 transition-colors"
                 >
                   Find Where to Watch
                 </a>
